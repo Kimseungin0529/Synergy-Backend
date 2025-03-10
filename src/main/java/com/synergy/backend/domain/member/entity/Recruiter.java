@@ -23,7 +23,7 @@ public class Recruiter extends BaseEntity implements User {
 	private Long id;
 
 	@Column(nullable = false)
-	private String assignedAdminId;
+	private String recruiterAuthCode;
 
 	// 회사
 	@Column

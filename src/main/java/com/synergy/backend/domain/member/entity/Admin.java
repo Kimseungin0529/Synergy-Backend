@@ -22,7 +22,7 @@ public class Admin extends BaseEntity implements User {
 	private Long id;
 
 	@Column(nullable = false)
-	private String assignedAdminId;
+	private String adminAuthCode;
 
 	@Override
 	public RoleType getRole() {
