@@ -1,15 +1,14 @@
 package com.synergy.backend.global.util;
 
-import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
 public interface FileUtil {
-    public FileResponseDto uploadFilesFrom(FileUploadRequestDto dto);
+    List<String> uploadFilesFrom(List<MultipartFile> files);
 
-    public void deleteFilesFrom(FileDeleteRequestDto dto);
+    void deleteFilesFrom(List<String> fileKeys);
 
-    public FileResponseDto getFiles(FileListRequestDto fileKey);
+    List<String> getFilesFrom(List<String> fileKeys);
 
 }
