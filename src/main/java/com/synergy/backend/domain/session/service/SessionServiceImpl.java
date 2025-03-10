@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,9 +32,11 @@ public class SessionServiceImpl implements SessionService {
 
         LocalDateTime startTime = DateTimeValidator.isValidLocalDateTime(reqDto.startTime());
         LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
+        LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
 
         Session session = Session.builder()
                         .reqDto(reqDto)
+                        .progressDate(progressDate)
                         .startTime(startTime)
                         .endTime(endTime)
                         .conference(conference)
@@ -58,14 +61,16 @@ public class SessionServiceImpl implements SessionService {
         return SessionDetailResDto.from(session);
     }
 
+    @Transactional
     @Override
     public void updateSession(Long sessionId, SessionReqDto reqDto) {
         Session session = ifSessionExists(sessionId);
         // session에 대한 본인 소지 여부 확인
+        LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
         LocalDateTime startTime = DateTimeValidator.isValidLocalDateTime(reqDto.startTime());
         LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
 
-        session.updateSession(reqDto, startTime, endTime);
+        session.updateSession(reqDto, progressDate, startTime, endTime);
     }
 
     @Override
