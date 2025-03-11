@@ -1,7 +1,6 @@
 package com.synergy.backend.domain.interest.entity;
 
 import com.synergy.backend.domain.member.entity.Attendee;
-import com.synergy.backend.domain.member.entity.Member;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;

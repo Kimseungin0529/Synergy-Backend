@@ -3,13 +3,17 @@ spring:
     url: jdbc:mysql://localhost:3306/conference
     driver-class-name: com.mysql.cj.jdbc.Driver
     username: root
-    password: root1234!@
+    password: rla363636!
 
   jpa:
     hibernate:
-      ddl-auto: create
-      show-sql: true
-      open-in-view: false
+      ddl-auto: update
+
     properties:
       hibernate:
         format_sql: true
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        ddl-auto: create-drop
+        show-sql: true
+        open-in-view: false
+
