@@ -1,12 +1,22 @@
 package com.synergy.backend.domain.member.entity;
 
+import java.util.HashSet;
+import java.util.Set;
+
+import com.synergy.backend.domain.booth.model.Booth;
+import com.synergy.backend.domain.conference.entity.Conference;
+import com.synergy.backend.domain.session.entity.Session;
 import com.synergy.backend.global.common.BaseEntity;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.JoinTable;
+import jakarta.persistence.ManyToMany;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -24,8 +34,47 @@ public class Admin extends BaseEntity implements User {
 	@Column(nullable = false)
 	private String adminAuthCode;
 
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+		name = "ADMIN_CONFERENCE",
+		joinColumns = @JoinColumn(name = "admin_id"),
+		inverseJoinColumns = @JoinColumn(name = "conference_id")
+	)
+	private Set<Conference> conferences = new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+		name = "ADMIN_BOOTH",
+		joinColumns = @JoinColumn(name = "admin_id"),
+		inverseJoinColumns = @JoinColumn(name = "booth_id")
+	)
+	private Set<Booth> booths = new HashSet<>();
+
+	@ManyToMany(fetch = FetchType.LAZY)
+	@JoinTable(
+		name = "ADMIN_SESSION",
+		joinColumns = @JoinColumn(name = "admin_id"),
+		inverseJoinColumns = @JoinColumn(name = "session_id")
+	)
+	private Set<Session> sessions = new HashSet<>();
+
 	@Override
 	public RoleType getRole() {
 		return RoleType.ADMIN;
+	}
+
+	public void addSession(Session session) {
+		this.sessions.add(session);
+		session.getAdmins().add(this);
+	}
+
+	public void addBooth(Booth booth) {
+		this.booths.add(booth);
+		booth.getAdmins().add(this);
+	}
+
+	public void addConference(Conference conference) {
+		this.conferences.add(conference);
+		conference.getAdmins().add(this);
 	}
 }

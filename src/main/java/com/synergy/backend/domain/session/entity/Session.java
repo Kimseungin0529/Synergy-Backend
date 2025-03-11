@@ -1,7 +1,14 @@
 package com.synergy.backend.domain.session.entity;
 
+import static jakarta.persistence.FetchType.*;
+import static lombok.AccessLevel.*;
+
+import java.time.LocalDateTime;
+import java.util.HashSet;
+import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
+import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.session.dto.SessionReqDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -62,6 +69,18 @@ public class Session {
         this.description = reqDto.description();
         this.conference = conference;
     }
+	@ManyToMany(mappedBy = "sessions")
+	private Set<Admin> admins = new HashSet<>();
+
+	@Builder
+	public Session(SessionReqDto reqDto, LocalDateTime startTime, LocalDateTime endTime, Conference conference) {
+		this.title = reqDto.title();
+		this.speaker = reqDto.speaker();
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.description = reqDto.description();
+		this.conference = conference;
+	}
 
     public void updateSession(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime) {
         this.title = reqDto.title();
@@ -72,4 +91,16 @@ public class Session {
         this.endTime = endTime;
         this.description = reqDto.description();
     }
+	public void addAdmin(Admin admin) {
+		this.admins.add(admin);
+		admin.getSessions().add(this);
+	}
+
+	public void updateSession(SessionReqDto reqDto, LocalDateTime startTime, LocalDateTime endTime) {
+		this.title = reqDto.title();
+		this.speaker = reqDto.speaker();
+		this.startTime = startTime;
+		this.endTime = endTime;
+		this.description = reqDto.description();
+	}
 }

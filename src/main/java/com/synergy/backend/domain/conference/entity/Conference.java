@@ -1,11 +1,28 @@
 package com.synergy.backend.domain.conference.entity;
 
+import static jakarta.persistence.CascadeType.*;
+import static lombok.AccessLevel.*;
+
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import com.synergy.backend.domain.booth.entity.Booth;
 import com.synergy.backend.domain.conference.exception.InvalidLocationException;
 import com.synergy.backend.domain.conference.exception.InvalidNameException;
+import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.session.entity.Session;
-import jakarta.persistence.*;
+
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -58,6 +75,14 @@ public class Conference {
         this.location = location;
         this.type = type;
     }
+	@ManyToMany(mappedBy = "conferences")
+	private Set<Admin> admins = new HashSet<>();
+
+	private Conference(String name, TimePeriod period, String location) {
+		this.name = name;
+		this.period = period;
+		this.location = location;
+	}
 
     public static Conference of(String name, TimePeriod period, String organizer, String location, String type) {
         if (name.length() > MAX_NAME_LENGTH || name.isBlank()) {
@@ -96,4 +121,20 @@ public class Conference {
     public void updateType(String type) {
         this.type = type;
     }
+	public void addAdmin(Admin admin) {
+		this.admins.add(admin);
+		admin.getConferences().add(this);
+	}
+
+	public void updateName(String name) {
+		this.name = name;
+	}
+
+	public void updateLocation(String location) {
+		this.location = location;
+	}
+
+	public void updatePeriod(TimePeriod period) {
+		this.period = period;
+	}
 }

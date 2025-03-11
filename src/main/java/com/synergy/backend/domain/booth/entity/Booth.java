@@ -1,12 +1,18 @@
 package com.synergy.backend.domain.booth.entity;
+package com.synergy.backend.domain.booth.model;
+
+import static jakarta.persistence.FetchType.*;
+import static lombok.AccessLevel.*;
+
+import java.util.HashSet;
+import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
+import com.synergy.backend.domain.member.entity.Admin;
+
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-
-import static jakarta.persistence.FetchType.LAZY;
-import static lombok.AccessLevel.PROTECTED;
 
 @Entity
 @Getter
@@ -30,9 +36,17 @@ public class Booth {
     @Column(nullable = false, length = 1000)
     private String description;
 
-    @ManyToOne(fetch = LAZY)
-    @JoinColumn(name = "conference_id", nullable = false)
-    private Conference conference;
+	@ManyToOne(fetch = LAZY)
+	@JoinColumn(name = "conference_id")
+	private Conference conference;
+
+	@ManyToMany(mappedBy = "booths")
+	private Set<Admin> admins = new HashSet<>();
+
+	public void addAdmin(Admin admin) {
+		this.admins.add(admin);
+		admin.getBooths().add(this);
+	}
 
     public Booth(String name, String company, String location, String description, Conference conference) {
         this.name = name;
