@@ -1,7 +1,7 @@
 package com.synergy.backend.domain.conference.entity;
 
 
-import com.synergy.backend.domain.booth.model.Booth;
+import com.synergy.backend.domain.booth.entity.Booth;
 import com.synergy.backend.domain.conference.exception.InvalidLocationException;
 import com.synergy.backend.domain.conference.exception.InvalidNameException;
 import com.synergy.backend.domain.session.entity.Session;
