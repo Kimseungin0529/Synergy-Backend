@@ -3,10 +3,10 @@ package com.synergy.backend.domain.booth.controller;
 import com.synergy.backend.domain.booth.dto.BoothRequestDto;
 import com.synergy.backend.domain.booth.dto.BoothResponseDto;
 import com.synergy.backend.domain.booth.service.BoothService;
+import com.synergy.backend.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,44 +17,43 @@ public class BoothController {
     private final BoothService boothService;
 
     @GetMapping("/{id}")
-    public ResponseEntity<BoothResponseDto> getBoothById(
+    public ApiResponse<BoothResponseDto> getBoothById(
             @PathVariable Long conferenceId,
             @PathVariable Long id
     ) {
-        return ResponseEntity.ok(boothService.getBoothById(conferenceId, id));
+        return boothService.getBoothById(conferenceId, id);
     }
 
     @GetMapping
-    public ResponseEntity<Page<BoothResponseDto>> getAllBooths(
+    public ApiResponse<Page<BoothResponseDto>> getAllBooths(
             @PathVariable Long conferenceId,
             Pageable pageable
     ) {
-        return ResponseEntity.ok(boothService.getAllBooths(conferenceId, pageable));
+        return boothService.getAllBooths(conferenceId, pageable);
     }
 
     @PostMapping
-    public ResponseEntity<BoothResponseDto> createBooth(
+    public ApiResponse<BoothResponseDto> createBooth(
             @PathVariable Long conferenceId,
             @RequestBody BoothRequestDto request
     ) {
-        return ResponseEntity.ok(boothService.createBooth(conferenceId, request));
+        return boothService.createBooth(conferenceId, request);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BoothResponseDto> updateBooth(
+    public ApiResponse<BoothResponseDto> updateBooth(
             @PathVariable Long conferenceId,
             @PathVariable Long id,
             @RequestBody BoothRequestDto request
     ) {
-        return ResponseEntity.ok(boothService.updateBooth(conferenceId, id, request));
+        return boothService.updateBooth(conferenceId, id, request);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteBooth(
+    public ApiResponse<Void> deleteBooth(
             @PathVariable Long conferenceId,
             @PathVariable Long id
     ) {
-        boothService.deleteBooth(conferenceId, id);
-        return ResponseEntity.noContent().build();
+        return boothService.deleteBooth(conferenceId, id);
     }
 }
