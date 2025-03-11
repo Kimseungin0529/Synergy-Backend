@@ -4,30 +4,29 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
-public class FileS3Util implements FileUtil{
+public class FileS3Util implements FileUtil {
 
     private final AmazonS3 amazonS3Service;
 
     @Value("${spring.cloud.aws.s3.bucket}")
-    private final String bucketName;
+    private String bucketName;
 
     private static final String PREFIX = "all/";
 
     @Override
     public List<String> uploadFilesFrom(List<MultipartFile> files) {
         List<String> fileAccessKeys = new ArrayList<>();
-        for(MultipartFile file : files) {
+        for (MultipartFile file : files) {
             try {
                 String fileName = PREFIX + UUID.randomUUID() + "_" + file.getOriginalFilename(); // 고유한 파일 이름 생성
 
@@ -44,7 +43,7 @@ public class FileS3Util implements FileUtil{
                 fileAccessKeys.add(fileName);
 
                 fileAccessKeys.add(getPublicUrl(fileName));
-            }catch (Exception e) {
+            } catch (Exception e) {
                 throw new FileUploadS3Exception();
             }
         }
