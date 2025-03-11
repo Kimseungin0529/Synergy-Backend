@@ -3,7 +3,7 @@ package com.synergy.backend.domain.member.entity;
 import java.util.HashSet;
 import java.util.Set;
 
-import com.synergy.backend.domain.booth.model.Booth;
+import com.synergy.backend.domain.booth.entity.Booth;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.session.entity.Session;
 import com.synergy.backend.global.common.BaseEntity;

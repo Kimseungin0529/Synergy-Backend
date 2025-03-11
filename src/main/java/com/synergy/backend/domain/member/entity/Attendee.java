@@ -1,7 +1,5 @@
 package com.synergy.backend.domain.member.entity;
 
-import static jakarta.persistence.FetchType.*;
-
 import java.util.List;
 import java.util.Set;
 
