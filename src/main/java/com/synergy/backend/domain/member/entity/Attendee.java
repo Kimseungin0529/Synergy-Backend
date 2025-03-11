@@ -2,13 +2,12 @@ package com.synergy.backend.domain.member.entity;
 
 import static jakarta.persistence.FetchType.*;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.interest.entity.MemberInterest;
-import com.synergy.backend.domain.session.entity.AttendeeSession;
+import com.synergy.backend.domain.point.entity.Point;
 import com.synergy.backend.domain.techstack.entity.MemberTechStack;
 
 import jakarta.persistence.CascadeType;
@@ -42,13 +41,16 @@ public class Attendee extends Member {
 	// 현재 포인트 합계
 	@Column(nullable = false)
 	@Builder.Default
-	private int point = 0;
+	private int totalPoints = 0;
 
 	// 등급
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
 	@Builder.Default
 	private MembershipLevelType membershipLevelType = MembershipLevelType.BRONZE;
+
+	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<Point> points;
 
 	// 현재 직업
 	@Enumerated(EnumType.STRING)
@@ -89,8 +91,5 @@ public class Attendee extends Member {
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "conference_id")
 	private Conference conference;
-
-	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<AttendeeSession> attendeeSessions = new ArrayList<>();
 
 }

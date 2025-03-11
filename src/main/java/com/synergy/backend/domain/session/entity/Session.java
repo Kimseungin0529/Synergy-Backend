@@ -9,9 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 import static jakarta.persistence.FetchType.LAZY;
 import static lombok.AccessLevel.PROTECTED;
@@ -32,6 +31,12 @@ public class Session {
     @Column(nullable = false, length = 100)
     private String speaker;
 
+    @Column(nullable = false, length = 20)
+    private String speakerPosition;
+
+    @Column(nullable = false)
+    private LocalDate progressDate;
+
     @NotNull
     @Column(nullable = false)
     private LocalDateTime startTime;
@@ -46,31 +51,23 @@ public class Session {
     @JoinColumn(name = "conference_id")
     private Conference conference;
 
-    @OneToMany(mappedBy = "session", cascade = CascadeType.ALL, orphanRemoval = true)
-    private List<AttendeeSession> attendeeSessions = new ArrayList<>();
-
     @Builder
-    public Session(SessionReqDto reqDto, LocalDateTime startTime, LocalDateTime endTime, Conference conference) {
+    public Session(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime, Conference conference) {
         this.title = reqDto.title();
         this.speaker = reqDto.speaker();
+        this.speakerPosition = reqDto.speakerPosition();
+        this.progressDate = progressDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = reqDto.description();
         this.conference = conference;
     }
 
-    public static Session of(SessionReqDto reqDto, LocalDateTime startTime, LocalDateTime endTime, Conference conference) {
-        return Session.builder()
-                .reqDto(reqDto)
-                .startTime(startTime)
-                .endTime(endTime)
-                .conference(conference)
-                .build();
-    }
-
-    public void updateSession(SessionReqDto reqDto, LocalDateTime startTime, LocalDateTime endTime) {
+    public void updateSession(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime) {
         this.title = reqDto.title();
         this.speaker = reqDto.speaker();
+        this.speakerPosition = reqDto.speakerPosition();
+        this.progressDate = progressDate;
         this.startTime = startTime;
         this.endTime = endTime;
         this.description = reqDto.description();

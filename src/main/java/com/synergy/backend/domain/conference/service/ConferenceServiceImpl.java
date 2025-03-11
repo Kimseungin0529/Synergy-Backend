@@ -26,7 +26,7 @@ public class ConferenceServiceImpl implements ConferenceService {
     @Override
     public ConferenceCreateResponse registerConference(ConferenceCreateRequest request) {
         TimePeriod timePeriod = TimePeriod.of(request.startDate(), request.endDate());
-        Conference conference = Conference.of(request.name(), timePeriod, request.location());
+        Conference conference = Conference.of(request.name(), timePeriod, request.organizer(), request.location(), request.type());
         Conference savedConference = conferenceRepository.save(conference);
 
         return ConferenceCreateResponse.from(savedConference);
@@ -50,6 +50,8 @@ public class ConferenceServiceImpl implements ConferenceService {
     private void applyUpdatesToConference(ConferenceUpdateRequest request, Conference findConference) {
         Optional.ofNullable(request.name()).ifPresent(findConference::updateName);
         Optional.ofNullable(request.location()).ifPresent(findConference::updateLocation);
+        Optional.ofNullable(request.organizer()).ifPresent(findConference::updateOrganizer);
+        Optional.ofNullable(request.type()).ifPresent(findConference::updateType);
 
         Optional<LocalDateTime> optionalStartTime = Optional.ofNullable(request.startTime());
         Optional<LocalDateTime> optionalEndTime = Optional.ofNullable(request.endTime());

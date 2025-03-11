@@ -1,13 +1,13 @@
 spring:
   datasource:
-    url: jdbc:mysql://${DB_ADDRESS}:3306/${DB_NAME}
+    url: jdbc:mysql://localhost:3306/conference
     driver-class-name: com.mysql.cj.jdbc.Driver
-    username: ${DB_USERNAME}
-    password: ${DB_PASSWORD}
+    username: root
+    password: root1234!@
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
       show-sql: true
       open-in-view: false
     properties:
