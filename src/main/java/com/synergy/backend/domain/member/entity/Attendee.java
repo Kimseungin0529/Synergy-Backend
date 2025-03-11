@@ -1,7 +1,5 @@
 package com.synergy.backend.domain.member.entity;
 
-import static jakarta.persistence.FetchType.*;
-
 import java.util.List;
 import java.util.Set;
 
@@ -9,44 +7,53 @@ import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.interest.entity.MemberInterest;
 import com.synergy.backend.domain.point.entity.Point;
 import com.synergy.backend.domain.techstack.entity.MemberTechStack;
+import com.synergy.backend.global.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
-import lombok.Builder;
+import lombok.AccessLevel;
 import lombok.Getter;
-import lombok.experimental.SuperBuilder;
+import lombok.NoArgsConstructor;
 
 @Entity
 @Getter
-@SuperBuilder
-public class Attendee extends Member {
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+public class Attendee extends BaseEntity implements User {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "member_id")
+	@Column(name = "attendee_id")
 	private Long id;
+
+	@Column(unique = true, nullable = false)
+	private String email;
+
+	@Column(nullable = false)
+	private String password;
+
+	@Column(nullable = false, length = 25)
+	private String name;
 
 	@Column(nullable = false)
 	private String phone;
 
 	// 현재 포인트 합계
 	@Column(nullable = false)
-	@Builder.Default
 	private int totalPoints = 0;
 
 	// 등급
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	@Builder.Default
 	private MembershipLevelType membershipLevelType = MembershipLevelType.BRONZE;
 
 	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL, orphanRemoval = true)
@@ -88,8 +95,17 @@ public class Attendee extends Member {
 	private Set<MemberInterest> memberInterests;
 
 	// 컨퍼런스
-	@ManyToOne(fetch = LAZY)
+	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "conference_id")
 	private Conference conference;
 
+	@Override
+	public Long getId() {
+		return this.id;
+	}
+
+	@Override
+	public RoleType getRole() {
+		return RoleType.ATTENDEE;
+	}
 }
