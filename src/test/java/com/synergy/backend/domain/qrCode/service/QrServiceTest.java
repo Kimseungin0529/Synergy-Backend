@@ -25,7 +25,7 @@ class QrServiceTest {
 
      //when
         byte[] bytes = qrService.generateQRCode(url);
-        System.out.println(new String(bytes));
+        //System.out.println(new String(bytes));
 
         //then
         assertThat(bytes).isNotNull();
