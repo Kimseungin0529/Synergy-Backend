@@ -20,10 +20,12 @@ import com.synergy.backend.domain.session.repository.SessionRepository;
 import com.synergy.backend.domain.session.service.validate.DateTimeValidator;
 import com.synergy.backend.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.security.Security;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -44,10 +46,17 @@ public class SessionServiceImpl implements SessionService {
         Admin member = (Admin) getCurrentMember();
         Conference conference = ifConferenceExists(conferenceId);
 
+        LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
         LocalDateTime startTime = DateTimeValidator.isValidLocalDateTime(reqDto.startTime());
         LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
 
-        Session session = Session.of(reqDto, startTime, endTime, conference);
+        Session session = Session.builder()
+                .reqDto(reqDto)
+                .progressDate(progressDate)
+                .startTime(startTime)
+                .endTime(endTime)
+                .conference(conference)
+                .build();
         sessionRepository.save(session);
     }
 
@@ -72,10 +81,11 @@ public class SessionServiceImpl implements SessionService {
     public void updateSession(Long sessionId, SessionReqDto reqDto) {
         Session session = ifSessionExists(sessionId);
         // session에 대한 본인 소지 여부 확인
+        LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
         LocalDateTime startTime = DateTimeValidator.isValidLocalDateTime(reqDto.startTime());
         LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
 
-        session.updateSession(reqDto, startTime, endTime);
+        session.updateSession(reqDto, progressDate, startTime, endTime);
     }
 
     @Override
