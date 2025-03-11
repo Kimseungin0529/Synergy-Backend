@@ -9,14 +9,18 @@ public record ConferenceUpdateResponse(
         String name,
         LocalDateTime startTime,
         LocalDateTime endTime,
-        String location
+        String location,
+        String organizer,
+        String type
 ) {
     public static ConferenceUpdateResponse from(Conference conference) {
         TimePeriod period = conference.getPeriod();
         return new ConferenceUpdateResponse(conference.getName(),
                 period.getStartDateTime(),
                 period.getEndDateTime(),
-                conference.getLocation());
+                conference.getLocation(),
+                conference.getOrganizer(),
+                conference.getType());
     }
 
 }

@@ -17,7 +17,9 @@ public record ConferenceUpdateRequest(
     @Future(message = "종료 날짜는 미래여야 합니다.")
     LocalDateTime endTime,
 
-    String location
+    String location,
+    String organizer,
+    String type
 ) {
 }
 
