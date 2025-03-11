@@ -15,7 +15,7 @@ public interface AttendeeBoothRepository extends JpaRepository<AttendeeBooth, Lo
     List<AttendeeBooth> findByBooth(Booth booth);
     boolean existsByBoothIdAndAttendeeId(Long boothId, Long attendeeId);
 
-    @Modifying
+    @Modifying(clearAutomatically = true)
     @Transactional
     @Query("DELETE FROM AttendeeBooth ab WHERE ab.booth = :booth")
     void deleteByBooth(Booth booth);
