@@ -1,4 +1,4 @@
-package com.synergy.backend.global.util;
+package com.synergy.backend.global.util.file.util;
 
 import com.amazonaws.AmazonServiceException;
 import com.amazonaws.SdkClientException;
@@ -6,6 +6,10 @@ import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.synergy.backend.global.util.file.dto.FileAccessDto;
+import com.synergy.backend.global.util.file.dto.FileInformationDto;
+import com.synergy.backend.global.util.file.exception.ExternalApiCallException;
+import com.synergy.backend.global.util.file.exception.FileUploadS3Exception;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

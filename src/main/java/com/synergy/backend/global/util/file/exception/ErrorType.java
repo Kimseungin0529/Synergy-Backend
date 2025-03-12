@@ -1,4 +1,4 @@
-package com.synergy.backend.global.util;
+package com.synergy.backend.global.util.file.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

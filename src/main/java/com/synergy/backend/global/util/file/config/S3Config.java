@@ -1,4 +1,4 @@
-package com.synergy.backend.global.util;
+package com.synergy.backend.global.util.file.config;
 
 import com.amazonaws.auth.AWSStaticCredentialsProvider;
 import com.amazonaws.auth.BasicAWSCredentials;

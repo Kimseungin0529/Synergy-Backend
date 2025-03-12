@@ -1,8 +1,8 @@
-package com.synergy.backend.global.util;
+package com.synergy.backend.global.util.file.exception;
 
 import com.synergy.backend.global.exception.BaseErrorException;
 
-import static com.synergy.backend.global.util.ErrorType._EXTERNAL_API_FAIL_CALL;
+import static com.synergy.backend.global.util.file.exception.ErrorType._EXTERNAL_API_FAIL_CALL;
 
 public class ExternalApiCallException extends BaseErrorException {
 

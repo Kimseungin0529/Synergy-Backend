@@ -1,5 +1,7 @@
-package com.synergy.backend.global.util;
+package com.synergy.backend.global.util.file.util;
 
+import com.synergy.backend.global.util.file.dto.FileAccessDto;
+import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
