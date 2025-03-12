@@ -9,19 +9,14 @@ import java.util.Set;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.member.entity.Admin;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import lombok.Setter;
 
 @Entity
 @Getter
+@Setter
 @NoArgsConstructor(access = PROTECTED)
 public class Booth {
 
@@ -48,6 +43,9 @@ public class Booth {
 
 	@ManyToMany(mappedBy = "booths")
 	private Set<Admin> admins = new HashSet<>();
+
+    @Lob
+	private byte[] qrCode;
 
 	public Booth(String name, String company, String location, String description, Conference conference) {
 		this.name = name;

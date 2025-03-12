@@ -1,5 +1,6 @@
 package com.synergy.backend.domain.booth.service;
 
+import com.google.zxing.WriterException;
 import com.synergy.backend.domain.booth.dto.BoothRequestDto;
 import com.synergy.backend.domain.booth.dto.BoothResponseDto;
 import com.synergy.backend.domain.booth.entity.Booth;
@@ -8,6 +9,8 @@ import com.synergy.backend.domain.booth.repository.BoothRepository;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
+import com.synergy.backend.domain.qrCode.exception.NotGenerateQRCodeException;
+import com.synergy.backend.domain.qrCode.service.QrService;
 import com.synergy.backend.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
@@ -21,6 +24,7 @@ public class BoothServiceImpl implements BoothService {
 
     private final BoothRepository boothRepository;
     private final ConferenceRepository conferenceRepository;
+    private final QrService qrService;
 
     @Transactional
     @Override
@@ -33,7 +37,18 @@ public class BoothServiceImpl implements BoothService {
                 request.description(),
                 conference
         );
-        return ApiResponse.ok(new BoothResponseDto(boothRepository.save(booth)), 201);
+
+        booth = boothRepository.save(booth);
+
+        String qrCodeUrl = "http://localhost:8080/api/v1/conference/" + conferenceId + "/booths/" + booth.getId() + "/join";
+        try {
+            byte[] qrCode = qrService.generateQRCode(qrCodeUrl);
+            booth.setQrCode(qrCode);
+        } catch (WriterException e) {
+            throw new NotGenerateQRCodeException();
+        }
+
+        return ApiResponse.ok(new BoothResponseDto(booth), 201);
     }
 
     @Transactional(readOnly = true)
