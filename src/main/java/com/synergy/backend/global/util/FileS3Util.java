@@ -1,6 +1,9 @@
 package com.synergy.backend.global.util;
 
+import com.amazonaws.AmazonServiceException;
+import com.amazonaws.SdkClientException;
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.ObjectMetadata;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import lombok.RequiredArgsConstructor;
@@ -55,10 +58,25 @@ public class FileS3Util implements FileUtil {
     }
 
     @Override
-    public void deleteFilesFrom(List<String> fileKeys) {
+    public void deleteFilesFrom(List<String> keys) {
+        try {
+            if (keys.isEmpty()) {
+                return;
+            }
+            DeleteObjectsRequest deleteRequest = new DeleteObjectsRequest(bucketName)
+                    .withKeys(keys.toArray(new String[0]));
+
+            amazonS3Service.deleteObjects(deleteRequest);
+            log.info("S3 다중 객체 삭제 완료: {}", keys);
+
+        } catch (AmazonServiceException e) {
+            throw new ExternalApiCallException("S3 다중 파일 삭제 실패 : " + e.getMessage());
+        } catch (SdkClientException e) {
+            throw new ExternalApiCallException("AWS 연결 오류로 파일 삭제 실패 : " + e.getMessage());
+        }
+
 
     }
-
     @Override
     public List<String> getFilesFrom(List<String> fileKeys) {
         return List.of();
