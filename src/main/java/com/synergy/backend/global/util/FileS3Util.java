@@ -24,31 +24,30 @@ public class FileS3Util implements FileUtil {
     private static final String PREFIX = "all/";
 
     @Override
-    public List<String> uploadFilesFrom(List<MultipartFile> files) {
-        List<String> fileAccessKeys = new ArrayList<>();
+    public List<FileInformationDto> uploadFilesFrom(List<MultipartFile> files) {
+        List<FileInformationDto> fileInformation = new ArrayList<>();
         for (MultipartFile file : files) {
             try {
-                String fileName = PREFIX + UUID.randomUUID() + "_" + file.getOriginalFilename(); // 고유한 파일 이름 생성
+                // 고유한 파일 이름 생성
+                String fileKey = generateUniqueFileNameFrom(file);
 
                 // 메타데이터 설정
-                ObjectMetadata metadata = new ObjectMetadata();
-                metadata.setContentType(file.getContentType());
-                metadata.setContentLength(file.getSize());
+                ObjectMetadata metadata = generateMetadata(file);
 
                 // S3에 파일 업로드 요청 생성
-                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileName, file.getInputStream(), metadata);
+                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileKey, file.getInputStream(), metadata);
 
                 // S3에 파일 업로드
                 amazonS3Service.putObject(putObjectRequest);
-                fileAccessKeys.add(fileName);
+                String accessUrl = amazonS3Service.getUrl(bucketName, fileKey).toString();
+                fileInformation.add(new FileInformationDto(fileKey, accessUrl));
 
-                fileAccessKeys.add(getPublicUrl(fileName));
             } catch (Exception e) {
                 throw new FileUploadS3Exception();
             }
         }
 
-        return fileAccessKeys;
+        return fileInformation;
     }
 
     private String getPublicUrl(String fileName) {
@@ -63,5 +62,16 @@ public class FileS3Util implements FileUtil {
     @Override
     public List<String> getFilesFrom(List<String> fileKeys) {
         return List.of();
+    }
+
+    private ObjectMetadata generateMetadata(MultipartFile file) {
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentType(file.getContentType());
+        metadata.setContentLength(file.getSize());
+        return metadata;
+    }
+
+    private String generateUniqueFileNameFrom(MultipartFile file) {
+        return PREFIX + UUID.randomUUID() + "_" + file.getOriginalFilename();
     }
 }
