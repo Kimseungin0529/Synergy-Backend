@@ -67,7 +67,6 @@ public class FileS3Util implements FileUtil {
                     .withKeys(keys.toArray(new String[0]));
 
             amazonS3Service.deleteObjects(deleteRequest);
-            log.info("S3 다중 객체 삭제 완료: {}", keys);
 
         } catch (AmazonServiceException e) {
             throw new ExternalApiCallException("S3 다중 파일 삭제 실패 : " + e.getMessage());
