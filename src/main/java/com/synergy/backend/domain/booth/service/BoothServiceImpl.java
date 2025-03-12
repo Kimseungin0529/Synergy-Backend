@@ -40,7 +40,7 @@ public class BoothServiceImpl implements BoothService {
 
         booth = boothRepository.save(booth);
 
-        String qrCodeUrl = "http://localhost:8080/api/v1/conference/" + conferenceId + "/booths/" + booth.getId() + "/join";
+        String qrCodeUrl = "https://";
         try {
             byte[] qrCode = qrService.generateQRCode(qrCodeUrl);
             booth.setQrCode(qrCode);
