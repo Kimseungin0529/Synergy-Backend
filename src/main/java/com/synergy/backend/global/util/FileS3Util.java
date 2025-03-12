@@ -78,8 +78,14 @@ public class FileS3Util implements FileUtil {
 
     }
     @Override
-    public List<String> getFilesFrom(List<String> fileKeys) {
-        return List.of();
+    public List<FileAccessDto> getFilesFrom(List<String> keys) {
+        List<FileAccessDto> accessUrls = new ArrayList<>();
+        for (String fileKey : keys) {
+            String accessUrl = amazonS3Service.getUrl(bucketName, fileKey).toString();
+            accessUrls.add(new FileAccessDto(accessUrl));
+        }
+
+        return accessUrls;
     }
 
     private ObjectMetadata generateMetadata(MultipartFile file) {
