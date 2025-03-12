@@ -3,6 +3,7 @@ package com.synergy.backend.domain.session.service;
 import com.synergy.backend.domain.session.dto.SessionDetailResDto;
 import com.synergy.backend.domain.session.dto.SessionReqDto;
 import com.synergy.backend.domain.session.dto.SessionResDto;
+import com.synergy.backend.domain.session.dto.question.QuestionParticipateResDto;
 import com.synergy.backend.domain.session.dto.question.QuestionReqDto;
 import com.synergy.backend.domain.session.dto.question.QuestionResDto;
 import com.synergy.backend.domain.session.entity.Session;
@@ -24,5 +25,9 @@ public interface SessionService {
 
     void deleteSession(Long sessionId);
 
-    QuestionResDto createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto);
+    void createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto);
+
+    List<QuestionResDto> getQuestions(Long conferenceId, Long sessionId);
+
+    QuestionParticipateResDto getQuestionParticipate(Long sessionId, Long questionId);
 }

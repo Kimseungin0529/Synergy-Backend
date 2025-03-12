@@ -1,11 +1,13 @@
 package com.synergy.backend.domain.member.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.interest.entity.MemberInterest;
 import com.synergy.backend.domain.point.entity.Point;
+import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.domain.techstack.entity.MemberTechStack;
 import com.synergy.backend.global.common.BaseEntity;
 
@@ -98,6 +100,9 @@ public class Attendee extends BaseEntity implements User {
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "conference_id")
 	private Conference conference;
+
+	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL)
+	private List<AttendeeSession> attendeeSessions = new ArrayList<>();
 
 	@Override
 	public Long getId() {

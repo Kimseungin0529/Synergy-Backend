@@ -57,12 +57,12 @@ public class SessionController {
     /* ------------------------------------------ Q&A --------------------------------------*/
 
     @PostMapping("/{sessionId}/participation")
-    public ApiResponse<QuestionResDto> createQuestion(@PathVariable(name = "conferenceId") Long conferenceId,
+    public ApiResponse createQuestion(@PathVariable(name = "conferenceId") Long conferenceId,
                                                       @PathVariable(name = "sessionId") Long sessionId,
                                                       @RequestBody QuestionReqDto reqDto) {
 
-        QuestionResDto result = sessionService.createQuestion(conferenceId, sessionId, reqDto);
-        return ApiResponse.ok(result, 200);
+        sessionService.createQuestion(conferenceId, sessionId, reqDto);
+        return ApiResponse.ok("Question created successfully!", 200);
     }
 
 }

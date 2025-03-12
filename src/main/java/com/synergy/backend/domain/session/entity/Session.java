@@ -5,21 +5,16 @@ import static lombok.AccessLevel.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.session.dto.SessionReqDto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -60,6 +55,9 @@ public class Session {
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "conference_id")
 	private Conference conference;
+
+	@OneToMany(mappedBy = "session", fetch = LAZY, cascade = CascadeType.ALL)
+	private List<AttendeeSession> attendeeSessions = new ArrayList<>();
 
 	@ManyToMany(mappedBy = "sessions")
 	private Set<Admin> admins = new HashSet<>();

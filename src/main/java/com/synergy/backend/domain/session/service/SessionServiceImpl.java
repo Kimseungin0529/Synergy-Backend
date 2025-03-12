@@ -5,11 +5,11 @@ import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
-import com.synergy.backend.domain.member.entity.Member;
-import com.synergy.backend.domain.member.repository.AttendeeRepository;
+import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.session.dto.SessionDetailResDto;
 import com.synergy.backend.domain.session.dto.SessionReqDto;
 import com.synergy.backend.domain.session.dto.SessionResDto;
+import com.synergy.backend.domain.session.dto.question.QuestionParticipateResDto;
 import com.synergy.backend.domain.session.dto.question.QuestionReqDto;
 import com.synergy.backend.domain.session.dto.question.QuestionResDto;
 import com.synergy.backend.domain.session.entity.AttendeeSession;
@@ -20,7 +20,6 @@ import com.synergy.backend.domain.session.repository.SessionRepository;
 import com.synergy.backend.domain.session.service.validate.DateTimeValidator;
 import com.synergy.backend.global.util.SecurityUtil;
 import lombok.RequiredArgsConstructor;
-import org.springframework.cglib.core.Local;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +36,7 @@ public class SessionServiceImpl implements SessionService {
     private final SessionRepository sessionRepository;
     private final AttendeeSessionRepository attendeeSessionRepository;
 
-    public Member getCurrentMember() {
+    public User getCurrentMember() {
         return SecurityUtil.getCurrentMember();
     }
 
@@ -95,19 +94,34 @@ public class SessionServiceImpl implements SessionService {
         sessionRepository.delete(session);
     }
 
-    // -------------------------------------- QnA ------------------------------------------------
+    // -------------------------------------- Q&A ------------------------------------------------
 
     @Override
-    public QuestionResDto createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto) {
+    public void createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto) {
         Attendee attendee = (Attendee) getCurrentMember();
         // 참가자에 대한 QR 인증 여부를 확인해야 할듯
         ifConferenceExists(conferenceId);
         Session session = ifSessionExists(sessionId);
-        AttendeeSession attendeeSession = AttendeeSession.of(attendee, session);
+        AttendeeSession attendeeSession = AttendeeSession.of(attendee, session, reqDto.content());
         attendeeSessionRepository.save(attendeeSession);
-
-        return new QuestionResDto(reqDto.content());
     }
+
+    @Override
+    public List<QuestionResDto> getQuestions(Long conferenceId, Long sessionId) {
+        getCurrentMember();
+        ifConferenceExists(conferenceId);
+        ifSessionExists(sessionId);
+
+        List<AttendeeSession> allBySession = attendeeSessionRepository.findAllBySession(sessionId);
+
+        return allBySession.stream().map(QuestionResDto::from).toList();
+    }
+
+    @Override
+    public QuestionParticipateResDto getQuestionParticipate(Long sessionId, Long questionId) {
+        return null;
+    }
+
 
     private Conference ifConferenceExists(Long conferenceId) {
         return conferenceRepository.findById(conferenceId).orElseThrow(NotFoundConference::new);

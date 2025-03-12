@@ -17,9 +17,6 @@ public class AttendeeSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(nullable = false)
-    private Boolean hasAskedQuestion = false;
-
     @Size(min = 10)
     @Column(nullable = false, length = 300)
     private String question;
@@ -33,15 +30,17 @@ public class AttendeeSession {
     private Session session;
 
     @Builder
-    public AttendeeSession(Attendee attendee, Session session) {
+    public AttendeeSession(Attendee attendee, Session session, String question) {
         this.attendee = attendee;
         this.session = session;
+        this.question = question;
     }
 
-    public static AttendeeSession of(Attendee attendee, Session session) {
+    public static AttendeeSession of(Attendee attendee, Session session, String question) {
         return AttendeeSession.builder()
                 .attendee(attendee)
                 .session(session)
+                .question(question)
                 .build();
     }
 }
