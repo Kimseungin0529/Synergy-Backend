@@ -14,8 +14,11 @@ import com.synergy.backend.domain.session.dto.question.QuestionReqDto;
 import com.synergy.backend.domain.session.dto.question.QuestionResDto;
 import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.domain.session.entity.Session;
+import com.synergy.backend.domain.session.entity.SessionQuestion;
+import com.synergy.backend.domain.session.exception.NotAttendedSession;
 import com.synergy.backend.domain.session.exception.NotFoundSession;
 import com.synergy.backend.domain.session.repository.AttendeeSessionRepository;
+import com.synergy.backend.domain.session.repository.SessionQuestionRepository;
 import com.synergy.backend.domain.session.repository.SessionRepository;
 import com.synergy.backend.domain.session.service.validate.DateTimeValidator;
 import com.synergy.backend.global.util.SecurityUtil;
@@ -35,6 +38,7 @@ public class SessionServiceImpl implements SessionService {
     private final ConferenceRepository conferenceRepository;
     private final SessionRepository sessionRepository;
     private final AttendeeSessionRepository attendeeSessionRepository;
+    private final SessionQuestionRepository sessionQuestionRepository;
 
     public User getCurrentMember() {
         return SecurityUtil.getCurrentMember();
@@ -70,9 +74,11 @@ public class SessionServiceImpl implements SessionService {
 
     @Transactional(readOnly = true)
     @Override
-    public SessionDetailResDto getSessionInfo(Long conferenceId, Long sessionId) {
+    public SessionDetailResDto getSessionInfo(Long conferenceId, Long sessionId, String secretCode) {
         ifConferenceExists(conferenceId);
         Session session = ifSessionExists(sessionId);
+
+        //redis에 저장된 secretCode와 일치할 경우에 attendeeSession에 추가
         return SessionDetailResDto.from(session);
     }
 
@@ -96,14 +102,17 @@ public class SessionServiceImpl implements SessionService {
 
     // -------------------------------------- Q&A ------------------------------------------------
 
+    @Transactional
     @Override
     public void createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto) {
         Attendee attendee = (Attendee) getCurrentMember();
-        // 참가자에 대한 QR 인증 여부를 확인해야 할듯
         ifConferenceExists(conferenceId);
-        Session session = ifSessionExists(sessionId);
-        AttendeeSession attendeeSession = AttendeeSession.of(attendee, session, reqDto.content());
-        attendeeSessionRepository.save(attendeeSession);
+        AttendeeSession attendeeSession = ifAttendeeSessionExists(sessionId, attendee.getId());
+
+        SessionQuestion question = SessionQuestion.of(reqDto.content());
+        sessionQuestionRepository.save(question);
+
+        attendeeSession.addSessionQuestion(question);
     }
 
     @Override
@@ -112,9 +121,8 @@ public class SessionServiceImpl implements SessionService {
         ifConferenceExists(conferenceId);
         ifSessionExists(sessionId);
 
-        List<AttendeeSession> allBySession = attendeeSessionRepository.findAllBySession(sessionId);
-
-        return allBySession.stream().map(QuestionResDto::from).toList();
+        // sessionId와 부합하는 attendeeSession들의 질문들을 모두 추출
+        return null;
     }
 
     @Override
@@ -122,6 +130,11 @@ public class SessionServiceImpl implements SessionService {
         return null;
     }
 
+
+    private AttendeeSession ifAttendeeSessionExists(Long sessionId, Long attendeeId) {
+        return attendeeSessionRepository.findBySessionAndAttendeeId(sessionId, attendeeId)
+                .orElseThrow(NotAttendedSession::new);
+    }
 
     private Conference ifConferenceExists(Long conferenceId) {
         return conferenceRepository.findById(conferenceId).orElseThrow(NotFoundConference::new);

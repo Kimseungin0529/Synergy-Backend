@@ -19,7 +19,7 @@ public interface SessionService {
 
     List<SessionResDto> getSessions(Long conferenceId);
 
-    SessionDetailResDto getSessionInfo(Long conferenceId, Long sessionId);
+    SessionDetailResDto getSessionInfo(Long conferenceId, Long sessionId, String secretCode);
 
     void updateSession(Long sessionId, SessionReqDto reqDto);
 

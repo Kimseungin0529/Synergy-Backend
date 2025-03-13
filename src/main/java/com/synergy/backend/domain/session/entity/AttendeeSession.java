@@ -8,6 +8,9 @@ import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
@@ -29,18 +32,23 @@ public class AttendeeSession {
     @JoinColumn(name = "session_id")
     private Session session;
 
+    @OneToMany(mappedBy = "attendeeSession", fetch = FetchType.LAZY, orphanRemoval = true, cascade = CascadeType.ALL)
+    private List<SessionQuestion> sessionQuestionList = new ArrayList<>();
+
     @Builder
-    public AttendeeSession(Attendee attendee, Session session, String question) {
+    public AttendeeSession(Attendee attendee, Session session) {
         this.attendee = attendee;
         this.session = session;
-        this.question = question;
     }
 
-    public static AttendeeSession of(Attendee attendee, Session session, String question) {
+    public static AttendeeSession of(Attendee attendee, Session session) {
         return AttendeeSession.builder()
                 .attendee(attendee)
                 .session(session)
-                .question(question)
                 .build();
+    }
+
+    public void addSessionQuestion(SessionQuestion sessionQuestion) {
+        this.sessionQuestionList.add(sessionQuestion);
     }
 }

@@ -34,8 +34,9 @@ public class SessionController {
     }
 
     @GetMapping("/{sessionId}")
-    public ApiResponse getSession(@PathVariable(name = "conferenceId") Long conferenceId, @PathVariable(name = "sessionId") Long sessionId) {
-        SessionDetailResDto result = sessionService.getSessionInfo(conferenceId, sessionId);
+    public ApiResponse getSession(@PathVariable(name = "conferenceId") Long conferenceId, @PathVariable(name = "sessionId") Long sessionId,
+                                  @RequestParam(name = "secretCode") String secretCode) {
+        SessionDetailResDto result = sessionService.getSessionInfo(conferenceId, sessionId, secretCode);
 
         return ApiResponse.ok(result, 200);
     }
