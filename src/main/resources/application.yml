@@ -19,7 +19,7 @@ spring:
     aws:
       credentials:
         access-key: ${ACCESS_KEY}
-        secret-key: ${SECRETE_KEY}
+        secret-key: ${SECRET_KEY}
       region:
         static: ${REGION}
       s3:
