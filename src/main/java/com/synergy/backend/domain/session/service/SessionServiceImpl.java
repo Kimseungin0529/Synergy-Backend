@@ -85,7 +85,7 @@ public class SessionServiceImpl implements SessionService {
             List<QuestionResDto> questions = getQuestions(conferenceId, sessionId);
             return SessionDetailResDto.from(session, questions);
         } catch (Exception e) {
-            throw new NotAttendedSession();
+            return SessionDetailResDto.from(session, null);
         }
     }
 
