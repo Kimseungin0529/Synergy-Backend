@@ -19,7 +19,7 @@ public interface SessionService {
 
     List<SessionResDto> getSessions(Long conferenceId);
 
-    SessionDetailResDto getSessionInfo(Long conferenceId, Long sessionId, String secretCode);
+    SessionDetailResDto getSessionInfo(Long conferenceId, Long sessionId);
 
     void updateSession(Long sessionId, SessionReqDto reqDto);
 
@@ -27,7 +27,7 @@ public interface SessionService {
 
     void createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto);
 
-    List<QuestionResDto> getQuestions(Long conferenceId, Long sessionId);
+    void verifyQRCode(Long sessionId, String secretCode);
 
     QuestionParticipateResDto getQuestionParticipate(Long sessionId, Long questionId);
 }

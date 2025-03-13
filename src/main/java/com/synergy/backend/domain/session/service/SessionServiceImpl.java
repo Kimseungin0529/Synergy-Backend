@@ -74,12 +74,19 @@ public class SessionServiceImpl implements SessionService {
 
     @Transactional(readOnly = true)
     @Override
-    public SessionDetailResDto getSessionInfo(Long conferenceId, Long sessionId, String secretCode) {
+    public SessionDetailResDto getSessionInfo(Long conferenceId, Long sessionId) {
+        Attendee attendee = (Attendee) getCurrentMember();
         ifConferenceExists(conferenceId);
         Session session = ifSessionExists(sessionId);
 
         //redis에 저장된 secretCode와 일치할 경우에 attendeeSession에 추가
-        return SessionDetailResDto.from(session);
+        try {
+            ifAttendeeSessionExists(sessionId, attendee.getId());
+            List<QuestionResDto> questions = getQuestions(conferenceId, sessionId);
+            return SessionDetailResDto.from(session, questions);
+        } catch (Exception e) {
+            throw new NotAttendedSession();
+        }
     }
 
     @Override
@@ -102,6 +109,11 @@ public class SessionServiceImpl implements SessionService {
 
     // -------------------------------------- Q&A ------------------------------------------------
 
+    @Override
+    public void verifyQRCode(Long sessionId, String secretCode) {
+
+    }
+
     @Transactional
     @Override
     public void createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto) {
@@ -116,20 +128,17 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public List<QuestionResDto> getQuestions(Long conferenceId, Long sessionId) {
-        getCurrentMember();
-        ifConferenceExists(conferenceId);
-        ifSessionExists(sessionId);
-
-        // sessionId와 부합하는 attendeeSession들의 질문들을 모두 추출
-        return null;
-    }
-
-    @Override
     public QuestionParticipateResDto getQuestionParticipate(Long sessionId, Long questionId) {
         return null;
     }
 
+    private List<QuestionResDto> getQuestions(Long conferenceId, Long sessionId) {
+        getCurrentMember();
+        ifConferenceExists(conferenceId);
+        ifSessionExists(sessionId);
+
+        return sessionQuestionRepository.findBySessionIdJoinAttendeeSession(sessionId);
+    }
 
     private AttendeeSession ifAttendeeSessionExists(Long sessionId, Long attendeeId) {
         return attendeeSessionRepository.findBySessionAndAttendeeId(sessionId, attendeeId)

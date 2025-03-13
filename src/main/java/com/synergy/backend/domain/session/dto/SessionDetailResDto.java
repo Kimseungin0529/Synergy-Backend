@@ -1,8 +1,10 @@
 package com.synergy.backend.domain.session.dto;
 
+import com.synergy.backend.domain.session.dto.question.QuestionResDto;
 import com.synergy.backend.domain.session.entity.Session;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 public record SessionDetailResDto(
         Long sessionId,
@@ -10,9 +12,11 @@ public record SessionDetailResDto(
         String speaker,
         LocalDateTime startTime,
         LocalDateTime endTime,
-        String description
+        String description,
+        List<QuestionResDto> questionResDto
 ) {
-    public static SessionDetailResDto from(Session session) {
-        return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(), session.getStartTime(), session.getEndTime(), session.getDescription());
+    public static SessionDetailResDto from(Session session, List<QuestionResDto> resDtos) {
+        return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(),
+                session.getStartTime(), session.getEndTime(), session.getDescription(), resDtos);
     }
 }

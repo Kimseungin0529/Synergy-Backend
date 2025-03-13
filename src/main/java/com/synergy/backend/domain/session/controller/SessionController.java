@@ -34,9 +34,8 @@ public class SessionController {
     }
 
     @GetMapping("/{sessionId}")
-    public ApiResponse getSession(@PathVariable(name = "conferenceId") Long conferenceId, @PathVariable(name = "sessionId") Long sessionId,
-                                  @RequestParam(name = "secretCode") String secretCode) {
-        SessionDetailResDto result = sessionService.getSessionInfo(conferenceId, sessionId, secretCode);
+    public ApiResponse getSession(@PathVariable(name = "conferenceId") Long conferenceId, @PathVariable(name = "sessionId") Long sessionId) {
+        SessionDetailResDto result = sessionService.getSessionInfo(conferenceId, sessionId);
 
         return ApiResponse.ok(result, 200);
     }
@@ -56,6 +55,14 @@ public class SessionController {
     }
 
     /* ------------------------------------------ Q&A --------------------------------------*/
+
+    @PostMapping("/{sessionId}")
+    public ApiResponse verifyQRCode(@PathVariable(name = "sessionId") Long sessionId,
+                                    @RequestParam(name = "qrCode") String qrCode){
+        sessionService.verifyQRCode(sessionId, qrCode);
+
+        return ApiResponse.ok("QR code verified successfully!", 200);
+    }
 
     @PostMapping("/{sessionId}/participation")
     public ApiResponse createQuestion(@PathVariable(name = "conferenceId") Long conferenceId,

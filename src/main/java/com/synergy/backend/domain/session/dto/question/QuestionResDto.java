@@ -4,11 +4,9 @@ import com.synergy.backend.domain.session.entity.AttendeeSession;
 import lombok.Builder;
 
 public record QuestionResDto(
+        Long id,
         String name,
         String content
 ) {
 
-    public static QuestionResDto from(AttendeeSession attendeeSession) {
-        return new QuestionResDto(attendeeSession.getAttendee().getName(), attendeeSession.getQuestion());
-    }
 }
