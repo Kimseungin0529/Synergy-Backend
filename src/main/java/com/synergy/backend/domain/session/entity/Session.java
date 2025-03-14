@@ -24,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 public class Session {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "session_id")
@@ -42,7 +43,6 @@ public class Session {
 	@Column(nullable = false)
 	private LocalDate progressDate;
 
-	@NotNull
 	@Column(nullable = false)
 	private LocalDateTime startTime;
 
@@ -64,7 +64,7 @@ public class Session {
 
 	@Builder
 	public Session(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
-		Conference conference) {
+				   Conference conference) {
 		this.title = reqDto.title();
 		this.speaker = reqDto.speaker();
 		this.speakerPosition = reqDto.speakerPosition();
@@ -73,6 +73,18 @@ public class Session {
 		this.endTime = endTime;
 		this.description = reqDto.description();
 		this.conference = conference;
+	}
+
+
+	public static Session of(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
+							 Conference conference) {
+		return Session.builder()
+				.reqDto(reqDto)
+				.startTime(startTime)
+				.endTime(endTime)
+				.conference(conference)
+				.progressDate(progressDate)
+				.build();
 	}
 
 	public void updateSession(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime,

@@ -20,10 +20,6 @@ public class AttendeeSession {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Size(min = 10)
-    @Column(nullable = false, length = 300)
-    private String question;
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "attendee_id")
     private Attendee attendee;
