@@ -12,9 +12,9 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.experimental.SuperBuilder;
 
 @Entity
 @Getter
@@ -35,15 +35,27 @@ public class Recruiter extends BaseEntity implements User {
 
 	// 담당 업무
 	@Column
-	private String Responsibility;
+	private String responsibility;
 
 	// 컨퍼런스
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "conference_id")
 	private Conference conference;
 
+	@Builder
+	private Recruiter(String recruiterAuthCode) {
+		this.recruiterAuthCode = recruiterAuthCode;
+	}
+
+	public static Recruiter of(String recruiterAuthCode) {
+		return Recruiter.builder()
+			.recruiterAuthCode(recruiterAuthCode)
+			.build();
+	}
+
 	@Override
 	public RoleType getRole() {
 		return RoleType.RECRUITER;
 	}
+
 }
