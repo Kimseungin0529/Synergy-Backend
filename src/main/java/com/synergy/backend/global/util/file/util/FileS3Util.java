@@ -60,10 +60,6 @@ public class FileS3Util implements FileUtil {
         return fileInformation;
     }
 
-    private String getPublicUrl(String fileName) {
-        return String.format("https://%s.s3.%s.amazonaws.com/%s", bucketName, amazonS3Service.getRegionName(), fileName);
-    }
-
     @Override
     public void deleteFilesFrom(List<String> keys) {
         try {
