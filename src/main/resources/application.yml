@@ -17,6 +17,7 @@ spring:
         show-sql: true
         open-in-view: false
         dialect: org.hibernate.dialect.MySQL8Dialect
+        default_batch_fetch_size: 200
 
   cloud:
     aws:
