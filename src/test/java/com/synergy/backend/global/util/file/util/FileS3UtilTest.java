@@ -2,7 +2,9 @@ package com.synergy.backend.global.util.file.util;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
+import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
+import com.synergy.backend.global.util.file.dto.FileAccessDto;
 import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import com.synergy.backend.global.util.file.exception.FileUploadS3Exception;
 import org.junit.jupiter.api.BeforeEach;
@@ -18,6 +20,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -50,8 +53,8 @@ class FileS3UtilTest {
         MockMultipartFile mockFile = new MockMultipartFile(fileName, fileName + contentType, contentType, "test content".getBytes());
 
 
-        String TEST_URL = "https://test-bucket.s3.region.amazonaws.com/all/uuid" + fileName + contentType;
-        given(amazonS3.getUrl(anyString(), anyString())).willReturn(new URL(TEST_URL));
+        String url = "https://test-bucket.s3.region.amazonaws.com/all/uuid" + fileName + contentType;
+        given(amazonS3.getUrl(anyString(), anyString())).willReturn(new URL(url));
 
         // when
         List<FileInformationDto> result = fileS3Util.uploadFilesFrom(List.of(mockFile));
@@ -86,6 +89,25 @@ class FileS3UtilTest {
         verify(amazonS3, never()).deleteObjects(any(DeleteObjectsRequest.class));
     }
 
+
+    @DisplayName("1개 이상 파일을 조회합니다.")
+    @Test
+    void getFilesFrom() throws MalformedURLException {
+        // given
+        URL url1 = new URL("https://test-bucket.s3.amazonaws.com/fileKey1");
+        URL url2 = new URL("https://test-bucket.s3.amazonaws.com/fileKey2");
+        given(amazonS3.getUrl(anyString(), anyString())).willReturn(url1, url2);
+
+        // when
+        List<FileAccessDto> result = fileS3Util.getFilesFrom(List.of("fileKey1", "fileKey2"));
+
+        // then
+        assertThat(result)
+                .hasSize(2)
+                .extracting("accessUrl")
+                .containsExactly(url1.toString(), url2.toString());
+        verify(amazonS3, times(2)).getUrl(anyString(), anyString());
+    }
 
 
 }
