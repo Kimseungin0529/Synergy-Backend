@@ -1,8 +1,10 @@
 package com.synergy.backend.global.util.file.util;
 
 import com.amazonaws.services.s3.AmazonS3;
+import com.amazonaws.services.s3.model.DeleteObjectsRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.synergy.backend.global.util.file.dto.FileInformationDto;
+import com.synergy.backend.global.util.file.exception.FileUploadS3Exception;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -19,6 +21,7 @@ import java.net.URL;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
@@ -38,7 +41,7 @@ class FileS3UtilTest {
         ReflectionTestUtils.setField(fileS3Util, "bucketName", "test-bucket"); // ✅ bucketName 수동 주입
     }
 
-    @DisplayName("파일을 업로드합니다.")
+    @DisplayName("1개 이상 파일을 업로드합니다.")
     @Test
     void uploadFilesFrom() throws MalformedURLException {
         // given
@@ -59,6 +62,30 @@ class FileS3UtilTest {
         verify(amazonS3, times(1)).putObject(any(PutObjectRequest.class));
 
     }
+
+    @DisplayName("1개 이상 파일을 삭제합니다.")
+    @Test
+    void deleteFilesFrom() {
+        // given
+        String fileKey1 = "test-file1";
+        String fileKey2 = "test-file2";
+        // when
+        fileS3Util.deleteFilesFrom(List.of(fileKey1, fileKey2));
+        // then
+        verify(amazonS3, times(2)).deleteObjects(any(DeleteObjectsRequest.class));
+    }
+
+    @DisplayName("빈 목록을 제공하면 파일 삭제를 수행하지 않습니다.")
+    @Test
+    void deleteFilesFrom_EmptyList() {
+        // given
+        List<String> fileKeys = List.of();
+        // when
+        fileS3Util.deleteFilesFrom(fileKeys);
+        // then
+        verify(amazonS3, never()).deleteObjects(any(DeleteObjectsRequest.class));
+    }
+
 
 
 }
