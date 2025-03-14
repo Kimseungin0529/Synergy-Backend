@@ -7,7 +7,8 @@ public record BoothResponseDto(
         String name,
         String company,
         String location,
-        String description
+        String description,
+        byte[] qrCode
 ) {
     public BoothResponseDto(Booth booth) {
         this(
@@ -15,7 +16,8 @@ public record BoothResponseDto(
                 booth.getName(),
                 booth.getCompany(),
                 booth.getLocation(),
-                booth.getDescription()
+                booth.getDescription(),
+                booth.getQrCode()
         );
     }
 }
