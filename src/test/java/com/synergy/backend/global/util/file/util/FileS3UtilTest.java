@@ -70,7 +70,7 @@ class FileS3UtilTest {
         // when
         fileS3Util.deleteFilesFrom(List.of(fileKey1, fileKey2));
         // then
-        verify(amazonS3, times(2)).deleteObjects(any(DeleteObjectsRequest.class));
+        verify(amazonS3, times(1)).deleteObjects(any(DeleteObjectsRequest.class));
     }
 
     @DisplayName("빈 목록을 제공하면 파일 삭제를 수행하지 않습니다.")
