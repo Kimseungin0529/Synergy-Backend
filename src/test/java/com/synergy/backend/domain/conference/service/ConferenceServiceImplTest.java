@@ -22,7 +22,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.*;
 
 
-@SpringBootTest
+@SpringBootTest("test")
 @Transactional
 class ConferenceServiceImplTest {
     @Autowired
