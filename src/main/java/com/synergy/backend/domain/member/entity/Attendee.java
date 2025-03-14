@@ -1,12 +1,12 @@
 package com.synergy.backend.domain.member.entity;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.interest.entity.MemberInterest;
 import com.synergy.backend.domain.point.entity.Point;
+import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.domain.techstack.entity.MemberTechStack;
 import com.synergy.backend.global.common.BaseEntity;
@@ -24,6 +24,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -56,7 +57,7 @@ public class Attendee extends BaseEntity implements User {
 	// 등급
 	@Column(nullable = false)
 	@Enumerated(EnumType.STRING)
-	private MembershipLevelType membershipLevelType = MembershipLevelType.BRONZE;
+	private MembershipLevelType membershipLevelType = MembershipLevelType.DEFAULT;
 
 	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Point> points;
@@ -103,6 +104,23 @@ public class Attendee extends BaseEntity implements User {
 
 	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL)
 	private List<AttendeeSession> attendeeSessions = new ArrayList<>();
+
+	@Builder
+	private Attendee(String password, String name, String phone, String email) {
+		this.password = password;
+		this.name = name;
+		this.phone = phone;
+		this.email = email;
+	}
+
+	public static Attendee of(String email, String encodedPassword, String name, String phone) {
+		return Attendee.builder()
+			.email(email)
+			.password(encodedPassword)
+			.name(name)
+			.phone(phone)
+			.build();
+	}
 
 	@Override
 	public Long getId() {

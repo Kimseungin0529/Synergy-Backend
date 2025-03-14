@@ -18,6 +18,7 @@ import jakarta.persistence.JoinColumn;
 import jakarta.persistence.JoinTable;
 import jakarta.persistence.ManyToMany;
 import lombok.AccessLevel;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -57,6 +58,17 @@ public class Admin extends BaseEntity implements User {
 		inverseJoinColumns = @JoinColumn(name = "session_id")
 	)
 	private Set<Session> sessions = new HashSet<>();
+
+	@Builder
+	private Admin(String adminAuthCode) {
+		this.adminAuthCode = adminAuthCode;
+	}
+
+	public static Admin of(String adminAuthCode) {
+		return Admin.builder()
+			.adminAuthCode(adminAuthCode)
+			.build();
+	}
 
 	@Override
 	public RoleType getRole() {
