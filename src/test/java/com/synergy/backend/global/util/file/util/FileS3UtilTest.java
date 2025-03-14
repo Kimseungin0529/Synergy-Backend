@@ -21,6 +21,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.times;
 
 @ExtendWith(MockitoExtension.class)
@@ -31,8 +32,6 @@ class FileS3UtilTest {
 
     @Mock
     private AmazonS3 amazonS3;
-
-    private static final String TEST_URL = "https://test-bucket.s3.region.amazonaws.com/all/uuid_test-file.txt";
 
     @BeforeEach
     void setUp() {
@@ -48,11 +47,8 @@ class FileS3UtilTest {
         MockMultipartFile mockFile = new MockMultipartFile(fileName, fileName + contentType, contentType, "test content".getBytes());
 
 
-        String TEST_URL = "https://test-bucket.s3.region.amazonaws.com/all/uuid_test-file.txt";
-        //when(amazonS3.getUrl(anyString(), anyString())).thenReturn(new URL(TEST_URL));
-        BDDMockito.given(amazonS3.getUrl(anyString(), anyString())).willReturn(new URL(TEST_URL));
-        //BDDMockito.doNothing().when(amazonS3).putObject(any(PutObjectRequest.class));
-        //BDDMockito.when(amazonS3.getUrl(anyString(), anyString()).toString()).thenReturn(TEST_URL);
+        String TEST_URL = "https://test-bucket.s3.region.amazonaws.com/all/uuid" + fileName + contentType;
+        given(amazonS3.getUrl(anyString(), anyString())).willReturn(new URL(TEST_URL));
 
         // when
         List<FileInformationDto> result = fileS3Util.uploadFilesFrom(List.of(mockFile));
@@ -60,8 +56,7 @@ class FileS3UtilTest {
         assertThat(result)
                 .hasSize(1);
 
-        //verify(amazonS3, times(1)).putObject(any(PutObjectRequest.class));
-        BDDMockito.verify(amazonS3, times(1)).putObject(any(PutObjectRequest.class));
+        verify(amazonS3, times(1)).putObject(any(PutObjectRequest.class));
 
     }
 
