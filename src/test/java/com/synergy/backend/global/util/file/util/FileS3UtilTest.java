@@ -2,16 +2,13 @@ package com.synergy.backend.global.util.file.util;
 
 import com.amazonaws.services.s3.AmazonS3;
 import com.amazonaws.services.s3.model.DeleteObjectsRequest;
-import com.amazonaws.services.s3.model.ListObjectsRequest;
 import com.amazonaws.services.s3.model.PutObjectRequest;
 import com.synergy.backend.global.util.file.dto.FileAccessDto;
 import com.synergy.backend.global.util.file.dto.FileInformationDto;
-import com.synergy.backend.global.util.file.exception.FileUploadS3Exception;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -20,11 +17,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.BDDMockito.*;
@@ -41,7 +36,7 @@ class FileS3UtilTest {
 
     @BeforeEach
     void setUp() {
-        ReflectionTestUtils.setField(fileS3Util, "bucketName", "test-bucket"); // ✅ bucketName 수동 주입
+        ReflectionTestUtils.setField(fileS3Util, "bucketName", "test-bucket"); // bucketName 수동 주입
     }
 
     @DisplayName("1개 이상 파일을 업로드합니다.")
