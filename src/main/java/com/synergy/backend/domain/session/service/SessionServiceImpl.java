@@ -39,7 +39,7 @@ public class SessionServiceImpl implements SessionService {
     private final AttendeeSessionRepository attendeeSessionRepository;
     private final SessionQuestionRepository sessionQuestionRepository;
 
-    public User getCurrentMember() {
+    private User getCurrentMember() {
         return SecurityUtil.getCurrentMember();
     }
 
