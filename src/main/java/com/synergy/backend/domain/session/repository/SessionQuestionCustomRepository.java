@@ -8,4 +8,6 @@ import java.util.List;
 public interface SessionQuestionCustomRepository {
 
     List<QuestionResDto> findBySessionIdJoinAttendeeSession(Long sessionId);
+
+
 }

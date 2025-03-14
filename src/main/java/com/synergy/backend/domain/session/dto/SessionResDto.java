@@ -13,4 +13,5 @@ public record SessionResDto(
     public static SessionResDto from(Session session){
         return new SessionResDto(session.getId(), session.getTitle(), session.getStartTime(), session.getEndTime());
     }
+
 }

@@ -3,11 +3,8 @@ package com.synergy.backend.domain.session.service;
 import com.synergy.backend.domain.session.dto.SessionDetailResDto;
 import com.synergy.backend.domain.session.dto.SessionReqDto;
 import com.synergy.backend.domain.session.dto.SessionResDto;
-import com.synergy.backend.domain.session.dto.question.QuestionParticipateResDto;
+import com.synergy.backend.domain.session.dto.sessionparticipate.SessionParticipateRateResDto;
 import com.synergy.backend.domain.session.dto.question.QuestionReqDto;
-import com.synergy.backend.domain.session.dto.question.QuestionResDto;
-import com.synergy.backend.domain.session.entity.Session;
-import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -29,5 +26,5 @@ public interface SessionService {
 
     void verifyQRCode(Long sessionId, String secretCode);
 
-    QuestionParticipateResDto getQuestionParticipate(Long sessionId, Long questionId);
+    SessionParticipateRateResDto getSessionParticipateRate(Long conferenceId);
 }

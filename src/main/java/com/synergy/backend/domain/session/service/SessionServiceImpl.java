@@ -9,7 +9,7 @@ import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.session.dto.SessionDetailResDto;
 import com.synergy.backend.domain.session.dto.SessionReqDto;
 import com.synergy.backend.domain.session.dto.SessionResDto;
-import com.synergy.backend.domain.session.dto.question.QuestionParticipateResDto;
+import com.synergy.backend.domain.session.dto.sessionparticipate.SessionParticipateRateResDto;
 import com.synergy.backend.domain.session.dto.question.QuestionReqDto;
 import com.synergy.backend.domain.session.dto.question.QuestionResDto;
 import com.synergy.backend.domain.session.entity.AttendeeSession;
@@ -26,7 +26,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.security.Security;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -53,13 +52,7 @@ public class SessionServiceImpl implements SessionService {
         LocalDateTime startTime = DateTimeValidator.isValidLocalDateTime(reqDto.startTime());
         LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
 
-        Session session = Session.builder()
-                .reqDto(reqDto)
-                .progressDate(progressDate)
-                .startTime(startTime)
-                .endTime(endTime)
-                .conference(conference)
-                .build();
+        Session session = Session.of(reqDto, progressDate, startTime, endTime, conference);
         sessionRepository.save(session);
     }
 
@@ -128,7 +121,12 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public QuestionParticipateResDto getQuestionParticipate(Long sessionId, Long questionId) {
+    public SessionParticipateRateResDto getSessionParticipateRate(Long conferenceId) {
+        // 이걸 구현하려면 일자별 세션들의 참여율을 조회해야함.
+        Admin admin =  (Admin) getCurrentMember();
+        ifConferenceExists(conferenceId);
+
+
         return null;
     }
 
