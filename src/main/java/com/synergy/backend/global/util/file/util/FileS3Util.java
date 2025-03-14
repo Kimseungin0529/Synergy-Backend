@@ -11,6 +11,7 @@ import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import com.synergy.backend.global.util.file.exception.ExternalApiCallException;
 import com.synergy.backend.global.util.file.exception.FileUploadS3Exception;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -19,6 +20,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Component
 @RequiredArgsConstructor
 public class FileS3Util implements FileUtil {
@@ -50,6 +52,7 @@ public class FileS3Util implements FileUtil {
                 fileInformation.add(new FileInformationDto(fileKey, accessUrl));
 
             } catch (Exception e) {
+                log.error("파일 업로드 ERROR = {}", e.getMessage(), e);
                 throw new FileUploadS3Exception();
             }
         }
@@ -80,6 +83,7 @@ public class FileS3Util implements FileUtil {
 
 
     }
+
     @Override
     public List<FileAccessDto> getFilesFrom(List<String> keys) {
         List<FileAccessDto> accessUrls = new ArrayList<>();
