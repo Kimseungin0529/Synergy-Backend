@@ -22,9 +22,10 @@ class QrServiceTest {
     void generateQRCode() throws WriterException {
      //given
         String url = "https://www.mydomain.com/verify?token=akefjqoisn";
+        String secretCode = "akjfaoeinvodsa";
 
      //when
-        byte[] bytes = qrService.generateQRCode(url);
+        byte[] bytes = qrService.generateQRCode(url, secretCode);
         //System.out.println(new String(bytes));
 
         //then
