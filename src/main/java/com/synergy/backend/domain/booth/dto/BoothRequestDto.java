@@ -4,6 +4,7 @@ public record BoothRequestDto(
         String name,
         String company,
         String location,
-        String description
+        String description,
+        String domainAddress
 ) {
 }

@@ -18,6 +18,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.UUID;
+
 @Service
 @RequiredArgsConstructor
 public class BoothServiceImpl implements BoothService {
@@ -41,8 +43,9 @@ public class BoothServiceImpl implements BoothService {
         booth = boothRepository.save(booth);
 
         String qrCodeUrl = "https://";
+        String secretCode = UUID.randomUUID().toString();
         try {
-            byte[] qrCode = qrService.generateQRCode(qrCodeUrl);
+            byte[] qrCode = qrService.generateQRCode(qrCodeUrl, secretCode);
             booth.setQrCode(qrCode);
         } catch (WriterException e) {
             throw new NotGenerateQRCodeException();
