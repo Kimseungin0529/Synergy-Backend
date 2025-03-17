@@ -1,5 +1,6 @@
 package com.synergy.backend.domain.session.service;
 
+import com.google.zxing.WriterException;
 import com.synergy.backend.domain.session.dto.SessionDetailResDto;
 import com.synergy.backend.domain.session.dto.SessionReqDto;
 import com.synergy.backend.domain.session.dto.SessionResDto;
@@ -12,7 +13,7 @@ import java.util.List;
 @Service
 public interface SessionService {
 
-    void createSession(Long conferenceId, SessionReqDto reqDto);
+    void createSession(Long conferenceId, SessionReqDto reqDto) throws WriterException;
 
     List<SessionResDto> getSessions(Long conferenceId);
 
@@ -24,7 +25,7 @@ public interface SessionService {
 
     void createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto);
 
-    void verifyQRCode(Long sessionId, String secretCode);
+    SessionResDto verifyQRCode(String secretCode);
 
     SessionParticipateRateResDto getSessionParticipateRate(Long conferenceId);
 }

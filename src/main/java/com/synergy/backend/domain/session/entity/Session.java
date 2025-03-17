@@ -56,6 +56,9 @@ public class Session {
 	@JoinColumn(name = "conference_id")
 	private Conference conference;
 
+	@Column(nullable = false)
+	private String secretCode;
+
 	@OneToMany(mappedBy = "session", fetch = LAZY, cascade = CascadeType.ALL)
 	private List<AttendeeSession> attendeeSessions = new ArrayList<>();
 
@@ -64,7 +67,7 @@ public class Session {
 
 	@Builder
 	public Session(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
-				   Conference conference) {
+				   String secretCode, Conference conference) {
 		this.title = reqDto.title();
 		this.speaker = reqDto.speaker();
 		this.speakerPosition = reqDto.speakerPosition();
@@ -72,16 +75,18 @@ public class Session {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.description = reqDto.description();
+		this.secretCode = secretCode;
 		this.conference = conference;
 	}
 
 
 	public static Session of(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
-							 Conference conference) {
+							 String secretCode, Conference conference) {
 		return Session.builder()
 				.reqDto(reqDto)
 				.startTime(startTime)
 				.endTime(endTime)
+				.secretCode(secretCode)
 				.conference(conference)
 				.progressDate(progressDate)
 				.build();
@@ -96,6 +101,10 @@ public class Session {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.description = reqDto.description();
+	}
+
+	public void addQRCode(String qrCode) {
+		this.secretCode = qrCode;
 	}
 
 	public void addAdmin(Admin admin) {

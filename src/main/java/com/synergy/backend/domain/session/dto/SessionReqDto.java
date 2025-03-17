@@ -8,7 +8,8 @@ public record SessionReqDto(
         String progressDate,
         String startTime,
         String endTime,
-        String description) {
+        String description,
+        String domainAddress) {
 
 
 }

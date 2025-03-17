@@ -2,6 +2,7 @@ package com.synergy.backend.domain.session.controller;
 
 import java.util.List;
 
+import com.google.zxing.WriterException;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -31,7 +32,7 @@ public class SessionController {
 
 	@PostMapping
 	public ApiResponse createSession(@PathVariable(name = "conferenceId") Long conferenceId,
-		@RequestBody SessionReqDto sessionReqDto) {
+		@RequestBody SessionReqDto sessionReqDto) throws WriterException {
 		sessionService.createSession(conferenceId, sessionReqDto);
 
 		return ApiResponse.ok("Session created successfully!", 200);
@@ -68,12 +69,11 @@ public class SessionController {
 
     /* ------------------------------------------ Q&A --------------------------------------*/
 
-    @PostMapping("/{sessionId}")
-    public ApiResponse verifyQRCode(@PathVariable(name = "sessionId") Long sessionId,
-                                    @RequestParam(name = "qrCode") String qrCode){
-        sessionService.verifyQRCode(sessionId, qrCode);
+    @PostMapping("/verify")
+    public ApiResponse<SessionResDto> verifyQRCode(@RequestParam(name = "qrCode") String qrCode){
+		SessionResDto sessionResDto = sessionService.verifyQRCode(qrCode);
 
-        return ApiResponse.ok("QR code verified successfully!", 200);
+		return ApiResponse.ok(sessionResDto, 200);
     }
 
     @PostMapping("/{sessionId}/participation")

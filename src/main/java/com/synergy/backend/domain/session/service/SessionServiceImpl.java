@@ -1,11 +1,13 @@
 package com.synergy.backend.domain.session.service;
 
+import com.google.zxing.WriterException;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.User;
+import com.synergy.backend.domain.qrCode.service.QrService;
 import com.synergy.backend.domain.session.dto.SessionDetailResDto;
 import com.synergy.backend.domain.session.dto.SessionReqDto;
 import com.synergy.backend.domain.session.dto.SessionResDto;
@@ -17,18 +19,24 @@ import com.synergy.backend.domain.session.entity.Session;
 import com.synergy.backend.domain.session.entity.SessionQuestion;
 import com.synergy.backend.domain.session.exception.NotAttendedSession;
 import com.synergy.backend.domain.session.exception.NotFoundSession;
+import com.synergy.backend.domain.session.exception.NotMatchedAttendeeCodeException;
 import com.synergy.backend.domain.session.repository.AttendeeSessionRepository;
 import com.synergy.backend.domain.session.repository.SessionQuestionRepository;
 import com.synergy.backend.domain.session.repository.SessionRepository;
 import com.synergy.backend.domain.session.service.validate.DateTimeValidator;
 import com.synergy.backend.global.util.SecurityUtil;
+import com.synergy.backend.global.util.file.util.FileS3Util;
 import lombok.RequiredArgsConstructor;
+import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
@@ -38,21 +46,25 @@ public class SessionServiceImpl implements SessionService {
     private final SessionRepository sessionRepository;
     private final AttendeeSessionRepository attendeeSessionRepository;
     private final SessionQuestionRepository sessionQuestionRepository;
+    private final FileS3Util fileS3Util;
+
+    private final QrService qrService;
 
     private User getCurrentMember() {
         return SecurityUtil.getCurrentMember();
     }
 
     @Override
-    public void createSession(Long conferenceId, SessionReqDto reqDto) {
-        Admin member = (Admin) getCurrentMember();
+    public void createSession(Long conferenceId, SessionReqDto reqDto) throws WriterException {
         Conference conference = ifConferenceExists(conferenceId);
 
         LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
         LocalDateTime startTime = DateTimeValidator.isValidLocalDateTime(reqDto.startTime());
         LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
+        String secretCode = UUID.randomUUID().toString();
 
-        Session session = Session.of(reqDto, progressDate, startTime, endTime, conference);
+        Session session = Session.of(reqDto, progressDate, startTime, endTime, secretCode, conference);
+        byte[] bytes = qrService.generateQRCode(reqDto.domainAddress(), secretCode);
         sessionRepository.save(session);
     }
 
@@ -72,7 +84,6 @@ public class SessionServiceImpl implements SessionService {
         ifConferenceExists(conferenceId);
         Session session = ifSessionExists(sessionId);
 
-        //redis에 저장된 secretCode와 일치할 경우에 attendeeSession에 추가
         try {
             ifAttendeeSessionExists(sessionId, attendee.getId());
             List<QuestionResDto> questions = getQuestions(conferenceId, sessionId);
@@ -103,8 +114,13 @@ public class SessionServiceImpl implements SessionService {
     // -------------------------------------- Q&A ------------------------------------------------
 
     @Override
-    public void verifyQRCode(Long sessionId, String secretCode) {
+    public SessionResDto verifyQRCode(String secretCode) {
+        Attendee currentMember = (Attendee) getCurrentMember();
+        Session session = findBySecretCode(secretCode);
 
+        AttendeeSession attendeeSession = AttendeeSession.of(currentMember, session);
+        attendeeSessionRepository.save(attendeeSession);
+        return SessionResDto.from(session);
     }
 
     @Transactional
@@ -149,6 +165,10 @@ public class SessionServiceImpl implements SessionService {
 
     private Session ifSessionExists(Long sessionId) {
         return sessionRepository.findById(sessionId).orElseThrow(NotFoundSession::new);
+    }
+
+    private Session findBySecretCode(String secretCode) {
+        return sessionRepository.findBySecretCode(secretCode).orElseThrow(NotFoundSession::new);
     }
 
 }

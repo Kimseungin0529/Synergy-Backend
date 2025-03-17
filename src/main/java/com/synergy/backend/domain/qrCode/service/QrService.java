@@ -22,13 +22,13 @@ import java.util.Map;
 @Slf4j
 public class QrService {
 
-    private final int width = 200;
-    private final int height = 200;
+    private static final int WIDTH = 200;
+    private static final int HEIGHT = 200;
 
     public byte[] generateQRCode(String url, String secretCode) throws WriterException {
 
         BitMatrix encode = new MultiFormatWriter()
-                .encode(convertToQueryString(url, secretCode), BarcodeFormat.QR_CODE, width, height);
+                .encode(convertToQueryString(url, secretCode), BarcodeFormat.QR_CODE, WIDTH, HEIGHT);
 
         try{
             ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -41,6 +41,6 @@ public class QrService {
     }
 
     private String convertToQueryString(String url, String secretCode) {
-        return url + "&secretCode=" + secretCode;
+        return url + "?code=" + secretCode;
     }
 }
