@@ -1,5 +1,6 @@
 package com.synergy.backend.domain.member.entity;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
@@ -58,7 +59,7 @@ public class Attendee extends BaseEntity implements User {
 	private MembershipLevelType membershipLevelType = MembershipLevelType.DEFAULT;
 
 	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<Point> points;
+	private List<Point> points = new ArrayList<>();
 
 	// 현재 직업
 	@Enumerated(EnumType.STRING)
@@ -127,4 +128,17 @@ public class Attendee extends BaseEntity implements User {
 		return RoleType.ATTENDEE;
 	}
 
+	public void addPoint(Point point) {
+		points.add(point);
+		point.assignAttendee(this);
+	}
+
+	public void addPoints(int point) {
+		this.totalPoints += point;
+		updateMembershipLevel();
+	}
+
+	private void updateMembershipLevel() {
+		this.membershipLevelType = MembershipLevelType.getMembershipLevel(this.totalPoints);
+	}
 }

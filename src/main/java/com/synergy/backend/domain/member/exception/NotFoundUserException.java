@@ -9,4 +9,8 @@ public class NotFoundUserException extends BaseErrorException {
 	public NotFoundUserException() {
 		super(_USER_NOT_FOUND.getCode(), _USER_NOT_FOUND.getMessage());
 	}
+
+	public NotFoundUserException(String message) {
+		super(_USER_NOT_FOUND.getCode(), _USER_NOT_FOUND.getMessage());
+	}
 }

@@ -33,7 +33,7 @@ public class Point extends BaseEntity {
 
 	private Long boothId;  // 부스 방문 시 부스 ID 저장
 	private Long sessionId; // 세션 참여 시 세션 ID 저장
-	private Long sessionQnAId; // 세션 Q&A 참여 시 세션 Q&A ID 저장
+	// private Long sessionQnAId; // 세션 Q&A 참여 시 세션 Q&A ID 저장
 	private Long recruiterId; // 채용 담당자 미팅 시 담당자 ID 저장
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -41,11 +41,34 @@ public class Point extends BaseEntity {
 	private Attendee attendee;
 
 	@Builder
-	public Point(PointType pointType, Long boothId, Long sessionId, Long sessionQnAId, Long recruiterId) {
+	private Point(PointType pointType, Long boothId, Long sessionId, Long sessionQnAId, Long recruiterId) {
 		this.pointType = pointType;
 		this.boothId = boothId;
 		this.sessionId = sessionId;
-		this.sessionQnAId = sessionQnAId;
+		// this.sessionQnAId = sessionQnAId;
 		this.recruiterId = recruiterId;
 	}
+
+	public static Point of(PointType pointType) {
+		return Point.builder()
+			.pointType(pointType)
+			.build();
+	}
+
+	public void assignAttendee(Attendee attendee) {
+		this.attendee = attendee;
+	}
+
+	public void updateBoothId(Long boothId) {
+		this.boothId = boothId;
+	}
+
+	public void updateSessionId(Long sessionId) {
+		this.sessionId = sessionId;
+	}
+
+	public void updateRecruiterId(Long recruiterId) {
+		this.recruiterId = recruiterId;
+	}
+
 }
