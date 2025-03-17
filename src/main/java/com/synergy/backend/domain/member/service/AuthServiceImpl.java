@@ -18,6 +18,8 @@ import com.synergy.backend.domain.member.exception.UnauthorizedException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
+import com.synergy.backend.domain.point.entity.PointType;
+import com.synergy.backend.domain.point.service.PointService;
 import com.synergy.backend.global.security.CustomUserDetails;
 import com.synergy.backend.global.security.JwtProvider;
 
@@ -32,6 +34,7 @@ public class AuthServiceImpl implements AuthService {
 	private final AttendeeRepository attendeeRepository;
 	private final AdminRepository adminRepository;
 	private final RecruiterRepository recruiterRepository;
+	private final PointService pointService;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
 
@@ -50,6 +53,9 @@ public class AuthServiceImpl implements AuthService {
 			request.phone());
 
 		attendeeRepository.save(attendee);
+
+		// 회원가입 시 포인트 적립
+		pointService.addSignupPoint(attendee.getId());
 
 		return SignupAttendeeResponseDto.from(attendee);
 	}

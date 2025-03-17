@@ -28,6 +28,7 @@ import com.synergy.backend.domain.member.exception.UnauthorizedException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
+import com.synergy.backend.domain.point.service.PointServiceImpl;
 import com.synergy.backend.global.security.CustomUserDetails;
 import com.synergy.backend.global.security.JwtProvider;
 
@@ -36,6 +37,9 @@ class AuthServiceImplTest {
 
 	@InjectMocks
 	private AuthServiceImpl authService;
+
+	@Mock
+	private PointServiceImpl pointService;
 
 	@Mock
 	private AttendeeRepository attendeeRepository;
