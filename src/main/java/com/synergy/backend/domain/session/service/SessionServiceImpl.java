@@ -6,6 +6,7 @@ import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
+import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.qrCode.service.QrService;
 import com.synergy.backend.domain.session.dto.SessionDetailResDto;
@@ -56,6 +57,7 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public void createSession(Long conferenceId, SessionReqDto reqDto) throws WriterException {
+        Admin admin = (Admin) getCurrentMember();
         Conference conference = ifConferenceExists(conferenceId);
 
         LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
@@ -63,8 +65,10 @@ public class SessionServiceImpl implements SessionService {
         LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
         String secretCode = UUID.randomUUID().toString();
 
-        Session session = Session.of(reqDto, progressDate, startTime, endTime, secretCode, conference);
+        Session session = Session.of(reqDto, progressDate, startTime, endTime, conference);
         byte[] bytes = qrService.generateQRCode(reqDto.domainAddress(), secretCode);
+        admin.addSession(session);
+        session.addQRCode(bytes);
         sessionRepository.save(session);
     }
 
@@ -80,13 +84,15 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(readOnly = true)
     @Override
     public SessionDetailResDto getSessionInfo(Long conferenceId, Long sessionId) {
-        Attendee attendee = (Attendee) getCurrentMember();
+        User user = getCurrentMember();
         ifConferenceExists(conferenceId);
         Session session = ifSessionExists(sessionId);
 
         try {
-            ifAttendeeSessionExists(sessionId, attendee.getId());
+            ifAttendeeSessionExists(sessionId, user.getId());
             List<QuestionResDto> questions = getQuestions(conferenceId, sessionId);
+            if(user.getRole().equals(RoleType.ADMIN))
+                return SessionDetailResDto.withQRCodefrom(session, questions);
             return SessionDetailResDto.from(session, questions);
         } catch (Exception e) {
             return SessionDetailResDto.from(session, null);

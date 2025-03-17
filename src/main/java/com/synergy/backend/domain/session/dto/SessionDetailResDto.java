@@ -2,6 +2,7 @@ package com.synergy.backend.domain.session.dto;
 
 import com.synergy.backend.domain.session.dto.question.QuestionResDto;
 import com.synergy.backend.domain.session.entity.Session;
+import org.aspectj.weaver.patterns.TypePatternQuestions;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -13,10 +14,16 @@ public record SessionDetailResDto(
         LocalDateTime startTime,
         LocalDateTime endTime,
         String description,
+        byte[] qrCode,
         List<QuestionResDto> questionResDto
 ) {
     public static SessionDetailResDto from(Session session, List<QuestionResDto> resDtos) {
         return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(),
-                session.getStartTime(), session.getEndTime(), session.getDescription(), resDtos);
+                session.getStartTime(), session.getEndTime(), session.getDescription(), null, resDtos);
+    }
+
+    public static SessionDetailResDto withQRCodefrom(Session session, List<QuestionResDto> resDtos) {
+        return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(),
+                session.getStartTime(), session.getEndTime(), session.getDescription(), session.getQrCode(), resDtos);
     }
 }
