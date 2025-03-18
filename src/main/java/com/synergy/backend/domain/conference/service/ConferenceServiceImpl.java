@@ -14,6 +14,7 @@ import com.synergy.backend.domain.member.exception.AccessDeniedException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
+import org.apache.catalina.security.SecurityUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,6 @@ import java.util.Optional;
 public class ConferenceServiceImpl implements ConferenceService {
     private final ConferenceRepository conferenceRepository;
     private final AdminRepository adminRepository;
-
     @Transactional
     @Override
     public ConferenceCreateResponse registerConference(String identifier, ConferenceCreateRequest request) {
