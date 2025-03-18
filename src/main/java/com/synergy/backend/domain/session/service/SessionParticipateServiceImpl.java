@@ -3,8 +3,10 @@ package com.synergy.backend.domain.session.service;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
+import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.User;
+import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
 import com.synergy.backend.domain.session.dto.questionDto.QuestionReqDto;
 import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParticipateRateDetailResDto;
@@ -63,8 +65,10 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
 
     @Override
     public List<SessionParticipateRateResDto> getSessionParticipateRate(Long conferenceId) {
-        // 이걸 구현하려면 일자별 세션들의 참여율을 조회해야함.
+        Admin currentMember = (Admin) getCurrentMember();
+        verifyUserAuthentication(currentMember); // 해당 컨퍼런스의 소유자인지 확인해야돰.
         ifConferenceExists(conferenceId);
+
         List<SessionParticipateRateResDto> sessionParticipate =
                 sessionRepository.getSessionParticipateByConferenceId(conferenceId);
         if(sessionParticipate.isEmpty()) {
@@ -76,7 +80,15 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
 
     @Override
     public SessionParticipateRateDetailResDto getSessionParticipateRateDetail(Long conferenceId) {
+        //
+        Admin currentMember = (Admin) getCurrentMember();
+        verifyUserAuthentication(currentMember); // 해당 컨퍼런스의 소유자인지 확인해야돰.
+
+
         return null;
+    }
+
+    private void verifyUserAuthentication(Admin admin){
     }
 
     private Session findBySecretCode(String secretCode) {
