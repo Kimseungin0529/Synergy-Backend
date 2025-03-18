@@ -36,6 +36,10 @@ spring:
       max-file-size: 2MB
       max-request-size: 15MB
 
+#logging:
+#  level:
+#    org.hibernate.SQL: DEBUG  # ✅ SQL 로그를 DEBUG 수준으로 상세하게 출력
+#    org.hibernate.type.descriptor.sql: TRACE  # ✅ 바인딩된 파라미터도 함께 출력
 ---
 
 jwt:
