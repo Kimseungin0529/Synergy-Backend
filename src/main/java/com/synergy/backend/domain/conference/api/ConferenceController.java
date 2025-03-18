@@ -27,14 +27,21 @@ public class ConferenceController {
         String identifier = userDetails.getIdentifier();
         RoleType role = userDetails.getRole();
 
-        if (role != RoleType.ATTENDEE) {
+        if (role != RoleType.ADMIN) {
             throw new AccessDeniedException();
         }
         return ApiResponse.ok(conferenceService.registerConference(identifier, request), 201);
     }
 
     @PatchMapping("/{id}")
-    public ApiResponse<ConferenceUpdateResponse> updateConference(@PathVariable(name = "id") Long id, @RequestBody @Valid ConferenceUpdateRequest request){
-        return ApiResponse.ok(conferenceService.updateConference(id, request), 200);
+    public ApiResponse<ConferenceUpdateResponse> updateConference(@AuthenticationPrincipal CustomUserDetails userDetails,
+                                @PathVariable(name = "id") Long id, @RequestBody @Valid ConferenceUpdateRequest request){
+        String identifier = userDetails.getIdentifier();
+        RoleType role = userDetails.getRole();
+
+        if (role != RoleType.ADMIN) {
+            throw new AccessDeniedException();
+        }
+        return ApiResponse.ok(conferenceService.updateConference(identifier, id, request), 200);
     }
 }

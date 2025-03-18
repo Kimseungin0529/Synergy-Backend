@@ -75,6 +75,12 @@ class ConferenceServiceImplTest {
         Conference savedConference = conferenceRepository.save(
                 Conference.of(name, TimePeriod.of(startTime, endTime), organizer, location, type)
         );
+
+        String identifier = "AUTH1";
+        Admin admin = Admin.of(identifier);
+        admin.addConference(savedConference);
+        adminRepository.save(admin);
+
         Long conferenceId = savedConference.getId();
 
         String updatedName = "카카오 개발자로 살아남기";
@@ -87,12 +93,11 @@ class ConferenceServiceImplTest {
         return List.of(
                 DynamicTest.dynamicTest("컨퍼런스명을 수정합니다.", () -> {
                         //given
-
                         ConferenceUpdateRequest request = new ConferenceUpdateRequest(
                                 updatedName, null, null, null, null, null
                         );
                         //when
-                        ConferenceUpdateResponse result = conferenceService.updateConference(conferenceId, request);
+                        ConferenceUpdateResponse result = conferenceService.updateConference(identifier, conferenceId, request);
                         //then
                             assertThat(result)
                                     .extracting(ConferenceUpdateResponse::name,
@@ -116,7 +121,7 @@ class ConferenceServiceImplTest {
                                     null, null, null, updatedLocation, null, null
                             );
                             //when
-                            ConferenceUpdateResponse result = conferenceService.updateConference(conferenceId, request);
+                            ConferenceUpdateResponse result = conferenceService.updateConference(identifier, conferenceId, request);
                             //then
                             assertThat(result)
                                     .extracting(ConferenceUpdateResponse::name,
@@ -141,7 +146,7 @@ class ConferenceServiceImplTest {
                                     null, updatedStartTime, updatedEndTime, null, null, null
                             );
                             //when
-                            ConferenceUpdateResponse result = conferenceService.updateConference(conferenceId, request);
+                            ConferenceUpdateResponse result = conferenceService.updateConference(identifier, conferenceId, request);
                             //then
                             assertThat(result)
                                     .extracting(ConferenceUpdateResponse::name,
@@ -167,7 +172,7 @@ class ConferenceServiceImplTest {
                                     null, null, null, null, updatedOrganizer, null
                             );
                             //when
-                            ConferenceUpdateResponse result = conferenceService.updateConference(conferenceId, request);
+                            ConferenceUpdateResponse result = conferenceService.updateConference(identifier, conferenceId, request);
                             //then
                             assertThat(result)
                                     .extracting(ConferenceUpdateResponse::name,
@@ -182,7 +187,7 @@ class ConferenceServiceImplTest {
                                             updatedStartTime,
                                             updatedEndTime,
                                             updatedLocation,
-                                            savedConference.getOrganizer(),
+                                            updatedOrganizer,
                                             savedConference.getType()
                                     );
                         }
@@ -190,10 +195,10 @@ class ConferenceServiceImplTest {
                 DynamicTest.dynamicTest("유형을 수정합니다.", () -> {
                             //given
                             ConferenceUpdateRequest request = new ConferenceUpdateRequest(
-                                    null, null, null, null, null, type
+                                    null, null, null, null, null, updatedType
                             );
                             //when
-                            ConferenceUpdateResponse result = conferenceService.updateConference(conferenceId, request);
+                            ConferenceUpdateResponse result = conferenceService.updateConference(identifier, conferenceId, request);
                             //then
                             assertThat(result)
                                     .extracting(ConferenceUpdateResponse::name,
@@ -208,8 +213,8 @@ class ConferenceServiceImplTest {
                                             updatedStartTime,
                                             updatedEndTime,
                                             updatedLocation,
-                                            savedConference.getOrganizer(),
-                                            savedConference.getType()
+                                            updatedOrganizer,
+                                            updatedType
                                     );
                         }
                 )

@@ -10,6 +10,7 @@ import com.synergy.backend.domain.conference.entity.TimePeriod;
 import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.entity.Admin;
+import com.synergy.backend.domain.member.exception.AccessDeniedException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
@@ -41,9 +42,14 @@ public class ConferenceServiceImpl implements ConferenceService {
 
     @Transactional
     @Override
-    public ConferenceUpdateResponse updateConference(Long conferenceId, ConferenceUpdateRequest request) {
+    public ConferenceUpdateResponse updateConference(String identifier, Long conferenceId, ConferenceUpdateRequest request) {
+        Admin findAdmin = adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
         Conference findConference = conferenceRepository.findById(conferenceId)
                 .orElseThrow(NotFoundConference::new);
+        // 해당 컨퍼런스를 등록한 관리자가 수정을 하려고 하는지 검증 (다른 관리자가 만든 컨퍼런스에 접근해서는 안 된다.)
+        if (!findAdmin.getConferences().contains(findConference)) {
+            throw new AccessDeniedException();
+        }
         applyUpdatesToConference(request, findConference);
 
         return ConferenceUpdateResponse.from(findConference); // 반영된 정보 반환

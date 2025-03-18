@@ -8,7 +8,7 @@ import com.synergy.backend.domain.conference.dto.response.ConferenceUpdateRespon
 public interface ConferenceService {
     ConferenceCreateResponse registerConference(String identifier, ConferenceCreateRequest request);
 
-    ConferenceUpdateResponse updateConference(Long conferenceId, ConferenceUpdateRequest request);
+    ConferenceUpdateResponse updateConference(String identifier, Long conferenceId, ConferenceUpdateRequest request);
 
     ConferenceDetailResponse findConference(Long conferenceId);
 }
