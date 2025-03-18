@@ -6,7 +6,7 @@ import com.synergy.backend.domain.conference.dto.response.ConferenceCreateRespon
 import com.synergy.backend.domain.conference.dto.response.ConferenceUpdateResponse;
 
 public interface ConferenceService {
-    ConferenceCreateResponse registerConference(ConferenceCreateRequest request);
+    ConferenceCreateResponse registerConference(String identifier, ConferenceCreateRequest request);
 
     ConferenceUpdateResponse updateConference(Long conferenceId, ConferenceUpdateRequest request);
 
