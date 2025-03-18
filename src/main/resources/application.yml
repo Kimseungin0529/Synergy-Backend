@@ -54,7 +54,6 @@ spring:
   h2:
     console:
       enabled: true
-
   jpa:
     hibernate:
       ddl-auto: create
@@ -64,6 +63,7 @@ spring:
         show-sql: true
         open-in-view: false
         default_batch_fetch_size: 200
+        dialect: org.hibernate.dialect.H2Dialect
 
   cloud:
     aws:
