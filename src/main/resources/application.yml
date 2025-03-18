@@ -36,6 +36,10 @@ spring:
       max-file-size: 2MB
       max-request-size: 15MB
 
+#logging:
+#  level:
+#    org.hibernate.SQL: DEBUG  # ✅ SQL 로그를 DEBUG 수준으로 상세하게 출력
+#    org.hibernate.type.descriptor.sql: TRACE  # ✅ 바인딩된 파라미터도 함께 출력
 ---
 
 jwt:
@@ -54,7 +58,6 @@ spring:
   h2:
     console:
       enabled: true
-
   jpa:
     hibernate:
       ddl-auto: create
@@ -64,6 +67,7 @@ spring:
         show-sql: true
         open-in-view: false
         default_batch_fetch_size: 200
+        dialect: org.hibernate.dialect.H2Dialect
 
   cloud:
     aws:
