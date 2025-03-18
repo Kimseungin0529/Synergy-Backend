@@ -15,5 +15,5 @@ public interface SessionParticipateService {
 
     List<SessionParticipateRateResDto> getSessionParticipateRate(Long conferenceId);
 
-    SessionParticipateRateDetailResDto getSessionParticipateRateDetail(Long conferenceId);
+    List<SessionParticipateRateDetailResDto> getSessionParticipateRateDetail(Long conferenceId);
 }

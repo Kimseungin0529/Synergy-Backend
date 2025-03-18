@@ -79,10 +79,10 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
     }
 
     @Override
-    public SessionParticipateRateDetailResDto getSessionParticipateRateDetail(Long conferenceId) {
-        //
+    public List<SessionParticipateRateDetailResDto> getSessionParticipateRateDetail(Long conferenceId) {
+        // 이름순으로 관심 분야를 기준으로 조회시키기.
         Admin currentMember = (Admin) getCurrentMember();
-        verifyUserAuthentication(currentMember); // 해당 컨퍼런스의 소유자인지 확인해야돰.
+        verifyUserAuthentication(currentMember); // 해당 컨퍼런스의 소유자인지 확인해야 됨.
 
 
         return null;
