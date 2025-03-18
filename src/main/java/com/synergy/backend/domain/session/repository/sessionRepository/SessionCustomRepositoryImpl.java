@@ -9,7 +9,6 @@ import org.springframework.stereotype.Repository;
 import java.time.LocalDate;
 import java.util.List;
 
-import static com.synergy.backend.domain.conference.entity.QConference.conference;
 import static com.synergy.backend.domain.session.entity.QAttendeeSession.attendeeSession;
 import static com.synergy.backend.domain.session.entity.QSession.session;
 
@@ -35,6 +34,7 @@ public class SessionCustomRepositoryImpl implements SessionCustomRepository {
                 .leftJoin(session.attendeeSessions, attendeeSession).on(attendeeSession.session.id.eq(session.id))
                 .where(session.conference.id.eq(conferenceId))
                 .where(session.progressDate.eq(now))
+                .groupBy(session.id)
                 .fetch();
     }
 }
