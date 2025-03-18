@@ -7,6 +7,7 @@ import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.member.repository.AdminRepository;
+import com.synergy.backend.domain.qrCode.service.QrService;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
 import com.synergy.backend.domain.session.dto.questionDto.QuestionReqDto;
 import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParticipateRateDetailResDto;
@@ -31,6 +32,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SessionParticipateServiceImpl implements SessionParticipateService {
 
+    private final QrService qrService;
     private final SessionRepository sessionRepository;
     private final SessionQuestionRepository sessionQuestionRepository;
     private final ConferenceRepository conferenceRepository;
@@ -40,9 +42,11 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
         return SecurityUtil.getCurrentMember();
     }
 
+    @Transactional
     @Override
     public SessionResDto verifyQRCode(String secretCode) {
         Attendee currentMember = (Attendee) getCurrentMember();
+        secretCode = qrService.decodingSecretCode(secretCode);
         Session session = findBySecretCode(secretCode);
 
         AttendeeSession attendeeSession = AttendeeSession.of(currentMember, session);
@@ -63,6 +67,7 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
         attendeeSession.addSessionQuestion(question);
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<SessionParticipateRateResDto> getSessionParticipateRate(Long conferenceId) {
         Admin currentMember = (Admin) getCurrentMember();
@@ -78,6 +83,7 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
         return sessionParticipate;
     }
 
+    @Transactional(readOnly = true)
     @Override
     public List<SessionParticipateRateDetailResDto> getSessionParticipateRateDetail(Long conferenceId) {
         // 이름순으로 관심 분야를 기준으로 조회시키기.

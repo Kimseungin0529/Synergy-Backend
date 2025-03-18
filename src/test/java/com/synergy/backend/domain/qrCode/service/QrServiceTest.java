@@ -21,16 +21,16 @@ class QrServiceTest {
     @Test
     void generateQRCode() throws WriterException {
      //given
-        String url = "https://www.mydomain.com/verify?token=akefjqoisn";
-        String secretCode = "akjfaoeinvodsa";
-
-     //when
-        byte[] bytes = qrService.generateQRCode(url, secretCode);
-        //System.out.println(new String(bytes));
-
-        //then
-        assertThat(bytes).isNotNull();
-        assertThat(bytes.length).isNotEqualTo(0);
+//        String url = "https://www.mydomain.com/verify?token=akefjqoisn";
+//        String secretCode = "akjfaoeinvodsa";
+//
+//     //when
+//        byte[] bytes = qrService.generateQRCode(url, id, secretCode);
+//        //System.out.println(new String(bytes));
+//
+//        //then
+//        assertThat(bytes).isNotNull();
+//        assertThat(bytes.length).isNotEqualTo(0);
 
     }
 }

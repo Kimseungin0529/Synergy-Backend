@@ -57,7 +57,7 @@ public class SessionServiceImpl implements SessionService {
         String secretCode = UUID.randomUUID().toString();
 
         Session session = Session.of(reqDto, progressDate, startTime, endTime, conference);
-        byte[] bytes = qrService.generateQRCode(reqDto.domainAddress(), secretCode);
+        byte[] bytes = qrService.generateQRCode(reqDto.domainAddress(), session.getId(), secretCode);
         admin.addSession(session);
         session.addQRCode(bytes);
         sessionRepository.save(session);

@@ -40,12 +40,12 @@ public class BoothServiceImpl implements BoothService {
                 conference
         );
 
-        booth = boothRepository.save(booth);
+        boothRepository.save(booth);
 
         String qrCodeUrl = "https://";
         String secretCode = UUID.randomUUID().toString();
         try {
-            byte[] qrCode = qrService.generateQRCode(qrCodeUrl, secretCode);
+            byte[] qrCode = qrService.generateQRCode(qrCodeUrl, booth.getId(), secretCode);
             booth.setQrCode(qrCode);
         } catch (WriterException e) {
             throw new NotGenerateQRCodeException();
