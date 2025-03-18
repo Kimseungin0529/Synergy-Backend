@@ -12,6 +12,7 @@ import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParti
 import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.domain.session.entity.Session;
 import com.synergy.backend.domain.session.entity.SessionQuestion;
+import com.synergy.backend.domain.session.exception.InvalidTimeException;
 import com.synergy.backend.domain.session.exception.NotAttendedSession;
 import com.synergy.backend.domain.session.exception.NotFoundSession;
 import com.synergy.backend.domain.session.repository.AttendeeSessionRepository;
@@ -63,11 +64,14 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
     @Override
     public List<SessionParticipateRateResDto> getSessionParticipateRate(Long conferenceId) {
         // 이걸 구현하려면 일자별 세션들의 참여율을 조회해야함.
-        // 해당 컨퍼런스에 해당하는 모든 세션들에 대한 최대 인원 수용과 현재 attendeeSession있는 sessionId의 인원수를 담아 넣어놓는다.
-        Conference conference = ifConferenceExists(conferenceId);
+        ifConferenceExists(conferenceId);
+        List<SessionParticipateRateResDto> sessionParticipate =
+                sessionRepository.getSessionParticipateByConferenceId(conferenceId);
+        if(sessionParticipate.isEmpty()) {
+            throw new InvalidTimeException();
+        }
 
-
-        return null;
+        return sessionParticipate;
     }
 
     @Override
