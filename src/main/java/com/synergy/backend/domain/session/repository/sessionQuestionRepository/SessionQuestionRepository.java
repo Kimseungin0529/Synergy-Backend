@@ -1,4 +1,4 @@
-package com.synergy.backend.domain.session.repository;
+package com.synergy.backend.domain.session.repository.sessionQuestionRepository;
 
 import com.synergy.backend.domain.session.entity.SessionQuestion;
 import org.springframework.data.jpa.repository.JpaRepository;

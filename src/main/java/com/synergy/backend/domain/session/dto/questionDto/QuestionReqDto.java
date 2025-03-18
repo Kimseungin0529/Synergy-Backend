@@ -1,4 +1,4 @@
-package com.synergy.backend.domain.session.dto.question;
+package com.synergy.backend.domain.session.dto.questionDto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

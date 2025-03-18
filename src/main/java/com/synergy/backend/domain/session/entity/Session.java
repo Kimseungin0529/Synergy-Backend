@@ -12,7 +12,7 @@ import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.member.entity.Admin;
-import com.synergy.backend.domain.session.dto.SessionReqDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
@@ -52,6 +52,9 @@ public class Session {
 	@Column(nullable = false, length = 3000)
 	private String description;
 
+	@Column(nullable = false)
+	private Integer maximum;
+
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "conference_id")
 	private Conference conference;
@@ -67,7 +70,7 @@ public class Session {
 
 	@Builder
 	public Session(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
-				   Conference conference, Admin admin) {
+				   Conference conference) {
 		this.title = reqDto.title();
 		this.speaker = reqDto.speaker();
 		this.speakerPosition = reqDto.speakerPosition();
@@ -75,6 +78,7 @@ public class Session {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.description = reqDto.description();
+		this.maximum = reqDto.maximum();
 		this.conference = conference;
 	}
 

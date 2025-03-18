@@ -1,8 +1,7 @@
-package com.synergy.backend.domain.session.dto;
+package com.synergy.backend.domain.session.dto.sessionDto;
 
-import com.synergy.backend.domain.session.dto.question.QuestionResDto;
+import com.synergy.backend.domain.session.dto.questionDto.QuestionResDto;
 import com.synergy.backend.domain.session.entity.Session;
-import org.aspectj.weaver.patterns.TypePatternQuestions;
 
 import java.time.LocalDateTime;
 import java.util.List;

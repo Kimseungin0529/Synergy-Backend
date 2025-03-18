@@ -3,6 +3,7 @@ package com.synergy.backend.domain.session.controller;
 import java.util.List;
 
 import com.google.zxing.WriterException;
+import com.synergy.backend.domain.session.service.SessionParticipateService;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -13,11 +14,10 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synergy.backend.domain.session.dto.SessionDetailResDto;
-import com.synergy.backend.domain.session.dto.SessionReqDto;
-import com.synergy.backend.domain.session.dto.SessionResDto;
-import com.synergy.backend.domain.session.dto.question.QuestionReqDto;
-import com.synergy.backend.domain.session.dto.question.QuestionResDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionDetailResDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
+import com.synergy.backend.domain.session.dto.questionDto.QuestionReqDto;
 import com.synergy.backend.domain.session.service.SessionService;
 import com.synergy.backend.global.common.ApiResponse;
 
@@ -29,6 +29,7 @@ import lombok.RequiredArgsConstructor;
 public class SessionController {
 
 	private final SessionService sessionService;
+	private final SessionParticipateService sessionParticipateService;
 
 	@PostMapping
 	public ApiResponse createSession(@PathVariable(name = "conferenceId") Long conferenceId,
@@ -71,7 +72,7 @@ public class SessionController {
 
     @PostMapping("/verify")
     public ApiResponse<SessionResDto> verifyQRCode(@RequestParam(name = "qrCode") String qrCode){
-		SessionResDto sessionResDto = sessionService.verifyQRCode(qrCode);
+		SessionResDto sessionResDto = sessionParticipateService.verifyQRCode(qrCode);
 
 		return ApiResponse.ok(sessionResDto, 200);
     }
@@ -81,7 +82,7 @@ public class SessionController {
                                                       @PathVariable(name = "sessionId") Long sessionId,
                                                       @RequestBody QuestionReqDto reqDto) {
 
-        sessionService.createQuestion(conferenceId, sessionId, reqDto);
+        sessionParticipateService.createQuestion(conferenceId, sessionId, reqDto);
         return ApiResponse.ok("Question created successfully!", 200);
     }
 

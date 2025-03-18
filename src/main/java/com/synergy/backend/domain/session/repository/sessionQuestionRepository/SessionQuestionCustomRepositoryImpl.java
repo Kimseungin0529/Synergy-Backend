@@ -1,10 +1,8 @@
-package com.synergy.backend.domain.session.repository;
+package com.synergy.backend.domain.session.repository.sessionQuestionRepository;
 
-import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.synergy.backend.domain.session.dto.question.QuestionResDto;
-import com.synergy.backend.domain.session.entity.SessionQuestion;
+import com.synergy.backend.domain.session.dto.questionDto.QuestionResDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 

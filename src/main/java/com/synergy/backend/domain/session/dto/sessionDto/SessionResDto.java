@@ -1,4 +1,4 @@
-package com.synergy.backend.domain.session.dto;
+package com.synergy.backend.domain.session.dto.sessionDto;
 
 import com.synergy.backend.domain.session.entity.Session;
 

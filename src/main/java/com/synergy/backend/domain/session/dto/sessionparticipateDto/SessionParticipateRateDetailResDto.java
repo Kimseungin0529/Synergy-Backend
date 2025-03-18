@@ -1,4 +1,4 @@
-package com.synergy.backend.domain.session.dto.sessionparticipate;
+package com.synergy.backend.domain.session.dto.sessionparticipateDto;
 
 public record SessionParticipateRateDetailResDto (
         String sessionId,

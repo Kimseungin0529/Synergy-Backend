@@ -21,7 +21,7 @@ import com.synergy.backend.domain.point.exception.PointNotFoundException;
 import com.synergy.backend.domain.point.repository.PointRepository;
 import com.synergy.backend.domain.session.entity.Session;
 import com.synergy.backend.domain.session.exception.NotFoundSession;
-import com.synergy.backend.domain.session.repository.SessionRepository;
+import com.synergy.backend.domain.session.repository.sessionRepository.SessionRepository;
 import com.synergy.backend.global.security.exception.UnKnownUserTypeException;
 
 import lombok.RequiredArgsConstructor;

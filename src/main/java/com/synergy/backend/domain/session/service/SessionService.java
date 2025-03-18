@@ -1,11 +1,9 @@
 package com.synergy.backend.domain.session.service;
 
 import com.google.zxing.WriterException;
-import com.synergy.backend.domain.session.dto.SessionDetailResDto;
-import com.synergy.backend.domain.session.dto.SessionReqDto;
-import com.synergy.backend.domain.session.dto.SessionResDto;
-import com.synergy.backend.domain.session.dto.sessionparticipate.SessionParticipateRateResDto;
-import com.synergy.backend.domain.session.dto.question.QuestionReqDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionDetailResDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -23,9 +21,5 @@ public interface SessionService {
 
     void deleteSession(Long sessionId);
 
-    void createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto);
 
-    SessionResDto verifyQRCode(String secretCode);
-
-    SessionParticipateRateResDto getSessionParticipateRate(Long conferenceId);
 }

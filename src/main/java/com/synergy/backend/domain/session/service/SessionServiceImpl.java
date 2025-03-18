@@ -5,35 +5,26 @@ import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.entity.Admin;
-import com.synergy.backend.domain.member.entity.Attendee;
-import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.qrCode.service.QrService;
-import com.synergy.backend.domain.session.dto.SessionDetailResDto;
-import com.synergy.backend.domain.session.dto.SessionReqDto;
-import com.synergy.backend.domain.session.dto.SessionResDto;
-import com.synergy.backend.domain.session.dto.sessionparticipate.SessionParticipateRateResDto;
-import com.synergy.backend.domain.session.dto.question.QuestionReqDto;
-import com.synergy.backend.domain.session.dto.question.QuestionResDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionDetailResDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
+import com.synergy.backend.domain.session.dto.questionDto.QuestionResDto;
 import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.domain.session.entity.Session;
-import com.synergy.backend.domain.session.entity.SessionQuestion;
 import com.synergy.backend.domain.session.exception.NotAttendedSession;
 import com.synergy.backend.domain.session.exception.NotFoundSession;
-import com.synergy.backend.domain.session.exception.NotMatchedAttendeeCodeException;
 import com.synergy.backend.domain.session.repository.AttendeeSessionRepository;
-import com.synergy.backend.domain.session.repository.SessionQuestionRepository;
-import com.synergy.backend.domain.session.repository.SessionRepository;
+import com.synergy.backend.domain.session.repository.sessionQuestionRepository.SessionQuestionRepository;
+import com.synergy.backend.domain.session.repository.sessionRepository.SessionRepository;
 import com.synergy.backend.domain.session.service.validate.DateTimeValidator;
 import com.synergy.backend.global.util.SecurityUtil;
 import com.synergy.backend.global.util.file.util.FileS3Util;
 import lombok.RequiredArgsConstructor;
-import org.apache.tomcat.util.http.fileupload.disk.DiskFileItem;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.multipart.MultipartFile;
 
-import java.net.URL;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -91,8 +82,6 @@ public class SessionServiceImpl implements SessionService {
         try {
             ifAttendeeSessionExists(sessionId, user.getId());
             List<QuestionResDto> questions = getQuestions(conferenceId, sessionId);
-            if(user.getRole().equals(RoleType.ADMIN))
-                return SessionDetailResDto.withQRCodefrom(session, questions);
             return SessionDetailResDto.from(session, questions);
         } catch (Exception e) {
             return SessionDetailResDto.from(session, null);
@@ -112,45 +101,13 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public void deleteSession(Long sessionId) {
+        User user = getCurrentMember();
+        // session에 대한 권한 확인
         Session session = ifSessionExists(sessionId);
-        // session에 대한 본인 소지 여부 확인
         sessionRepository.delete(session);
     }
 
-    // -------------------------------------- Q&A ------------------------------------------------
-
-    @Override
-    public SessionResDto verifyQRCode(String secretCode) {
-        Attendee currentMember = (Attendee) getCurrentMember();
-        Session session = findBySecretCode(secretCode);
-
-        AttendeeSession attendeeSession = AttendeeSession.of(currentMember, session);
-        attendeeSessionRepository.save(attendeeSession);
-        return SessionResDto.from(session);
-    }
-
-    @Transactional
-    @Override
-    public void createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto) {
-        Attendee attendee = (Attendee) getCurrentMember();
-        ifConferenceExists(conferenceId);
-        AttendeeSession attendeeSession = ifAttendeeSessionExists(sessionId, attendee.getId());
-
-        SessionQuestion question = SessionQuestion.of(reqDto.content());
-        sessionQuestionRepository.save(question);
-
-        attendeeSession.addSessionQuestion(question);
-    }
-
-    @Override
-    public SessionParticipateRateResDto getSessionParticipateRate(Long conferenceId) {
-        // 이걸 구현하려면 일자별 세션들의 참여율을 조회해야함.
-        Admin admin =  (Admin) getCurrentMember();
-        ifConferenceExists(conferenceId);
-
-
-        return null;
-    }
+    // --------------------------------- private method ----------------------------------------
 
     private List<QuestionResDto> getQuestions(Long conferenceId, Long sessionId) {
         getCurrentMember();
@@ -171,10 +128,6 @@ public class SessionServiceImpl implements SessionService {
 
     private Session ifSessionExists(Long sessionId) {
         return sessionRepository.findById(sessionId).orElseThrow(NotFoundSession::new);
-    }
-
-    private Session findBySecretCode(String secretCode) {
-        return sessionRepository.findBySecretCode(secretCode).orElseThrow(NotFoundSession::new);
     }
 
 }
