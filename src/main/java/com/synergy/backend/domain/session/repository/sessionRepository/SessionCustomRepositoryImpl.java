@@ -35,6 +35,7 @@ public class SessionCustomRepositoryImpl implements SessionCustomRepository {
                 .where(session.conference.id.eq(conferenceId))
                 .where(session.progressDate.eq(now))
                 .groupBy(session.id)
+                .orderBy(session.startTime.asc())
                 .fetch();
     }
 }
