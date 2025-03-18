@@ -7,6 +7,8 @@ import com.synergy.backend.domain.conference.dto.response.ConferenceUpdateRespon
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.entity.TimePeriod;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
+import com.synergy.backend.domain.member.entity.Admin;
+import com.synergy.backend.domain.member.repository.AdminRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -24,18 +26,22 @@ import static org.assertj.core.api.Assertions.*;
 
 
 @SpringBootTest
-@ActiveProfiles//("test")
+@ActiveProfiles("test")
 @Transactional
 class ConferenceServiceImplTest {
     @Autowired
     ConferenceService conferenceService;
     @Autowired
     ConferenceRepository conferenceRepository;
+    @Autowired
+    AdminRepository adminRepository;
 
-    @DisplayName("")
+    @DisplayName("관리자가 컨퍼런스를 등록합니다.")
     @Test
     void registerConference() {
         // given
+        String identifier = "CODE1234";
+        Admin admin = Admin.of(identifier);
         ConferenceCreateRequest request = new ConferenceCreateRequest(
                 "컨퍼런스명",
                 LocalDateTime.of(2025,5,10,9,0),
@@ -44,13 +50,15 @@ class ConferenceServiceImplTest {
                 "김승진",
                 "IT"
         );
+        adminRepository.save(admin);
         // when
-        ConferenceCreateResponse result = conferenceService.registerConference(request);
+        ConferenceCreateResponse result = conferenceService.registerConference(identifier, request);
         // then
         assertThat(result)
                 .isNotNull()
                 .extracting(ConferenceCreateResponse::id)
                 .isNotNull();
+
     }
 
     @DisplayName("컨퍼런스 정보 변경하는 시나리오")

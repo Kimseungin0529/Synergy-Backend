@@ -9,6 +9,9 @@ import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.entity.TimePeriod;
 import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
+import com.synergy.backend.domain.member.entity.Admin;
+import com.synergy.backend.domain.member.exception.NotFoundUserException;
+import com.synergy.backend.domain.member.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,13 +24,17 @@ import java.util.Optional;
 @Transactional(readOnly = true)
 public class ConferenceServiceImpl implements ConferenceService {
     private final ConferenceRepository conferenceRepository;
+    private final AdminRepository adminRepository;
 
     @Transactional
     @Override
-    public ConferenceCreateResponse registerConference(ConferenceCreateRequest request) {
+    public ConferenceCreateResponse registerConference(String identifier, ConferenceCreateRequest request) {
+        Admin findAdmin = adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
         TimePeriod timePeriod = TimePeriod.of(request.startDate(), request.endDate());
         Conference conference = Conference.of(request.name(), timePeriod, request.organizer(), request.location(), request.type());
         Conference savedConference = conferenceRepository.save(conference);
+
+        findAdmin.addConference(conference);
 
         return ConferenceCreateResponse.from(savedConference);
     }
