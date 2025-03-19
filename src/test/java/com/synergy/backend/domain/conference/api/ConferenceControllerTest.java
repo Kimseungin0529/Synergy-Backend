@@ -82,7 +82,7 @@ class ConferenceControllerTest {
         ConferenceCreateResponse response = new ConferenceCreateResponse(1L);
 
         String identifier = "AUTH1";
-        given(conferenceService.registerConference(anyString(), any(ConferenceCreateRequest.class))).willReturn(response);
+        given(conferenceService.registerConference(eq(identifier), any(ConferenceCreateRequest.class))).willReturn(response);
         given(jwtProvider.validateToken(anyString())).willReturn(true);
         given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
@@ -93,7 +93,6 @@ class ConferenceControllerTest {
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
-                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())
