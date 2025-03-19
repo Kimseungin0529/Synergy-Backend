@@ -108,6 +108,13 @@ bootJar {
         into 'static/docs'
     }
 }
-// RestDocs 추가 끝
+tasks.register('copyDocument', Copy) {
+    dependsOn asciidoctor
 
+    from file("build/docs/asciidoc/")
+    into file("src/main/resources/static/docs")
+}
 
+build {
+    dependsOn copyDocument
+}

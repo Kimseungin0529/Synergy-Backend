@@ -16,7 +16,7 @@ include::{snippets}/conference-register/response-fields.adoc[]
 
 ==== HTTP Request
 include::{snippets}/conference-update/http-request.adoc[]
-include::{snippets}/conference-update/path-parameters.adoc[]
+
 ===== Request Header
 include::{snippets}/conference-update/request-headers.adoc[]
 
