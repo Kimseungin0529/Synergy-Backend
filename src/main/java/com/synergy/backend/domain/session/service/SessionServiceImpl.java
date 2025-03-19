@@ -6,6 +6,8 @@ import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.User;
+import com.synergy.backend.domain.member.exception.NotFoundUserException;
+import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.qrCode.service.QrService;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionDetailResDto;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
@@ -34,6 +36,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class SessionServiceImpl implements SessionService {
 
+    private final AdminRepository adminRepository;
     private final ConferenceRepository conferenceRepository;
     private final SessionRepository sessionRepository;
     private final AttendeeSessionRepository attendeeSessionRepository;
@@ -56,7 +59,7 @@ public class SessionServiceImpl implements SessionService {
         LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
         String secretCode = UUID.randomUUID().toString();
 
-        Session session = Session.of(reqDto, progressDate, startTime, endTime, conference);
+        Session session = Session.of(reqDto, progressDate, startTime, endTime, secretCode, conference);
         byte[] bytes = qrService.generateQRCode(reqDto.domainAddress(), session.getId(), secretCode);
         admin.addSession(session);
         session.addQRCode(bytes);
@@ -109,6 +112,10 @@ public class SessionServiceImpl implements SessionService {
 
     // --------------------------------- private method ----------------------------------------
 
+    private Admin findIfExists(String identifier) {
+        return adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
+    }
+
     private List<QuestionResDto> getQuestions(Long conferenceId, Long sessionId) {
         getCurrentMember();
         ifConferenceExists(conferenceId);
@@ -118,7 +125,7 @@ public class SessionServiceImpl implements SessionService {
     }
 
     private AttendeeSession ifAttendeeSessionExists(Long sessionId, Long attendeeId) {
-        return attendeeSessionRepository.findBySessionAndAttendeeId(sessionId, attendeeId)
+        return attendeeSessionRepository.findBySessionIdAndAttendeeId(sessionId, attendeeId)
                 .orElseThrow(NotAttendedSession::new);
     }
 

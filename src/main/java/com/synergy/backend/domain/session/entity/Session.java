@@ -60,6 +60,9 @@ public class Session {
 	private Conference conference;
 
 	@Column(nullable = false)
+	private String secretCode;
+
+	@Column(nullable = false)
 	private byte[] qrCode;
 
 	@OneToMany(mappedBy = "session", fetch = LAZY, cascade = CascadeType.ALL)
@@ -70,7 +73,7 @@ public class Session {
 
 	@Builder
 	public Session(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
-				   Conference conference) {
+				   String secretCode, Conference conference) {
 		this.title = reqDto.title();
 		this.speaker = reqDto.speaker();
 		this.speakerPosition = reqDto.speakerPosition();
@@ -79,17 +82,19 @@ public class Session {
 		this.endTime = endTime;
 		this.description = reqDto.description();
 		this.maximum = reqDto.maximum();
+		this.secretCode = secretCode;
 		this.conference = conference;
 	}
 
 
 	public static Session of(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
-							 Conference conference) {
+							 String secretCode, Conference conference) {
 		return Session.builder()
 				.reqDto(reqDto)
 				.startTime(startTime)
 				.endTime(endTime)
 				.conference(conference)
+				.secretCode(secretCode)
 				.progressDate(progressDate)
 				.build();
 	}

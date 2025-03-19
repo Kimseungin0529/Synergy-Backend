@@ -6,7 +6,6 @@ import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.User;
-import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.qrCode.service.QrService;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
 import com.synergy.backend.domain.session.dto.questionDto.QuestionReqDto;
@@ -102,7 +101,7 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
     }
 
     private AttendeeSession ifAttendeeSessionExists(Long sessionId, Long attendeeId) {
-        return attendeeSessionRepository.findBySessionAndAttendeeId(sessionId, attendeeId)
+        return attendeeSessionRepository.findBySessionIdAndAttendeeId(sessionId, attendeeId)
                 .orElseThrow(NotAttendedSession::new);
     }
 
