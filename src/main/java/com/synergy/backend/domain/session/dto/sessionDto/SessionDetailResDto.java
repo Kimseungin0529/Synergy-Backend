@@ -13,16 +13,15 @@ public record SessionDetailResDto(
         LocalDateTime startTime,
         LocalDateTime endTime,
         String description,
-        byte[] qrCode,
         List<QuestionResDto> questionResDto
 ) {
     public static SessionDetailResDto from(Session session, List<QuestionResDto> resDtos) {
         return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(),
-                session.getStartTime(), session.getEndTime(), session.getDescription(), null, resDtos);
+                session.getStartTime(), session.getEndTime(), session.getDescription(), resDtos);
     }
 
     public static SessionDetailResDto withQRCodefrom(Session session, List<QuestionResDto> resDtos) {
         return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(),
-                session.getStartTime(), session.getEndTime(), session.getDescription(), session.getQrCode(), resDtos);
+                session.getStartTime(), session.getEndTime(), session.getDescription(), resDtos);
     }
 }
