@@ -13,8 +13,6 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import java.time.LocalDateTime;
 
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyString;
-import static org.mockito.BDDMockito.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
@@ -45,10 +43,9 @@ public class ConferenceControllerDocsTest extends RestDocsSupport {
                 "IT"
         );
 
-        given(conferenceService.registerConference(anyString(), any(ConferenceCreateRequest.class)))
-                .willReturn(new ConferenceCreateResponse(
-                        1L
-                ));
+        given(conferenceService.registerConference(any(), any(ConferenceCreateRequest.class)))
+                .willReturn(new ConferenceCreateResponse(1L));
+
 
         mockMvc.perform(
                         post("/api/v1/conference")
@@ -58,34 +55,34 @@ public class ConferenceControllerDocsTest extends RestDocsSupport {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("conference-register",
-                        preprocessRequest(prettyPrint()),
-                        preprocessResponse(prettyPrint()),
-                        requestFields(
-                                fieldWithPath("name").type(JsonFieldType.STRING)
-                                        .description("컨퍼런스명"),
-                                fieldWithPath("startDate").type(JsonFieldType.STRING)
-                                        .description("컨퍼런스 시작 날짜 및 시간 (ISO 8601 형식: yyyy-MM-dd'T'HH:mm:ss)"),
-                                fieldWithPath("endDate").type(JsonFieldType.STRING)
-                                        .description("컨퍼런스 종료 날짜 및 시간 (ISO 8601 형식: yyyy-MM-dd'T'HH:mm:ss)"),
-                                fieldWithPath("location").type(JsonFieldType.STRING)
-                                        .description("컨퍼런스 개최 장소"),
-                                fieldWithPath("organizer").type(JsonFieldType.STRING)
-                                        .description("컨퍼런스 주최자"),
-                                fieldWithPath("type").type(JsonFieldType.STRING)
-                                        .description("컨퍼런스 유형 (예: IT, 교육, 비즈니스 등)")
-                        ),
-                        responseFields(
-                                fieldWithPath("status").type(JsonFieldType.STRING)
-                                        .description("결과 상태 (실패 시, 없음)"),
-                                fieldWithPath("code").type(JsonFieldType.NUMBER)
-                                        .description("HTTP 상태 코드"),
-                                fieldWithPath("message").type(JsonFieldType.STRING)
-                                        .description("응답 메시지 (오류 발생 시 포함, 성공 시 null)"),
-                                fieldWithPath("data.id").type(JsonFieldType.NUMBER)
-                                        .description("생성된 컨퍼런스의 고유 ID")
+                                preprocessRequest(prettyPrint()),
+                                preprocessResponse(prettyPrint()),
+                                requestFields(
+                                        fieldWithPath("name").type(JsonFieldType.STRING)
+                                                .description("컨퍼런스명"),
+                                        fieldWithPath("startDate").type(JsonFieldType.STRING)
+                                                .description("컨퍼런스 시작 날짜 및 시간 (ISO 8601 형식: yyyy-MM-dd'T'HH:mm:ss)"),
+                                        fieldWithPath("endDate").type(JsonFieldType.STRING)
+                                                .description("컨퍼런스 종료 날짜 및 시간 (ISO 8601 형식: yyyy-MM-dd'T'HH:mm:ss)"),
+                                        fieldWithPath("location").type(JsonFieldType.STRING)
+                                                .description("컨퍼런스 개최 장소"),
+                                        fieldWithPath("organizer").type(JsonFieldType.STRING)
+                                                .description("컨퍼런스 주최자"),
+                                        fieldWithPath("type").type(JsonFieldType.STRING)
+                                                .description("컨퍼런스 유형 (예: IT, 교육, 비즈니스 등)")
+                                ),
+                                responseFields(
+                                        fieldWithPath("status").type(JsonFieldType.STRING)
+                                                .description("결과 상태 (실패 시, 없음)"),
+                                        fieldWithPath("code").type(JsonFieldType.NUMBER)
+                                                .description("HTTP 상태 코드"),
+                                        fieldWithPath("message").type(JsonFieldType.NULL)
+                                                .description("응답 메시지 (오류 발생 시 포함, 성공 시 null)"),
+                                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
+                                                .description("생성된 컨퍼런스의 고유 ID")
+                                )
                         )
-                    )
                 );
-        }
+    }
 
 }

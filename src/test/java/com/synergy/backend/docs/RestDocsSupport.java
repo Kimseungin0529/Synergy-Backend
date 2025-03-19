@@ -2,6 +2,7 @@ package com.synergy.backend.docs;
 
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -22,7 +23,9 @@ public abstract class RestDocsSupport {
      * 적용해주는 어노테이션을 사용하지 않는 이유도 이에 있습니다.
      */
     protected MockMvc mockMvc;
-    protected ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());;
+    protected ObjectMapper objectMapper = new ObjectMapper()
+            .registerModule(new JavaTimeModule())
+            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);;
 
     @BeforeEach
     void setUp(RestDocumentationContextProvider provider) {
