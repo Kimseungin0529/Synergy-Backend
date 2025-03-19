@@ -18,6 +18,12 @@ spring:
         open-in-view: false
         dialect: org.hibernate.dialect.MySQL8Dialect
         default_batch_fetch_size: 200
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+      data-locations: ""
 
   cloud:
     aws:

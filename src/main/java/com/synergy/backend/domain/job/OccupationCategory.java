@@ -1,4 +1,4 @@
-package com.synergy.backend.domain.interest.entity;
+package com.synergy.backend.domain.job;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -12,10 +12,11 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class Interest {
+public class OccupationCategory {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "interest_id")
+	@Column(name = "occupation_id")
 	private Long id;
 
 	@Column(nullable = false, unique = true)
@@ -23,4 +24,5 @@ public class Interest {
 
 	@Column(nullable = false, unique = true)
 	private Integer code;
+
 }

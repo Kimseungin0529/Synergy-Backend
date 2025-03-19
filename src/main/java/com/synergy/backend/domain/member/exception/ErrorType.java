@@ -13,8 +13,14 @@ public enum ErrorType {
 	_ADMIN_OR_RECRUITER_NOT_FOUND(404, "해당 관리자나 채용담당자를 찾을 수 없습니다."),
 	_INVALID_AUTH_CODE(400, "유효하지 않은 인증코드 입니다."),
 	_INVALID_EMAIL_OR_PASSWORD(400, "이메일이 존재하지 않거나 비밀번호가 다릅니다."),
-	_DUPLICATE_EMAIL_EXCEPTION(409, "이미 등록된 이메일입니다.")
-
+	_DUPLICATE_EMAIL_EXCEPTION(409, "이미 등록된 이메일입니다."),
+	_INVALID_AGE_GROUP_CODE(400, "유효하지 않은 연령대 코드입니다."),
+	_INVALID_CONFERENCE_PARTICIPATION_PURPOSE_CODE(400, "유효하지 않은 컨퍼런스 참여목적 코드입니다."),
+	_INVALID_EDUCATION_LEVEL_TYPE_CODE(400, "유효하지 않은 학력 코드입니다."),
+	_INVALID_EXPERIENCE_LEVEL_TYPE_CODE(400, "유효하지 않은 경력 코드입니다."),
+	_INVALID_PREFERRED_CORPORATE_CULTURE_CODE(400, "유효하지 않은 선호기업문화 코드입니다."),
+	_INVALID_REGION_TYPE_CODE(400, "유효하지 않은 지역코드입니다."),
+	_INVALID_WORKPLACE_SELECTION_FACTOR_CODE(400, "유효하지 않은 직장선택요소 코드입니다."),
 	;
 
 	private final int code;

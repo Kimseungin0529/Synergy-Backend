@@ -1,10 +1,12 @@
-package com.synergy.backend.domain.techstack.entity;
+package com.synergy.backend.domain.job;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,12 +14,21 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class TechStack {
+public class JobCategory {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	@Column(name = "tech_stack_id")
+	@Column(name = "job_id")
 	private Long id;
 
 	@Column(nullable = false, unique = true)
 	private String name;
+
+	@Column(nullable = false, unique = true)
+	private Integer code;
+
+	@ManyToOne
+	@JoinColumn(name = "occupation_id", nullable = false)
+	private OccupationCategory occupationCategory;
+
 }

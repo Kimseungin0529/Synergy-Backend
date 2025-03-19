@@ -18,15 +18,15 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
-public class MemberInterest {
+public class AttendeeInterest {
 
 	@Id
-	@Column(name = "member_interest_id")
+	@Column(name = "attendee_interest_id")
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	private Long id;
 
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "member_id", nullable = false)
+	@JoinColumn(name = "attendee_id", nullable = false)
 	private Attendee attendee;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -34,8 +34,15 @@ public class MemberInterest {
 	private Interest interest;
 
 	@Builder
-	public MemberInterest(Attendee attendee, Interest interest) {
+	private AttendeeInterest(Attendee attendee, Interest interest) {
 		this.attendee = attendee;
 		this.interest = interest;
+	}
+
+	public static AttendeeInterest of(Attendee attendee, Interest interest) {
+		return AttendeeInterest.builder()
+			.attendee(attendee)
+			.interest(interest)
+			.build();
 	}
 }

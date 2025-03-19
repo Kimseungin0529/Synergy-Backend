@@ -1,18 +1,28 @@
 package com.synergy.backend.domain.member.entity;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
-import com.synergy.backend.domain.interest.entity.MemberInterest;
+import com.synergy.backend.domain.interest.entity.AttendeeInterest;
+import com.synergy.backend.domain.job.JobCategory;
+import com.synergy.backend.domain.job.OccupationCategory;
+import com.synergy.backend.domain.member.entity.details.AgeGroup;
+import com.synergy.backend.domain.member.entity.details.ConferenceParticipationPurpose;
+import com.synergy.backend.domain.member.entity.details.EducationLevelType;
+import com.synergy.backend.domain.member.entity.details.ExperienceLevelType;
+import com.synergy.backend.domain.member.entity.details.MembershipLevelType;
+import com.synergy.backend.domain.member.entity.details.PreferredCorporateCulture;
+import com.synergy.backend.domain.member.entity.details.RegionType;
+import com.synergy.backend.domain.member.entity.details.WorkplaceSelectionFactor;
 import com.synergy.backend.domain.point.entity.Point;
-import com.synergy.backend.domain.session.entity.AttendeeSession;
-import com.synergy.backend.domain.techstack.entity.MemberTechStack;
 import com.synergy.backend.global.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
+import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
@@ -62,40 +72,73 @@ public class Attendee extends BaseEntity implements User {
 	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Point> points = new ArrayList<>();
 
+	/*------Job Info------*/
 	// 현재 직업
-	@Enumerated(EnumType.STRING)
-	private OccupationType occupationType;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "current_job_id")
+	private JobCategory currentJobCategory;
 
 	// 현재 직무
-	@Enumerated(EnumType.STRING)
-	private PositionType position;
-
-	// 희망 직무
-	@Enumerated(EnumType.STRING)
-	private PositionType desiredPosition;
-
-	// 경력
-	private String yearsOfExperience;
-
-	// 참가자-보유기술
-	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<MemberTechStack> memberTechStacks;
-
-	// 자기소개서
-	private String selfIntroduction;
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "current_occupation_id")
+	private OccupationCategory currentOccupationCategory;
 
 	// 채용 희망여부
 	private boolean isHiringInterested;
 
-	// 경력 정보
-	private String personalHistory;
+	/*------Job Info Details------*/
+	// 희망 직무
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "desired_occupation_id")
+	private OccupationCategory desiredOccupationCategory;
+
+	// 학력
+	@Enumerated(EnumType.STRING)
+	private EducationLevelType educationLevel;
+
+	// 연령대
+	@Enumerated(EnumType.STRING)
+	private AgeGroup ageGroup;
+
+	// 보유기술
+	private String techStacks;
+
+	// 경력
+	@Enumerated(EnumType.STRING)
+	private ExperienceLevelType experienceLevel;
+
+	// 희망 근무 지역
+	@ElementCollection
+	@Enumerated(EnumType.STRING)
+	private Set<RegionType> desiredWorkRegion = new HashSet<>();
+
+	// 자기소개서
+	private String selfIntroduction;
+
+	// 증명사진
+	private String profilePhotoUrl;
 
 	// 경험 및 기타 정보
 	private String information;
 
+	// 직장 선택 요소
+	@ElementCollection
+	@Enumerated(EnumType.ORDINAL)
+	private Set<WorkplaceSelectionFactor> workplaceSelectionFactors = new HashSet<>();
+
+	// 선호하는 기업 문화
+	@ElementCollection
+	@Enumerated(EnumType.ORDINAL)
+	private Set<PreferredCorporateCulture> preferredCorporateCultures = new HashSet<>();
+
+	// 컨퍼런스 참여 목적
+	@ElementCollection
+	@Enumerated(EnumType.ORDINAL)
+	private Set<ConferenceParticipationPurpose> conferenceParticipationPurposes = new HashSet<>();
+
 	// 참가자-관심분야
 	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<MemberInterest> memberInterests;
+	private Set<AttendeeInterest> attendeeInterests;
 
 	// 컨퍼런스
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -130,6 +173,44 @@ public class Attendee extends BaseEntity implements User {
 	@Override
 	public RoleType getRole() {
 		return RoleType.ATTENDEE;
+	}
+
+	public void updateJobInfo(JobCategory jobCategory, OccupationCategory occupationCategory,
+		Boolean isHiringInterested) {
+		this.currentJobCategory = jobCategory;
+		this.currentOccupationCategory = occupationCategory;
+		this.isHiringInterested = isHiringInterested;
+	}
+
+	public void updateJobInfoDetails(
+		OccupationCategory desiredOccupationCategory,
+		EducationLevelType educationLevel,
+		AgeGroup ageGroup,
+		String techStacks,
+		ExperienceLevelType experienceLevel,
+		String selfIntroduction,
+		String profilePhotoUrl,
+		String information,
+		Set<WorkplaceSelectionFactor> workplaceSelectionFactors,
+		Set<PreferredCorporateCulture> preferredCorporateCultures,
+		Set<ConferenceParticipationPurpose> conferenceParticipationPurposes
+	) {
+		this.desiredOccupationCategory = desiredOccupationCategory;
+		this.educationLevel = educationLevel;
+		this.ageGroup = ageGroup;
+		this.techStacks = techStacks;
+		this.experienceLevel = experienceLevel;
+		this.selfIntroduction = selfIntroduction;
+		this.profilePhotoUrl = profilePhotoUrl;
+		this.information = information;
+		this.attendeeInterests =
+			attendeeInterests != null ? attendeeInterests : new HashSet<>();
+		this.workplaceSelectionFactors =
+			workplaceSelectionFactors != null ? workplaceSelectionFactors : new HashSet<>();
+		this.preferredCorporateCultures =
+			preferredCorporateCultures != null ? preferredCorporateCultures : new HashSet<>();
+		this.conferenceParticipationPurposes =
+			conferenceParticipationPurposes != null ? conferenceParticipationPurposes : new HashSet<>();
 	}
 
 	public void addPoint(Point point) {
