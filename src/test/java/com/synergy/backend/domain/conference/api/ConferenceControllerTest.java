@@ -344,8 +344,108 @@ class ConferenceControllerTest {
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").isEmpty())
                 .andExpect(jsonPath("$.data.name").value(request.name()))
-                .andExpect(jsonPath("$.data.startTime").value(request.startTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // startTime 검증
-                .andExpect(jsonPath("$.data.endTime").value(request.endTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // endTime 검증
+                .andExpect(jsonPath("$.data.startTime").value(request.startDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // startDate 검증
+                .andExpect(jsonPath("$.data.endTime").value(request.endDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // endDate 검증
+                .andExpect(jsonPath("$.data.location").value(request.location()))
+                .andExpect(jsonPath("$.data.organizer").value(request.organizer()))
+                .andExpect(jsonPath("$.data.type").value(request.type()));
+
+
+    }
+
+    @DisplayName("컨퍼런스 수정 시 시작 날짜는 반드시 미래여야 한다.")
+    @Test
+    @WithMockUser(username = "AUTH1", roles = {"ADMIN"})
+    void updateConference_ExceptionStartDate() throws Exception {
+        // given
+        ConferenceUpdateRequest request = new ConferenceUpdateRequest(
+                "Spring Boot Conference 2025",
+                LocalDateTime.of(2024, 6, 15, 10, 0, 0),
+                LocalDateTime.of(3025, 6, 16, 18, 0,0),
+                "Seoul, South Korea",
+                "김승진",
+                "IT"
+        );
+//        ConferenceUpdateResponse response = new ConferenceUpdateResponse(
+//                "Spring Boot Conference 2025",
+//                LocalDateTime.of(3025, 6, 15, 10, 0, 0),
+//                LocalDateTime.of(3025, 6, 16, 18, 0, 0),
+//                "Seoul, South Korea",
+//                "김승진",
+//                "IT"
+//        );
+//        String identifier = "AUTH1";
+//        given(conferenceService.updateConference(eq(identifier), anyLong(), eq(request))).willReturn(response);
+        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
+        given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
+
+
+        // when & then
+        mockMvc.perform(patch("/api/v1/conference/{id}", 1L)
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.code").value(400 ))
+                .andExpect(jsonPath("$.message").isEmpty())
+                .andExpect(jsonPath("$.data.name").value(request.name()))
+                .andExpect(jsonPath("$.data.startTime").value(request.startDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // startDate 검증
+                .andExpect(jsonPath("$.data.endTime").value(request.endDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // endDate 검증
+                .andExpect(jsonPath("$.data.location").value(request.location()))
+                .andExpect(jsonPath("$.data.organizer").value(request.organizer()))
+                .andExpect(jsonPath("$.data.type").value(request.type()));
+
+
+    }
+
+    @DisplayName("컨퍼런스 시간은 수정한다.")
+    @Test
+    @WithMockUser(username = "AUTH1", roles = {"ADMIN"})
+    void updateConference1() throws Exception {
+        // given
+        ConferenceUpdateRequest request = new ConferenceUpdateRequest(
+                "Spring Boot Conference 2025",
+                LocalDateTime.of(3025, 6, 15, 10, 0, 0),
+                LocalDateTime.of(3025, 6, 16, 18, 0,0),
+                "Seoul, South Korea",
+                "김승진",
+                "IT"
+        );
+        ConferenceUpdateResponse response = new ConferenceUpdateResponse(
+                "Spring Boot Conference 2025",
+                LocalDateTime.of(3025, 6, 15, 10, 0, 0),
+                LocalDateTime.of(3025, 6, 16, 18, 0, 0),
+                "Seoul, South Korea",
+                "김승진",
+                "IT"
+        );
+        String identifier = "AUTH1";
+        given(conferenceService.updateConference(eq(identifier), anyLong(), eq(request))).willReturn(response);
+        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
+        given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
+
+
+        // when & then
+        mockMvc.perform(patch("/api/v1/conference/{id}", 1L)
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").isEmpty())
+                .andExpect(jsonPath("$.data.name").value(request.name()))
+                .andExpect(jsonPath("$.data.startTime").value(request.startDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // startDate 검증
+                .andExpect(jsonPath("$.data.endTime").value(request.endDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // endDate 검증
                 .andExpect(jsonPath("$.data.location").value(request.location()))
                 .andExpect(jsonPath("$.data.organizer").value(request.organizer()))
                 .andExpect(jsonPath("$.data.type").value(request.type()));
