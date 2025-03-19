@@ -3,7 +3,9 @@ package com.synergy.backend.domain.conference.api;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.synergy.backend.domain.conference.dto.requset.ConferenceCreateRequest;
+import com.synergy.backend.domain.conference.dto.requset.ConferenceUpdateRequest;
 import com.synergy.backend.domain.conference.dto.response.ConferenceCreateResponse;
+import com.synergy.backend.domain.conference.dto.response.ConferenceUpdateResponse;
 import com.synergy.backend.domain.conference.service.ConferenceService;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.security.CustomUserDetailsService;
@@ -19,10 +21,12 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.Clock;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import static org.mockito.BDDMockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
@@ -295,6 +299,56 @@ class ConferenceControllerTest {
                 .andDo(print())
                 .andExpect(status().isBadRequest())
                 .andExpect(jsonPath("$.message").value("컨퍼런스 유형은 필수입니다. 공백 이하는 불가능합니다."));
+
+
+    }
+
+    @DisplayName("컨퍼런스를 수정한다.")
+    @Test
+    @WithMockUser(username = "AUTH1", roles = {"ADMIN"})
+    void updateConference() throws Exception {
+        // given
+        ConferenceUpdateRequest request = new ConferenceUpdateRequest(
+                "Spring Boot Conference 2025",
+                LocalDateTime.of(3025, 6, 15, 10, 0, 0),
+                LocalDateTime.of(3025, 6, 16, 18, 0,0),
+                "Seoul, South Korea",
+                "김승진",
+                "IT"
+        );
+        ConferenceUpdateResponse response = new ConferenceUpdateResponse(
+                "Spring Boot Conference 2025",
+                LocalDateTime.of(3025, 6, 15, 10, 0, 0),
+                LocalDateTime.of(3025, 6, 16, 18, 0, 0),
+                "Seoul, South Korea",
+                "김승진",
+                "IT"
+        );
+        String identifier = "AUTH1";
+        given(conferenceService.updateConference(eq(identifier), anyLong(), eq(request))).willReturn(response);
+        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
+        given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
+
+
+        // when & then
+        mockMvc.perform(patch("/api/v1/conference/{id}", 1L)
+                        .with(csrf())
+                        .content(objectMapper.writeValueAsString(request))
+                        .contentType(APPLICATION_JSON)
+                )
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.status").value("success"))
+                .andExpect(jsonPath("$.code").value(200))
+                .andExpect(jsonPath("$.message").isEmpty())
+                .andExpect(jsonPath("$.data.name").value(request.name()))
+                .andExpect(jsonPath("$.data.startTime").value(request.startTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // startTime 검증
+                .andExpect(jsonPath("$.data.endTime").value(request.endTime().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // endTime 검증
+                .andExpect(jsonPath("$.data.location").value(request.location()))
+                .andExpect(jsonPath("$.data.organizer").value(request.organizer()))
+                .andExpect(jsonPath("$.data.type").value(request.type()));
 
 
     }
