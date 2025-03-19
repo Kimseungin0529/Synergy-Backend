@@ -45,8 +45,6 @@ class ConferenceControllerTest {
     @MockitoBean
     CustomUserDetailsService userDetailsService;
 
-    Clock clock;
-
     private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     /**
@@ -75,30 +73,27 @@ class ConferenceControllerTest {
         // given
         ConferenceCreateRequest request = new ConferenceCreateRequest(
                 "Spring Boot Conference 2025",
-                LocalDateTime.of(3025, 6, 15, 10, 0),
-                LocalDateTime.of(3025, 6, 16, 18, 0),
+                LocalDateTime.of(3025, 6, 15, 10, 0, 0),
+                LocalDateTime.of(3025, 6, 16, 18, 0, 0),
                 "Seoul, South Korea",
                 "김승진",
                 "IT"
         );
         ConferenceCreateResponse response = new ConferenceCreateResponse(1L);
+
         String identifier = "AUTH1";
-        given(conferenceService.registerConference(identifier, request))
-                .willReturn(response);
-        given(jwtProvider.validateToken(anyString()))
-                .willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString()))
-                .willReturn("AUTH1");
-        given(jwtProvider.getRoleTypeFromToken(anyString()))
-                .willReturn(RoleType.ADMIN);
-        given(userDetailsService.loadUserByUsername(anyString()))
-                .willReturn(mock(UserDetails.class));
+        given(conferenceService.registerConference(anyString(), any(ConferenceCreateRequest.class))).willReturn(response);
+        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
+        given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
 
         // when & then
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
+                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -262,6 +257,7 @@ class ConferenceControllerTest {
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
+                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -294,6 +290,7 @@ class ConferenceControllerTest {
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
+                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -344,8 +341,8 @@ class ConferenceControllerTest {
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").isEmpty())
                 .andExpect(jsonPath("$.data.name").value(request.name()))
-                .andExpect(jsonPath("$.data.startTime").value(request.startDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // startDate 검증
-                .andExpect(jsonPath("$.data.endTime").value(request.endDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // endDate 검증
+                .andExpect(jsonPath("$.data.startDate").value(request.startDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // startDate 검증
+                .andExpect(jsonPath("$.data.endDate").value(request.endDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // endDate 검증
                 .andExpect(jsonPath("$.data.location").value(request.location()))
                 .andExpect(jsonPath("$.data.organizer").value(request.organizer()))
                 .andExpect(jsonPath("$.data.type").value(request.type()));
@@ -391,7 +388,7 @@ class ConferenceControllerTest {
     @DisplayName("컨퍼런스 수정 시 종료 날짜는 반드시 미래여야 한다.")
     @Test
     @WithMockUser(username = "AUTH1", roles = {"ADMIN"})
-    void updateConference1() throws Exception {
+    void updateConference_ExceptionEndDate() throws Exception {
         // given
         ConferenceUpdateRequest request = new ConferenceUpdateRequest(
                 "Spring Boot Conference 2025",
