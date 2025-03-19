@@ -16,6 +16,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.io.ByteArrayInputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -31,6 +32,17 @@ public class FileS3Util implements FileUtil {
     private String bucketName;
 
     private static final String PREFIX = "all/";
+    private static final String QR = "qr/";
+
+    @Override
+    public String uploadQRCode(byte[] qrCode, String fileName) {
+        String fileUrl = generateUniqueFileNameFrom(QR, fileName);
+        PutObjectRequest putObjectRequest = new PutObjectRequest
+                (bucketName, fileUrl, String.valueOf(new ByteArrayInputStream(qrCode)));
+
+        amazonS3Service.putObject(putObjectRequest);
+        return amazonS3Service.getUrl(bucketName, fileUrl).toString();
+    }
 
     @Override
     public List<FileInformationDto> uploadFilesFrom(List<MultipartFile> files) {
@@ -38,7 +50,7 @@ public class FileS3Util implements FileUtil {
         for (MultipartFile file : files) {
             try {
                 // 고유한 파일 이름 생성
-                String fileKey = generateUniqueFileNameFrom(file);
+                String fileKey = generateUniqueFileNameFrom(PREFIX, file.getOriginalFilename());
 
                 // 메타데이터 설정
                 ObjectMetadata metadata = generateMetadata(file);
@@ -98,7 +110,7 @@ public class FileS3Util implements FileUtil {
         return metadata;
     }
 
-    private String generateUniqueFileNameFrom(MultipartFile file) {
-        return PREFIX + UUID.randomUUID() + "_" + file.getOriginalFilename();
+    private String generateUniqueFileNameFrom(String prefix, String originalFilename) {
+        return prefix + UUID.randomUUID() + "_" + originalFilename;
     }
 }

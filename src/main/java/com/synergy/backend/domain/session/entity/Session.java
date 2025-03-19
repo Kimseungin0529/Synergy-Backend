@@ -63,7 +63,7 @@ public class Session {
 	private String secretCode;
 
 	@Column(nullable = false)
-	private byte[] qrCode;
+	private String fileUrl;
 
 	@OneToMany(mappedBy = "session", fetch = LAZY, cascade = CascadeType.ALL)
 	private List<AttendeeSession> attendeeSessions = new ArrayList<>();
@@ -110,8 +110,8 @@ public class Session {
 		this.description = reqDto.description();
 	}
 
-	public void addQRCode(byte[] qrCode) {
-		this.qrCode = qrCode;
+	public void addQRCode(String fileUrl) {
+		this.fileUrl = fileUrl;
 	}
 
 	public void addAdmin(Admin admin) {

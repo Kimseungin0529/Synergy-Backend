@@ -18,6 +18,7 @@ import com.synergy.backend.domain.member.entity.details.PreferredCorporateCultur
 import com.synergy.backend.domain.member.entity.details.RegionType;
 import com.synergy.backend.domain.member.entity.details.WorkplaceSelectionFactor;
 import com.synergy.backend.domain.point.entity.Point;
+import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.global.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;
