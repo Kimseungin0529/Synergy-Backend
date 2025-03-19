@@ -3,7 +3,10 @@ package com.synergy.backend.domain.session.controller;
 import java.util.List;
 
 import com.google.zxing.WriterException;
+import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.session.service.SessionParticipateService;
+import com.synergy.backend.global.security.CustomUserDetails;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PatchMapping;
@@ -32,38 +35,43 @@ public class SessionController {
 	private final SessionParticipateService sessionParticipateService;
 
 	@PostMapping
-	public ApiResponse createSession(@PathVariable(name = "conferenceId") Long conferenceId,
+	public ApiResponse createSession(@AuthenticationPrincipal CustomUserDetails user,
+			@PathVariable(name = "conferenceId") Long conferenceId,
 		@RequestBody SessionReqDto sessionReqDto) throws WriterException {
-		sessionService.createSession(conferenceId, sessionReqDto);
+		sessionService.createSession(user.getIdentifier(), conferenceId, sessionReqDto);
 
 		return ApiResponse.ok("Session created successfully!", 200);
 	}
 
 	@GetMapping
-	public ApiResponse getSessions(@PathVariable(name = "conferenceId") Long conferenceId) {
-		List<SessionResDto> result = sessionService.getSessions(conferenceId);
+	public ApiResponse getSessions(@AuthenticationPrincipal CustomUserDetails user,
+								   @PathVariable(name = "conferenceId") Long conferenceId) {
+		List<SessionResDto> result = sessionService.getSessions(user.getIdentifier(), conferenceId);
 
 		return ApiResponse.ok(result, 200);
 	}
 
 	@GetMapping("/{sessionId}")
-	public ApiResponse getSession(@PathVariable(name = "conferenceId") Long conferenceId,
+	public ApiResponse getSession(@AuthenticationPrincipal CustomUserDetails user,
+								  @PathVariable(name = "conferenceId") Long conferenceId,
 		@PathVariable(name = "sessionId") Long sessionId) {
-		SessionDetailResDto result = sessionService.getSessionInfo(conferenceId, sessionId);
+		SessionDetailResDto result = sessionService.getSessionInfo(user.getIdentifier(), user.getRole(), conferenceId, sessionId);
 
 		return ApiResponse.ok(result, 200);
 	}
 
 	@PatchMapping
-	public ApiResponse updateSession(@RequestParam Long sessionId, @RequestBody SessionReqDto sessionReqDto) {
-		sessionService.updateSession(sessionId, sessionReqDto);
+	public ApiResponse updateSession(@AuthenticationPrincipal CustomUserDetails user,
+									 @RequestParam Long sessionId, @RequestBody SessionReqDto sessionReqDto) {
+		sessionService.updateSession(user.getIdentifier(), sessionId, sessionReqDto);
 
 		return ApiResponse.ok("Session updated successfully!", 200);
 	}
 
 	@DeleteMapping
-	public ApiResponse deleteSession(@RequestParam Long sessionId) {
-		sessionService.deleteSession(sessionId);
+	public ApiResponse deleteSession(@AuthenticationPrincipal CustomUserDetails user,
+									 @RequestParam Long sessionId) {
+		sessionService.deleteSession(user.getIdentifier(), sessionId);
 
 		return ApiResponse.ok("Session deleted successfully!", 200);
 	}
@@ -71,18 +79,20 @@ public class SessionController {
     /* ------------------------------------------ Q&A --------------------------------------*/
 
     @PostMapping("/verify")
-    public ApiResponse<SessionResDto> verifyQRCode(@RequestParam(name = "qrCode") String qrCode){
-		SessionResDto sessionResDto = sessionParticipateService.verifyQRCode(qrCode);
+    public ApiResponse<SessionResDto> verifyQRCode(@AuthenticationPrincipal CustomUserDetails user,
+												   @RequestParam(name = "qrCode") String qrCode){
+		SessionResDto sessionResDto = sessionParticipateService.verifyQRCode(user.getIdentifier(), qrCode);
 
 		return ApiResponse.ok(sessionResDto, 200);
     }
 
     @PostMapping("/{sessionId}/participation")
-    public ApiResponse createQuestion(@PathVariable(name = "conferenceId") Long conferenceId,
+    public ApiResponse createQuestion(@AuthenticationPrincipal CustomUserDetails user,
+									  @PathVariable(name = "conferenceId") Long conferenceId,
                                                       @PathVariable(name = "sessionId") Long sessionId,
                                                       @RequestBody QuestionReqDto reqDto) {
 
-        sessionParticipateService.createQuestion(conferenceId, sessionId, reqDto);
+        sessionParticipateService.createQuestion(user.getIdentifier(), conferenceId, sessionId, reqDto);
         return ApiResponse.ok("Question created successfully!", 200);
     }
 

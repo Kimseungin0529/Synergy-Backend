@@ -9,11 +9,11 @@ import java.util.List;
 
 public interface SessionParticipateService {
 
-    void createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto);
+    void createQuestion(String identifier, Long conferenceId, Long sessionId, QuestionReqDto reqDto);
 
-    SessionResDto verifyQRCode(String secretCode);
+    SessionResDto verifyQRCode(String identifier, String secretCode);
 
-    List<SessionParticipateRateResDto> getSessionParticipateRate(Long conferenceId);
+    List<SessionParticipateRateResDto> getSessionParticipateRate(String identifier, Long conferenceId);
 
-    List<SessionParticipateRateDetailResDto> getSessionParticipateRateDetail(Long conferenceId);
+    List<SessionParticipateRateDetailResDto> getSessionParticipateRateDetail(String identifier, Long conferenceId);
 }
