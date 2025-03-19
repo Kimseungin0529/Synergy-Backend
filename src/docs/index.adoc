@@ -1,0 +1,16 @@
+ifndef::snippets[]
+:snippets: ../../build/generated-snippets
+endif::[]
+= Synergy REST API 문서 (컨퍼런스, 채용담당자)
+:doctype: book
+:icons: font
+:source-highlighter: highlightjs
+:toc: left
+:toclevels: 2
+:sectlinks:
+
+[[Conference-API]]
+== Conference API
+
+
+include::conference/conference.adoc[]

@@ -15,6 +15,8 @@ import java.time.LocalDateTime;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
+import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
+import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
@@ -50,6 +52,7 @@ public class ConferenceControllerDocsTest extends RestDocsSupport {
         mockMvc.perform(
                         post("/api/v1/conference")
                                 .content(objectMapper.writeValueAsString(request))
+                                .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                                 .contentType(MediaType.APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -57,6 +60,10 @@ public class ConferenceControllerDocsTest extends RestDocsSupport {
                 .andDo(document("conference-register",
                                 preprocessRequest(prettyPrint()),
                                 preprocessResponse(prettyPrint()),
+                                requestHeaders(
+                                        headerWithName("Authorization").description("JWT 토큰 (형식: `Bearer {token}`)"),
+                                        headerWithName("Content-Type").description("요청 데이터 타입 (application/json)")
+                                ),
                                 requestFields(
                                         fieldWithPath("name").type(JsonFieldType.STRING)
                                                 .description("컨퍼런스명"),
