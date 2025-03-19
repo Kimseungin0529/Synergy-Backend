@@ -5,21 +5,16 @@ import static lombok.AccessLevel.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.member.entity.Admin;
-import com.synergy.backend.domain.session.dto.SessionReqDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToMany;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
 import lombok.Getter;
@@ -29,6 +24,7 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = PROTECTED)
 public class Session {
+
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "session_id")
@@ -47,7 +43,6 @@ public class Session {
 	@Column(nullable = false)
 	private LocalDate progressDate;
 
-	@NotNull
 	@Column(nullable = false)
 	private LocalDateTime startTime;
 
@@ -57,16 +52,28 @@ public class Session {
 	@Column(nullable = false, length = 3000)
 	private String description;
 
+	@Column(nullable = false)
+	private Integer maximum;
+
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "conference_id")
 	private Conference conference;
+
+	@Column(nullable = false)
+	private String secretCode;
+
+	@Column(nullable = false)
+	private byte[] qrCode;
+
+	@OneToMany(mappedBy = "session", fetch = LAZY, cascade = CascadeType.ALL)
+	private List<AttendeeSession> attendeeSessions = new ArrayList<>();
 
 	@ManyToMany(mappedBy = "sessions")
 	private Set<Admin> admins = new HashSet<>();
 
 	@Builder
 	public Session(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
-		Conference conference) {
+				   String secretCode, Conference conference) {
 		this.title = reqDto.title();
 		this.speaker = reqDto.speaker();
 		this.speakerPosition = reqDto.speakerPosition();
@@ -74,7 +81,22 @@ public class Session {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.description = reqDto.description();
+		this.maximum = reqDto.maximum();
+		this.secretCode = secretCode;
 		this.conference = conference;
+	}
+
+
+	public static Session of(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
+							 String secretCode, Conference conference) {
+		return Session.builder()
+				.reqDto(reqDto)
+				.startTime(startTime)
+				.endTime(endTime)
+				.conference(conference)
+				.secretCode(secretCode)
+				.progressDate(progressDate)
+				.build();
 	}
 
 	public void updateSession(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime,
@@ -86,6 +108,10 @@ public class Session {
 		this.startTime = startTime;
 		this.endTime = endTime;
 		this.description = reqDto.description();
+	}
+
+	public void addQRCode(byte[] qrCode) {
+		this.qrCode = qrCode;
 	}
 
 	public void addAdmin(Admin admin) {

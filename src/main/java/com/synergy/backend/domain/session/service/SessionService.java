@@ -1,10 +1,9 @@
 package com.synergy.backend.domain.session.service;
 
-import com.synergy.backend.domain.session.dto.SessionDetailResDto;
-import com.synergy.backend.domain.session.dto.SessionReqDto;
-import com.synergy.backend.domain.session.dto.SessionResDto;
-import com.synergy.backend.domain.session.entity.Session;
-import org.springframework.data.domain.Page;
+import com.google.zxing.WriterException;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionDetailResDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -12,7 +11,7 @@ import java.util.List;
 @Service
 public interface SessionService {
 
-    void createSession(Long conferenceId, SessionReqDto reqDto);
+    void createSession(Long conferenceId, SessionReqDto reqDto) throws WriterException;
 
     List<SessionResDto> getSessions(Long conferenceId);
 
@@ -21,4 +20,6 @@ public interface SessionService {
     void updateSession(Long sessionId, SessionReqDto reqDto);
 
     void deleteSession(Long sessionId);
+
+
 }

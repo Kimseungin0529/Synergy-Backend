@@ -21,7 +21,7 @@ import com.synergy.backend.domain.member.repository.RecruiterRepository;
 import com.synergy.backend.domain.point.entity.Point;
 import com.synergy.backend.domain.point.entity.PointType;
 import com.synergy.backend.domain.point.repository.PointRepository;
-import com.synergy.backend.domain.session.repository.SessionRepository;
+import com.synergy.backend.domain.session.repository.sessionRepository.SessionRepository;
 
 @ExtendWith(MockitoExtension.class)
 class PointServiceImplTest {

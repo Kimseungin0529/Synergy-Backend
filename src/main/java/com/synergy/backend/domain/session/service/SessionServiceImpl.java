@@ -1,15 +1,28 @@
 package com.synergy.backend.domain.session.service;
 
+import com.google.zxing.WriterException;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
-import com.synergy.backend.domain.session.dto.SessionDetailResDto;
-import com.synergy.backend.domain.session.dto.SessionReqDto;
-import com.synergy.backend.domain.session.dto.SessionResDto;
+import com.synergy.backend.domain.member.entity.Admin;
+import com.synergy.backend.domain.member.entity.User;
+import com.synergy.backend.domain.member.exception.NotFoundUserException;
+import com.synergy.backend.domain.member.repository.AdminRepository;
+import com.synergy.backend.domain.qrCode.service.QrService;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionDetailResDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
+import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
+import com.synergy.backend.domain.session.dto.questionDto.QuestionResDto;
+import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.domain.session.entity.Session;
+import com.synergy.backend.domain.session.exception.NotAttendedSession;
 import com.synergy.backend.domain.session.exception.NotFoundSession;
-import com.synergy.backend.domain.session.repository.SessionRepository;
+import com.synergy.backend.domain.session.repository.AttendeeSessionRepository;
+import com.synergy.backend.domain.session.repository.sessionQuestionRepository.SessionQuestionRepository;
+import com.synergy.backend.domain.session.repository.sessionRepository.SessionRepository;
 import com.synergy.backend.domain.session.service.validate.DateTimeValidator;
+import com.synergy.backend.global.util.SecurityUtil;
+import com.synergy.backend.global.util.file.util.FileS3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,29 +30,39 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
 public class SessionServiceImpl implements SessionService {
 
+    private final AdminRepository adminRepository;
     private final ConferenceRepository conferenceRepository;
     private final SessionRepository sessionRepository;
+    private final AttendeeSessionRepository attendeeSessionRepository;
+    private final SessionQuestionRepository sessionQuestionRepository;
+    private final FileS3Util fileS3Util;
+
+    private final QrService qrService;
+
+    private User getCurrentMember() {
+        return SecurityUtil.getCurrentMember();
+    }
 
     @Override
-    public void createSession(Long conferenceId, SessionReqDto reqDto) {
+    public void createSession(Long conferenceId, SessionReqDto reqDto) throws WriterException {
+        Admin admin = (Admin) getCurrentMember();
         Conference conference = ifConferenceExists(conferenceId);
 
+        LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
         LocalDateTime startTime = DateTimeValidator.isValidLocalDateTime(reqDto.startTime());
         LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
-        LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
+        String secretCode = UUID.randomUUID().toString();
 
-        Session session = Session.builder()
-                        .reqDto(reqDto)
-                        .progressDate(progressDate)
-                        .startTime(startTime)
-                        .endTime(endTime)
-                        .conference(conference)
-                    .build();
+        Session session = Session.of(reqDto, progressDate, startTime, endTime, secretCode, conference);
+        byte[] bytes = qrService.generateQRCode(reqDto.domainAddress(), session.getId(), secretCode);
+        admin.addSession(session);
+        session.addQRCode(bytes);
         sessionRepository.save(session);
     }
 
@@ -55,12 +78,19 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(readOnly = true)
     @Override
     public SessionDetailResDto getSessionInfo(Long conferenceId, Long sessionId) {
+        User user = getCurrentMember();
         ifConferenceExists(conferenceId);
         Session session = ifSessionExists(sessionId);
-        return SessionDetailResDto.from(session);
+
+        try {
+            ifAttendeeSessionExists(sessionId, user.getId());
+            List<QuestionResDto> questions = getQuestions(conferenceId, sessionId);
+            return SessionDetailResDto.from(session, questions);
+        } catch (Exception e) {
+            return SessionDetailResDto.from(session, null);
+        }
     }
 
-    @Transactional
     @Override
     public void updateSession(Long sessionId, SessionReqDto reqDto) {
         Session session = ifSessionExists(sessionId);
@@ -74,9 +104,29 @@ public class SessionServiceImpl implements SessionService {
 
     @Override
     public void deleteSession(Long sessionId) {
+        User user = getCurrentMember();
+        // session에 대한 권한 확인
         Session session = ifSessionExists(sessionId);
-        // session에 대한 본인 소지 여부 확인
         sessionRepository.delete(session);
+    }
+
+    // --------------------------------- private method ----------------------------------------
+
+    private Admin findIfExists(String identifier) {
+        return adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
+    }
+
+    private List<QuestionResDto> getQuestions(Long conferenceId, Long sessionId) {
+        getCurrentMember();
+        ifConferenceExists(conferenceId);
+        ifSessionExists(sessionId);
+
+        return sessionQuestionRepository.findBySessionIdJoinAttendeeSession(sessionId);
+    }
+
+    private AttendeeSession ifAttendeeSessionExists(Long sessionId, Long attendeeId) {
+        return attendeeSessionRepository.findBySessionIdAndAttendeeId(sessionId, attendeeId)
+                .orElseThrow(NotAttendedSession::new);
     }
 
     private Conference ifConferenceExists(Long conferenceId) {
