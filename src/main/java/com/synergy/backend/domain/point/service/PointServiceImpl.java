@@ -111,7 +111,8 @@ public class PointServiceImpl implements PointService {
 
 	}
 
-	private String getDetailsForPoint(Point point) {
+	@Override
+	public String getDetailsForPoint(Point point) {
 		return switch (point.getPointType()) {
 			case BOOTH_VISIT -> {
 				if (point.getBoothId() != null) {

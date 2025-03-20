@@ -22,4 +22,6 @@ public interface PointService {
 	void addSignupPoint(Long attendeeId);
 
 	List<PointResponseDto> getPointResponses(Long attendeeId);
+
+	String getDetailsForPoint(Point point);
 }
