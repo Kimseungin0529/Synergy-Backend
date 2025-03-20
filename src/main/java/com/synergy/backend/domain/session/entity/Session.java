@@ -5,6 +5,7 @@ import static lombok.AccessLevel.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +15,7 @@ import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
 
+import com.synergy.backend.domain.session.exception.NotValidSessionTime;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -72,14 +74,13 @@ public class Session {
 	private Set<Admin> admins = new HashSet<>();
 
 	@Builder
-	public Session(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
-				   String secretCode, Conference conference) {
+	public Session(SessionReqDto reqDto, String secretCode, Conference conference) {
 		this.title = reqDto.title();
 		this.speaker = reqDto.speaker();
 		this.speakerPosition = reqDto.speakerPosition();
-		this.progressDate = progressDate;
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.progressDate = reqDto.progressDate();
+		this.startTime = reqDto.startTime();
+		this.endTime = reqDto.endTime();
 		this.description = reqDto.description();
 		this.maximum = reqDto.maximum();
 		this.secretCode = secretCode;
@@ -87,26 +88,21 @@ public class Session {
 	}
 
 
-	public static Session of(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
-							 String secretCode, Conference conference) {
+	public static Session of(SessionReqDto reqDto, String secretCode, Conference conference) {
 		return Session.builder()
 				.reqDto(reqDto)
-				.startTime(startTime)
-				.endTime(endTime)
 				.conference(conference)
 				.secretCode(secretCode)
-				.progressDate(progressDate)
 				.build();
 	}
 
-	public void updateSession(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime,
-		LocalDateTime endTime) {
+	public void updateSession(SessionReqDto reqDto) {
 		this.title = reqDto.title();
 		this.speaker = reqDto.speaker();
 		this.speakerPosition = reqDto.speakerPosition();
-		this.progressDate = progressDate;
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.progressDate = reqDto.progressDate();
+		this.startTime = reqDto.startTime();
+		this.endTime = reqDto.endTime();
 		this.description = reqDto.description();
 	}
 

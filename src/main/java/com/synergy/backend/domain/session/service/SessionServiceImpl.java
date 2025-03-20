@@ -54,12 +54,9 @@ public class SessionServiceImpl implements SessionService {
         Admin admin = findIfAdminExists(idenfier);
         Conference conference = ifConferenceExists(conferenceId);
 
-        LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
-        LocalDateTime startTime = DateTimeValidator.isValidLocalDateTime(reqDto.startTime());
-        LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
         String secretCode = UUID.randomUUID().toString();
 
-        Session session = Session.of(reqDto, progressDate, startTime, endTime, secretCode, conference);
+        Session session = Session.of(reqDto, secretCode, conference);
         admin.addSession(session);
         byte[] qrCode = qrService.generateQRCode(reqDto.domainAddress(), session.getId(), secretCode);
         session.addQRCode(fileS3Util.uploadQRCode(qrCode, session.getTitle()));
@@ -98,11 +95,8 @@ public class SessionServiceImpl implements SessionService {
     public void updateSession(String idenfier, Long sessionId, SessionReqDto reqDto) {
         Session session = ifSessionExists(sessionId);
         // session에 대한 본인 소지 여부 확인
-        LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
-        LocalDateTime startTime = DateTimeValidator.isValidLocalDateTime(reqDto.startTime());
-        LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
 
-        session.updateSession(reqDto, progressDate, startTime, endTime);
+        session.updateSession(reqDto);
     }
 
     @Override
