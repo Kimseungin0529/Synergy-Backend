@@ -6,6 +6,9 @@ import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.User;
+import com.synergy.backend.domain.member.exception.NotFoundUserException;
+import com.synergy.backend.domain.member.repository.AdminRepository;
+import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.qrCode.service.QrService;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
 import com.synergy.backend.domain.session.dto.questionDto.QuestionReqDto;
@@ -20,7 +23,7 @@ import com.synergy.backend.domain.session.exception.NotFoundSession;
 import com.synergy.backend.domain.session.repository.AttendeeSessionRepository;
 import com.synergy.backend.domain.session.repository.sessionQuestionRepository.SessionQuestionRepository;
 import com.synergy.backend.domain.session.repository.sessionRepository.SessionRepository;
-import com.synergy.backend.global.util.SecurityUtil;
+import com.synergy.backend.global.util.SecurityUtils;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,15 +39,13 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
     private final SessionQuestionRepository sessionQuestionRepository;
     private final ConferenceRepository conferenceRepository;
     private final AttendeeSessionRepository attendeeSessionRepository;
-
-    private User getCurrentMember(){
-        return SecurityUtil.getCurrentMember();
-    }
+    private final AttendeeRepository attendeeRepository;
+    private final AdminRepository adminRepository;
 
     @Transactional
     @Override
-    public SessionResDto verifyQRCode(String secretCode) {
-        Attendee currentMember = (Attendee) getCurrentMember();
+    public SessionResDto verifyQRCode(String identifier, String secretCode) {
+        Attendee currentMember = findIfAttendeeExists(identifier);
         secretCode = qrService.decodingSecretCode(secretCode);
         Session session = findBySecretCode(secretCode);
 
@@ -55,8 +56,8 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
 
     @Transactional
     @Override
-    public void createQuestion(Long conferenceId, Long sessionId, QuestionReqDto reqDto) {
-        Attendee attendee = (Attendee) getCurrentMember();
+    public void createQuestion(String identifier, Long conferenceId, Long sessionId, QuestionReqDto reqDto) {
+        Attendee attendee = findIfAttendeeExists(identifier);
         ifConferenceExists(conferenceId);
         AttendeeSession attendeeSession = ifAttendeeSessionExists(sessionId, attendee.getId());
 
@@ -68,8 +69,8 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
 
     @Transactional(readOnly = true)
     @Override
-    public List<SessionParticipateRateResDto> getSessionParticipateRate(Long conferenceId) {
-        Admin currentMember = (Admin) getCurrentMember();
+    public List<SessionParticipateRateResDto> getSessionParticipateRate(String identifier, Long conferenceId) {
+        Admin currentMember = findIfAdminExists(identifier);
         verifyUserAuthentication(currentMember); // 해당 컨퍼런스의 소유자인지 확인해야돰.
         ifConferenceExists(conferenceId);
 
@@ -84,9 +85,9 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
 
     @Transactional(readOnly = true)
     @Override
-    public List<SessionParticipateRateDetailResDto> getSessionParticipateRateDetail(Long conferenceId) {
+    public List<SessionParticipateRateDetailResDto> getSessionParticipateRateDetail(String identifier, Long conferenceId) {
         // 이름순으로 관심 분야를 기준으로 조회시키기.
-        Admin currentMember = (Admin) getCurrentMember();
+        Admin currentMember = findIfAdminExists(identifier);
         verifyUserAuthentication(currentMember); // 해당 컨퍼런스의 소유자인지 확인해야 됨.
 
 
@@ -94,6 +95,14 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
     }
 
     private void verifyUserAuthentication(Admin admin){
+    }
+
+    private Admin findIfAdminExists(String identifier) {
+        return adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
+    }
+
+    private Attendee findIfAttendeeExists(String identifier) {
+        return attendeeRepository.findByEmail(identifier).orElseThrow(NotFoundUserException::new);
     }
 
     private Session findBySecretCode(String secretCode) {
