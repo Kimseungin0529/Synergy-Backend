@@ -31,9 +31,11 @@ import jakarta.persistence.FetchType;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Index;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToOne;
 import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
 import lombok.AccessLevel;
 import lombok.Builder;
 import lombok.Getter;
@@ -42,6 +44,10 @@ import lombok.NoArgsConstructor;
 @Entity
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
+@Table(
+	indexes = {
+		@Index(name = "idx_total_points", columnList = "total_points DESC")
+	})
 public class Attendee extends BaseEntity implements User {
 
 	@Id
@@ -219,7 +225,7 @@ public class Attendee extends BaseEntity implements User {
 		point.assignAttendee(this);
 	}
 
-	public void addPoints(int point) {
+	public void addTotalPoints(int point) {
 		this.totalPoints += point;
 		updateMembershipLevel();
 	}

@@ -106,7 +106,7 @@ public class PointServiceImpl implements PointService {
 		pointRepository.save(point);
 
 		int pointValue = pointType.getPointValue();
-		attendee.addPoints(pointValue);
+		attendee.addTotalPoints(pointValue);
 		attendeeRepository.save(attendee);
 
 	}
