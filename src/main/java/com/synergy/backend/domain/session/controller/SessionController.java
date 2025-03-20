@@ -6,6 +6,7 @@ import com.google.zxing.WriterException;
 import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.session.service.SessionParticipateService;
 import com.synergy.backend.global.security.CustomUserDetails;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +35,7 @@ public class SessionController {
 	private final SessionService sessionService;
 	private final SessionParticipateService sessionParticipateService;
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
 	public ApiResponse createSession(@AuthenticationPrincipal CustomUserDetails user,
 			@PathVariable(name = "conferenceId") Long conferenceId,
@@ -43,6 +45,7 @@ public class SessionController {
 		return ApiResponse.ok("Session created successfully!", 200);
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN', 'ATTENDEE', 'RECRUITER')")
 	@GetMapping
 	public ApiResponse getSessions(@AuthenticationPrincipal CustomUserDetails user,
 								   @PathVariable(name = "conferenceId") Long conferenceId) {
@@ -51,6 +54,7 @@ public class SessionController {
 		return ApiResponse.ok(result, 200);
 	}
 
+	@PreAuthorize("hasAnyRole('ADMIN', 'ATTENDEE', 'RECRUITER')")
 	@GetMapping("/{sessionId}")
 	public ApiResponse getSession(@AuthenticationPrincipal CustomUserDetails user,
 								  @PathVariable(name = "conferenceId") Long conferenceId,
@@ -60,6 +64,7 @@ public class SessionController {
 		return ApiResponse.ok(result, 200);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@PatchMapping
 	public ApiResponse updateSession(@AuthenticationPrincipal CustomUserDetails user,
 									 @RequestParam Long sessionId, @RequestBody SessionReqDto sessionReqDto) {
@@ -68,6 +73,7 @@ public class SessionController {
 		return ApiResponse.ok("Session updated successfully!", 200);
 	}
 
+	@PreAuthorize("hasRole('ADMIN')")
 	@DeleteMapping
 	public ApiResponse deleteSession(@AuthenticationPrincipal CustomUserDetails user,
 									 @RequestParam Long sessionId) {
@@ -78,6 +84,7 @@ public class SessionController {
 
     /* ------------------------------------------ Q&A --------------------------------------*/
 
+	@PreAuthorize("hasAnyRole('ATTENDEE')")
     @PostMapping("/verify")
     public ApiResponse<SessionResDto> verifyQRCode(@AuthenticationPrincipal CustomUserDetails user,
 												   @RequestParam(name = "qrCode") String qrCode){
@@ -86,6 +93,7 @@ public class SessionController {
 		return ApiResponse.ok(sessionResDto, 200);
     }
 
+	@PreAuthorize("hasAnyRole('ATTENDEE')")
     @PostMapping("/{sessionId}/participation")
     public ApiResponse createQuestion(@AuthenticationPrincipal CustomUserDetails user,
 									  @PathVariable(name = "conferenceId") Long conferenceId,
