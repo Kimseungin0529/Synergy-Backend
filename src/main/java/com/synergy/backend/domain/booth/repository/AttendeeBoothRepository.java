@@ -19,4 +19,9 @@ public interface AttendeeBoothRepository extends JpaRepository<AttendeeBooth, Lo
     @Transactional
     @Query("DELETE FROM AttendeeBooth ab WHERE ab.booth = :booth")
     void deleteByBooth(Booth booth);
+
+    @Modifying
+    @Transactional
+    @Query("DELETE FROM AttendeeBooth ab WHERE ab.booth.id = :boothId AND ab.attendee.id = :attendeeId")
+    void deleteByBoothIdAndAttendeeId(Long boothId, Long attendeeId);
 }
