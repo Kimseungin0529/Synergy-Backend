@@ -101,8 +101,8 @@ class ConferenceServiceImplTest {
                         //then
                             assertThat(result)
                                     .extracting(ConferenceUpdateResponse::name,
-                                            ConferenceUpdateResponse::startTime,
-                                            ConferenceUpdateResponse::endTime,
+                                            ConferenceUpdateResponse::startDate,
+                                            ConferenceUpdateResponse::endDate,
                                             ConferenceUpdateResponse::location,
                                             ConferenceUpdateResponse::organizer,
                                             ConferenceUpdateResponse::type)
@@ -125,8 +125,8 @@ class ConferenceServiceImplTest {
                             //then
                             assertThat(result)
                                     .extracting(ConferenceUpdateResponse::name,
-                                            ConferenceUpdateResponse::startTime,
-                                            ConferenceUpdateResponse::endTime,
+                                            ConferenceUpdateResponse::startDate,
+                                            ConferenceUpdateResponse::endDate,
                                             ConferenceUpdateResponse::location,
                                             ConferenceUpdateResponse::organizer,
                                             ConferenceUpdateResponse::type)
@@ -150,8 +150,8 @@ class ConferenceServiceImplTest {
                             //then
                             assertThat(result)
                                     .extracting(ConferenceUpdateResponse::name,
-                                            ConferenceUpdateResponse::startTime,
-                                            ConferenceUpdateResponse::endTime,
+                                            ConferenceUpdateResponse::startDate,
+                                            ConferenceUpdateResponse::endDate,
                                             ConferenceUpdateResponse::location,
                                             ConferenceUpdateResponse::organizer,
                                             ConferenceUpdateResponse::type
@@ -176,8 +176,8 @@ class ConferenceServiceImplTest {
                             //then
                             assertThat(result)
                                     .extracting(ConferenceUpdateResponse::name,
-                                            ConferenceUpdateResponse::startTime,
-                                            ConferenceUpdateResponse::endTime,
+                                            ConferenceUpdateResponse::startDate,
+                                            ConferenceUpdateResponse::endDate,
                                             ConferenceUpdateResponse::location,
                                             ConferenceUpdateResponse::organizer,
                                             ConferenceUpdateResponse::type
@@ -202,8 +202,8 @@ class ConferenceServiceImplTest {
                             //then
                             assertThat(result)
                                     .extracting(ConferenceUpdateResponse::name,
-                                            ConferenceUpdateResponse::startTime,
-                                            ConferenceUpdateResponse::endTime,
+                                            ConferenceUpdateResponse::startDate,
+                                            ConferenceUpdateResponse::endDate,
                                             ConferenceUpdateResponse::location,
                                             ConferenceUpdateResponse::organizer,
                                             ConferenceUpdateResponse::type

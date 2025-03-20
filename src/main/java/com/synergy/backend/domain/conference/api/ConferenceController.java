@@ -32,12 +32,8 @@ public class ConferenceController {
     }
 
     @PatchMapping("/{id}")
-    public ApiResponse<ConferenceUpdateResponse> updateConference(@AuthenticationPrincipal CustomUserDetails userDetails,
+    public ApiResponse<ConferenceUpdateResponse> updateConference(@CurrentUser String identifier,
                                                       @PathVariable(name = "id") Long id, @RequestBody @Valid ConferenceUpdateRequest request){
-        if(RoleType.ADMIN.equals(userDetails.getRole())){
-            throw new AccessDeniedException();
-        }
-        String identifier = userDetails.getIdentifier();
         return ApiResponse.ok(conferenceService.updateConference(identifier, id, request), 200);
     }
 }
