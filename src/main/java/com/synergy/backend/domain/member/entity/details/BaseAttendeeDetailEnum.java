@@ -13,5 +13,7 @@ public interface BaseAttendeeDetailEnum {
 
 	Integer getCode();
 
+	String getDescription();
+
 	Supplier<? extends RuntimeException> getExceptionSupplier();
 }

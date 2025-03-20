@@ -2,7 +2,7 @@
 INSERT INTO interest (name, code) VALUES ('데이터 분석 / AI', 101);
 INSERT INTO interest (name, code) VALUES ('클라우드 / DevOps', 102);
 INSERT INTO interest (name, code) VALUES ('소프트웨어 개발', 103);
-INSERT INTO interest (name, code) VALUES ('UX/UI 디자인', 104);
+INSERT INTO interest (name, code) VALUES ('디자인', 104);
 INSERT INTO interest (name, code) VALUES ('정보 보안', 105);
 INSERT INTO interest (name, code) VALUES ('신기술 연구', 106);
 INSERT INTO interest (name, code) VALUES ('커리어 개발', 107);

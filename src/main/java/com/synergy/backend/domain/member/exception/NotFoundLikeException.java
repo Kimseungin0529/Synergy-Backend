@@ -4,9 +4,8 @@ import static com.synergy.backend.domain.member.exception.ErrorType.*;
 
 import com.synergy.backend.global.exception.BaseErrorException;
 
-public class DuplicateEmailException extends BaseErrorException {
-
-	public DuplicateEmailException() {
-		super(_DUPLICATE_EMAIL.getCode(), _DUPLICATE_EMAIL.getMessage());
+public class NotFoundLikeException extends BaseErrorException {
+	public NotFoundLikeException() {
+		super(_LIKE_NOT_FOUND_.getCode(), _LIKE_NOT_FOUND_.getMessage());
 	}
 }

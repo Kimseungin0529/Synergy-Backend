@@ -1,0 +1,27 @@
+[[conference-register]]
+=== 컨퍼런스 등록
+
+==== HTTP Request
+include::{snippets}/conference-register/http-request.adoc[]
+===== Request Header
+include::{snippets}/conference-register/request-headers.adoc[]
+include::{snippets}/conference-register/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/conference-register/http-response.adoc[]
+include::{snippets}/conference-register/response-fields.adoc[]
+
+[[conference-update]]
+=== 컨퍼런스 수정
+
+==== HTTP Request
+include::{snippets}/conference-update/http-request.adoc[]
+
+===== Request Header
+include::{snippets}/conference-update/request-headers.adoc[]
+
+include::{snippets}/conference-update/request-fields.adoc[]
+
+==== HTTP Response
+include::{snippets}/conference-update/http-response.adoc[]
+include::{snippets}/conference-update/response-fields.adoc[]

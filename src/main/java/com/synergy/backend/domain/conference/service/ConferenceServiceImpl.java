@@ -14,13 +14,14 @@ import com.synergy.backend.domain.member.exception.AccessDeniedException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import lombok.RequiredArgsConstructor;
-import org.apache.catalina.security.SecurityUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -66,10 +67,13 @@ public class ConferenceServiceImpl implements ConferenceService {
         Optional.ofNullable(request.organizer()).ifPresent(findConference::updateOrganizer);
         Optional.ofNullable(request.type()).ifPresent(findConference::updateType);
 
-        Optional<LocalDateTime> optionalStartTime = Optional.ofNullable(request.startTime());
-        Optional<LocalDateTime> optionalEndTime = Optional.ofNullable(request.endTime());
-        if (optionalStartTime.isPresent() && optionalEndTime.isPresent()) {
-            findConference.updatePeriod(TimePeriod.of(optionalStartTime.get(), optionalEndTime.get()));
+        LocalDateTime currentStartTime = findConference.getPeriod().getStartDateTime();
+        LocalDateTime currentEndTime = findConference.getPeriod().getEndDateTime();
+        LocalDateTime newStartTime = Optional.ofNullable(request.startDate()).orElse(currentStartTime);
+        LocalDateTime newEndTime = Optional.ofNullable(request.endDate()).orElse(currentEndTime);
+
+        if (!newStartTime.equals(currentStartTime) || !newEndTime.equals(currentEndTime)) {
+            findConference.updatePeriod(TimePeriod.of(newStartTime, newEndTime));
         }
 
     }
