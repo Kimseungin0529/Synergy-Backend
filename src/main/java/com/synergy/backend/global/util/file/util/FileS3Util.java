@@ -37,8 +37,13 @@ public class FileS3Util implements FileUtil {
     @Override
     public String uploadQRCode(byte[] qrCode, String fileName) {
         String fileUrl = generateUniqueFileNameFrom(QR, fileName);
-        PutObjectRequest putObjectRequest = new PutObjectRequest
-                (bucketName, fileUrl, String.valueOf(new ByteArrayInputStream(qrCode)));
+
+        ObjectMetadata metadata = new ObjectMetadata();
+        metadata.setContentLength(qrCode.length);
+        metadata.setContentType("image/png");
+
+        ByteArrayInputStream inputStream = new ByteArrayInputStream(qrCode);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileUrl, inputStream, metadata);
 
         amazonS3Service.putObject(putObjectRequest);
         return amazonS3Service.getUrl(bucketName, fileUrl).toString();
