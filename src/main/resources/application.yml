@@ -10,7 +10,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -46,6 +46,55 @@ spring:
 #  level:
 #    org.hibernate.SQL: DEBUG  # ✅ SQL 로그를 DEBUG 수준으로 상세하게 출력
 #    org.hibernate.type.descriptor.sql: TRACE  # ✅ 바인딩된 파라미터도 함께 출력
+---
+jwt:
+  secret: ${JWT_SECRET}
+
+
+spring:
+  config:
+    activate:
+      on-profile: dev
+  datasource:
+    url: jdbc:mysql://${DEV_DB_HOST}:3306/synergy-dev-db?createDatabaseIfNotExist=true #conference
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: ${DEV_DB_USER}
+    password: ${DEV_DB_PASSWORD}
+
+  jpa:
+    hibernate:
+      ddl-auto: update
+    properties:
+      hibernate:
+        format_sql: true
+        show-sql: true
+        open-in-view: false
+        dialect: org.hibernate.dialect.MySQL8Dialect
+        default_batch_fetch_size: 200
+    defer-datasource-initialization: true
+
+  sql:
+    init:
+      mode: always
+      data-locations: ""
+
+  cloud:
+    aws:
+      credentials:
+        access-key: ${ACCESS_KEY}
+        secret-key: ${SECRET_KEY}
+      region:
+        static: ${REGION}
+      s3:
+        bucket: ${BUCKET_NAME}
+
+  servlet:
+    multipart:
+      enabled: true
+      # location: 간혹 에러가 생기면 해당 위치에 남는다고 한다. default는 스프링이 내부적으로 설정한다. 실제 운영에서 위치 지정하는 것이 파악하기 빠르다.
+      max-file-size: 2MB
+      max-request-size: 15MB
+
 ---
 
 jwt:
