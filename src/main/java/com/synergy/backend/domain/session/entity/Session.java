@@ -66,10 +66,16 @@ public class Session {
 	private String secretCode;
 
 	@Column(nullable = false)
-	private String fileKey;
+	private String qrKey;
 
 	@Column(nullable = false)
-	private String fileUrl;
+	private String qrUrl;
+
+	@Column(nullable = false)
+	private String imageKey;
+
+	@Column(nullable = false)
+	private String imageUrl;
 
 	@OneToMany(mappedBy = "session", fetch = LAZY, cascade = CascadeType.ALL)
 	private List<AttendeeSession> attendeeSessions = new ArrayList<>();
@@ -100,7 +106,7 @@ public class Session {
 				.build();
 	}
 
-	public void updateSession(SessionReqDto reqDto) {
+	public void updateSession(SessionReqDto reqDto, FileInformationDto fileInfo) {
 		this.title = reqDto.title();
 		this.speaker = reqDto.speaker();
 		this.speakerPosition = reqDto.speakerPosition();
@@ -108,11 +114,19 @@ public class Session {
 		this.startTime = reqDto.startTime();
 		this.endTime = reqDto.endTime();
 		this.description = reqDto.description();
+		this.maximum = reqDto.maximum();
+		this.imageKey = fileInfo.fileKey();
+		this.imageUrl = fileInfo.accessUrl();
 	}
 
 	public void addQRCode(FileInformationDto fileInformationDto) {
-		this.fileKey = fileInformationDto.fileKey();
-		this.fileUrl = fileInformationDto.accessUrl();
+		this.qrKey = fileInformationDto.fileKey();
+		this.qrUrl = fileInformationDto.accessUrl();
+	}
+
+	public void addImage(FileInformationDto fileInformationDto) {
+		this.imageKey = fileInformationDto.fileKey();
+		this.imageUrl = fileInformationDto.accessUrl();
 	}
 
 	public void addAdmin(Admin admin) {
