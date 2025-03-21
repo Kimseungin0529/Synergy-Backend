@@ -22,6 +22,7 @@ import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.global.common.BaseEntity;
 
 import jakarta.persistence.CascadeType;
+import jakarta.persistence.CollectionTable;
 import jakarta.persistence.Column;
 import jakarta.persistence.ElementCollection;
 import jakarta.persistence.Entity;
@@ -91,7 +92,7 @@ public class Attendee extends BaseEntity implements User {
 	private OccupationCategory currentOccupationCategory;
 
 	// 채용 희망여부
-	private boolean isHiringInterested;
+	private Boolean isHiringInterested = false;
 
 	/*------Job Info Details------*/
 	// 희망 직무
@@ -116,10 +117,13 @@ public class Attendee extends BaseEntity implements User {
 
 	// 희망 근무 지역
 	@ElementCollection
-	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = "attendee_desired_work_region",
+		joinColumns = @JoinColumn(name = "attendee_id"))
+	@Enumerated(EnumType.ORDINAL)
 	private Set<RegionType> desiredWorkRegion = new HashSet<>();
 
 	// 자기소개서
+	@Column(length = 1000)
 	private String selfIntroduction;
 
 	// 증명사진
@@ -130,16 +134,22 @@ public class Attendee extends BaseEntity implements User {
 
 	// 직장 선택 요소
 	@ElementCollection
+	@CollectionTable(name = "attendee_workplace_selection_factors",
+		joinColumns = @JoinColumn(name = "attendee_id"))
 	@Enumerated(EnumType.ORDINAL)
 	private Set<WorkplaceSelectionFactor> workplaceSelectionFactors = new HashSet<>();
 
 	// 선호하는 기업 문화
 	@ElementCollection
+	@CollectionTable(name = "attendee_preferred_corporate_cultures",
+		joinColumns = @JoinColumn(name = "attendee_id"))
 	@Enumerated(EnumType.ORDINAL)
 	private Set<PreferredCorporateCulture> preferredCorporateCultures = new HashSet<>();
 
 	// 컨퍼런스 참여 목적
 	@ElementCollection
+	@CollectionTable(name = "attendee_conference_participation_purposes",
+		joinColumns = @JoinColumn(name = "attendee_id"))
 	@Enumerated(EnumType.ORDINAL)
 	private Set<ConferenceParticipationPurpose> conferenceParticipationPurposes = new HashSet<>();
 

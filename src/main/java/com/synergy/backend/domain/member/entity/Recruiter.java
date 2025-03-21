@@ -37,6 +37,10 @@ public class Recruiter extends BaseEntity implements User {
 	@Column
 	private String responsibility;
 
+	// 채용담당자명
+	@Column
+	private String name;
+
 	// 컨퍼런스
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "conference_id")

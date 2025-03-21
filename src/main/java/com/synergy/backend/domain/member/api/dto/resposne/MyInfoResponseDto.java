@@ -18,7 +18,7 @@ public record MyInfoResponseDto(
 			attendee.getMembershipLevelType().name(),
 			attendee.getTotalPoints(),
 			recentPoints,
-			attendee.isHiringInterested()
+			attendee.getIsHiringInterested()
 		);
 	}
 }
