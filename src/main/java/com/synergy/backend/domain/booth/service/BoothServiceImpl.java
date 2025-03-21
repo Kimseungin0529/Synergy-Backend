@@ -11,7 +11,6 @@ import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.qrCode.exception.NotGenerateQRCodeException;
 import com.synergy.backend.domain.qrCode.service.QrService;
-import com.synergy.backend.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -30,7 +29,7 @@ public class BoothServiceImpl implements BoothService {
 
     @Transactional
     @Override
-    public ApiResponse<BoothResponseDto> createBooth(Long conferenceId, BoothRequestDto request) {
+    public BoothResponseDto createBooth(Long conferenceId, BoothRequestDto request) {
         Conference conference = ifConferenceExists(conferenceId);
         Booth booth = new Booth(
                 request.name(),
@@ -51,29 +50,29 @@ public class BoothServiceImpl implements BoothService {
             throw new NotGenerateQRCodeException();
         }
 
-        return ApiResponse.ok(new BoothResponseDto(booth), 201);
+        return new BoothResponseDto(booth);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<Page<BoothResponseDto>> getAllBooths(Long conferenceId, Pageable pageable) {
-        return ApiResponse.ok(boothRepository.findAllByConferenceId(conferenceId, pageable)
-                .map(BoothResponseDto::new), 200);
+    public Page<BoothResponseDto> getAllBooths(Long conferenceId, Pageable pageable) {
+        return boothRepository.findAllByConferenceId(conferenceId, pageable)
+                .map(BoothResponseDto::new);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public ApiResponse<BoothResponseDto> getBoothById(Long conferenceId, Long id) {
+    public BoothResponseDto getBoothById(Long conferenceId, Long id) {
         Booth booth = ifBoothExists(id);
         if (!booth.getConference().getId().equals(conferenceId)) {
             throw new NotFoundBoothException();
         }
-        return ApiResponse.ok(new BoothResponseDto(booth), 200);
+        return new BoothResponseDto(booth);
     }
 
     @Transactional
     @Override
-    public ApiResponse<BoothResponseDto> updateBooth(Long conferenceId, Long id, BoothRequestDto request) {
+    public BoothResponseDto updateBooth(Long conferenceId, Long id, BoothRequestDto request) {
         Booth booth = ifBoothExists(id);
         if (!booth.getConference().getId().equals(conferenceId)) {
             throw new NotFoundBoothException();
@@ -86,18 +85,17 @@ public class BoothServiceImpl implements BoothService {
                 request.description() != null ? request.description() : booth.getDescription()
         );
 
-        return ApiResponse.ok(new BoothResponseDto(booth), 200);
+        return new BoothResponseDto(booth);
     }
 
     @Transactional
     @Override
-    public ApiResponse<Void> deleteBooth(Long conferenceId, Long id) {
+    public void deleteBooth(Long conferenceId, Long id) {
         Booth booth = ifBoothExists(id);
         if (!booth.getConference().getId().equals(conferenceId)) {
             throw new NotFoundBoothException();
         }
         boothRepository.delete(booth);
-        return ApiResponse.ok(null, 204);
     }
 
     private Conference ifConferenceExists(Long conferenceId) {

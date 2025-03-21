@@ -1,5 +1,6 @@
 package com.synergy.backend.domain.member.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
@@ -14,4 +15,8 @@ public interface RecruiterAttendeeLikeRepository extends JpaRepository<Recruiter
 	boolean existsByRecruiterAndAttendee(Recruiter recruiter, Attendee attendee);
 
 	void deleteByRecruiterAndAttendee(Recruiter recruiter, Attendee attendee);
+
+	List<RecruiterAttendeeLike> findAllByRecruiterId(Long recruiterId);
+
+	List<RecruiterAttendeeLike> findAllByAttendeeId(Long attendeeId);
 }

@@ -7,10 +7,7 @@ import java.util.stream.Collectors;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.details.BaseAttendeeDetailEnum;
 
-public record AttendeeInfoDetailResponseDto(
-	String name,
-	String jobName,
-	String experience,
+public record AttendeeDetailInfoResponseDto(
 	String education,
 	String ageGroup,
 	String techStacks,
@@ -20,17 +17,14 @@ public record AttendeeInfoDetailResponseDto(
 	Set<String> workplaceSelectionFactors,
 	Set<String> preferredCorporateCultures
 ) {
-	public static AttendeeInfoDetailResponseDto from(Attendee attendee) {
-		return new AttendeeInfoDetailResponseDto(
-			attendee.getName() != null ? attendee.getName() : "Unknown",
-			attendee.getCurrentJobCategory() != null ? attendee.getCurrentJobCategory().getName() : "Unknown",
-			attendee.getExperienceLevel() != null ? attendee.getExperienceLevel().getDescription() : "Unknown",
-			attendee.getEducationLevel() != null ? attendee.getEducationLevel().getDescription() : "Unknown",
-			attendee.getAgeGroup() != null ? attendee.getAgeGroup().getDescription() : "Unknown",
-			attendee.getTechStacks() != null ? attendee.getTechStacks() : "No tech stack specified",
+	public static AttendeeDetailInfoResponseDto from(Attendee attendee) {
+		return new AttendeeDetailInfoResponseDto(
+			attendee.getEducationLevel() != null ? attendee.getEducationLevel().getDescription() : "",
+			attendee.getAgeGroup() != null ? attendee.getAgeGroup().getDescription() : "",
+			attendee.getTechStacks() != null ? attendee.getTechStacks() : "",
 			convertEnumSetToDescriptions(attendee.getDesiredWorkRegion()),
-			attendee.getSelfIntroduction() != null ? attendee.getSelfIntroduction() : "No self introduction",
-			attendee.getInformation() != null ? attendee.getInformation() : "No additional information",
+			attendee.getSelfIntroduction() != null ? attendee.getSelfIntroduction() : "N",
+			attendee.getInformation() != null ? attendee.getInformation() : "",
 			convertEnumSetToDescriptions(attendee.getWorkplaceSelectionFactors()),
 			convertEnumSetToDescriptions(attendee.getPreferredCorporateCultures())
 		);

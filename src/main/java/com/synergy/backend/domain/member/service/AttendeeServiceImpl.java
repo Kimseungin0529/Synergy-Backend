@@ -1,10 +1,7 @@
 package com.synergy.backend.domain.member.service;
 
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -24,7 +21,9 @@ import com.synergy.backend.domain.job.exception.NotFoundJobCategoryException;
 import com.synergy.backend.domain.job.exception.NotFoundOccupationCategoryException;
 import com.synergy.backend.domain.member.api.dto.request.JobInfoDetailsRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.JobInfoRequestDto;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeInfoDetailResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeBaseInfoResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeDetailInfoResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeFullInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.MyInfoResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.RoleType;
@@ -38,10 +37,6 @@ import com.synergy.backend.domain.member.entity.details.WorkplaceSelectionFactor
 import com.synergy.backend.domain.member.exception.AccessDeniedException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
-import com.synergy.backend.domain.point.api.dto.PointResponseDto;
-import com.synergy.backend.domain.point.entity.Point;
-import com.synergy.backend.domain.point.repository.PointRepository;
-import com.synergy.backend.domain.point.service.PointService;
 
 import lombok.RequiredArgsConstructor;
 
@@ -54,9 +49,6 @@ public class AttendeeServiceImpl implements AttendeeService {
 	private final AttendeeInterestRepository attendeeInterestRepository;
 	private final JobCategoryRepository jobCategoryRepository;
 	private final OccupationCategoryRepository occupationCategoryRepository;
-	private final PointRepository pointRepository;
-
-	private final PointService pointService;
 
 	/** 관심사 추가 */
 	@Transactional
@@ -127,19 +119,13 @@ public class AttendeeServiceImpl implements AttendeeService {
 	@Override
 	public MyInfoResponseDto getMyInformation(String identifier) {
 		Attendee attendee = findAttendeeByEmail(identifier);
-
-		List<PointResponseDto> recentPoints = mapToPointResponseDto(
-			Optional.ofNullable(pointRepository.findRecentPointsByAttendeeId(attendee.getId()))
-				.orElse(Collections.emptyList())
-		);
-
-		return MyInfoResponseDto.from(attendee, recentPoints);
+		return MyInfoResponseDto.from(attendee);
 	}
 
 	/** 참가자 상세 정보 */
 	@Transactional(readOnly = true)
 	@Override
-	public AttendeeInfoDetailResponseDto getAttendeeInfoDetail(Long attendeeId, String identifier, RoleType role) {
+	public AttendeeFullInfoResponseDto getAttendeeInfoDetail(Long attendeeId, String identifier, RoleType role) {
 
 		if (role == RoleType.ATTENDEE) {
 			Attendee loginUser = findAttendeeByEmail(identifier);
@@ -151,15 +137,7 @@ public class AttendeeServiceImpl implements AttendeeService {
 
 		Attendee attendee = findAttendeeById(attendeeId);
 
-		return AttendeeInfoDetailResponseDto.from(attendee);
-	}
-
-	private List<PointResponseDto> mapToPointResponseDto(List<Point> points) {
-		return points.stream()
-			.map(point -> PointResponseDto.from(point,
-				Objects.requireNonNullElse(pointService.getDetailsForPoint(point), "기본 포인트 설명")
-			))
-			.toList();
+		return AttendeeFullInfoResponseDto.from(attendee);
 	}
 
 	// 관심사 코드 검증
