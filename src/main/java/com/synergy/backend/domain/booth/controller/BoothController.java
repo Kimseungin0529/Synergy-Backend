@@ -2,7 +2,7 @@ package com.synergy.backend.domain.booth.controller;
 
 import com.synergy.backend.domain.booth.dto.BoothRequestDto;
 import com.synergy.backend.domain.booth.dto.BoothResponseDto;
-import com.synergy.backend.domain.booth.service.BoothParticipationServiceImpl;
+import com.synergy.backend.domain.booth.service.BoothParticipationService;
 import com.synergy.backend.domain.booth.service.BoothService;
 import com.synergy.backend.global.common.ApiResponse;
 import lombok.RequiredArgsConstructor;
@@ -18,14 +18,14 @@ import java.util.List;
 public class BoothController {
 
     private final BoothService boothService;
-    private final BoothParticipationServiceImpl boothParticipationService;
+    private final BoothParticipationService boothParticipationService;
 
     @GetMapping("/{id}")
     public ApiResponse<BoothResponseDto> getBoothById(
             @PathVariable Long conferenceId,
             @PathVariable Long id
     ) {
-        return boothService.getBoothById(conferenceId, id);
+        return ApiResponse.ok(boothService.getBoothById(conferenceId, id), 200);
     }
 
     @GetMapping
@@ -33,7 +33,7 @@ public class BoothController {
             @PathVariable Long conferenceId,
             Pageable pageable
     ) {
-        return boothService.getAllBooths(conferenceId, pageable);
+        return ApiResponse.ok(boothService.getAllBooths(conferenceId, pageable), 200);
     }
 
     @PostMapping
@@ -41,7 +41,7 @@ public class BoothController {
             @PathVariable Long conferenceId,
             @RequestBody BoothRequestDto request
     ) {
-        return boothService.createBooth(conferenceId, request);
+        return ApiResponse.ok(boothService.createBooth(conferenceId, request), 201);
     }
 
     @PutMapping("/{id}")
@@ -50,7 +50,7 @@ public class BoothController {
             @PathVariable Long id,
             @RequestBody BoothRequestDto request
     ) {
-        return boothService.updateBooth(conferenceId, id, request);
+        return ApiResponse.ok(boothService.updateBooth(conferenceId, id, request), 200);
     }
 
     @DeleteMapping("/{id}")
@@ -58,7 +58,8 @@ public class BoothController {
             @PathVariable Long conferenceId,
             @PathVariable Long id
     ) {
-        return boothService.deleteBooth(conferenceId, id);
+        boothService.deleteBooth(conferenceId, id);
+        return ApiResponse.ok(null, 204);
     }
 
     @PostMapping("/{boothId}/participate/{attendeeId}")
@@ -66,7 +67,8 @@ public class BoothController {
             @PathVariable Long conferenceId,
             @PathVariable Long boothId,
             @PathVariable Long attendeeId) {
-        return boothParticipationService.participateInBooth(attendeeId, boothId);
+        boothParticipationService.participateInBooth(attendeeId, boothId);
+        return ApiResponse.ok("부스 참여가 완료되었습니다.", 201);
     }
 
     @DeleteMapping("/{boothId}/cancel/{attendeeId}")
@@ -74,14 +76,7 @@ public class BoothController {
             @PathVariable Long conferenceId,
             @PathVariable Long boothId,
             @PathVariable Long attendeeId) {
-        return boothParticipationService.cancelParticipation(attendeeId, boothId);
-    }
-
-    @GetMapping("/{boothId}/participants")
-    public ApiResponse<List<String>> getParticipants(
-            @PathVariable Long conferenceId,
-            @PathVariable Long boothId
-    ) {
-        return boothParticipationService.getParticipantsByBoothId(boothId);
+        boothParticipationService.cancelParticipation(attendeeId, boothId);
+        return ApiResponse.ok("부스 참여가 취소되었습니다.", 200);
     }
 }
