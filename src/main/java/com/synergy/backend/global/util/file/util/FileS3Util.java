@@ -63,9 +63,7 @@ public class FileS3Util implements FileUtil {
         List<FileInformationDto> fileInformation = new ArrayList<>();
         for (MultipartFile file : files) {
             try {
-
                 fileInformation.add(getFileInformationDto(file));
-
             } catch (Exception e) {
                 log.error("파일 업로드 ERROR = {}", e.getMessage(), e);
                 throw new FileUploadS3Exception();
