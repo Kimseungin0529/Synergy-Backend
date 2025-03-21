@@ -12,6 +12,7 @@ import com.synergy.backend.global.util.file.exception.ExternalApiCallException;
 import com.synergy.backend.global.util.file.exception.FileUploadS3Exception;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.tomcat.jni.FileInfo;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
@@ -35,18 +36,20 @@ public class FileS3Util implements FileUtil {
     private static final String QR = "qr/";
 
     @Override
-    public String uploadQRCode(byte[] qrCode, String fileName) {
-        String fileUrl = generateUniqueFileNameFrom(QR, fileName);
+    public FileInformationDto uploadQRCode(byte[] qrCode, String fileName) {
+        String accessKey = generateUniqueFileNameFrom(QR, fileName);
 
         ObjectMetadata metadata = new ObjectMetadata();
         metadata.setContentLength(qrCode.length);
         metadata.setContentType("image/png");
 
         ByteArrayInputStream inputStream = new ByteArrayInputStream(qrCode);
-        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileUrl, inputStream, metadata);
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, accessKey, inputStream, metadata);
 
         amazonS3Service.putObject(putObjectRequest);
-        return amazonS3Service.getUrl(bucketName, fileUrl).toString();
+        String accessUrl =  amazonS3Service.getUrl(bucketName, accessKey).toString();
+
+        return new FileInformationDto(accessKey, accessUrl);
     }
 
     @Override

@@ -16,6 +16,7 @@ import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
 
 import com.synergy.backend.domain.session.exception.NotValidSessionTime;
+import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -65,6 +66,9 @@ public class Session {
 	private String secretCode;
 
 	@Column(nullable = false)
+	private String fileKey;
+
+	@Column(nullable = false)
 	private String fileUrl;
 
 	@OneToMany(mappedBy = "session", fetch = LAZY, cascade = CascadeType.ALL)
@@ -106,8 +110,9 @@ public class Session {
 		this.description = reqDto.description();
 	}
 
-	public void addQRCode(String fileUrl) {
-		this.fileUrl = fileUrl;
+	public void addQRCode(FileInformationDto fileInformationDto) {
+		this.fileKey = fileInformationDto.fileKey();
+		this.fileUrl = fileInformationDto.accessUrl();
 	}
 
 	public void addAdmin(Admin admin) {
