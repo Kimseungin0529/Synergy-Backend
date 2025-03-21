@@ -5,7 +5,7 @@ import java.util.Set;
 import com.synergy.backend.domain.interest.entity.Interest;
 import com.synergy.backend.domain.member.api.dto.request.JobInfoDetailsRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.JobInfoRequestDto;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeInfoDetailResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeFullInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.MyInfoResponseDto;
 import com.synergy.backend.domain.member.entity.RoleType;
 
@@ -19,5 +19,5 @@ public interface AttendeeService {
 
 	MyInfoResponseDto getMyInformation(String identifier);
 
-	AttendeeInfoDetailResponseDto getAttendeeInfoDetail(Long attendeeId, String identifier, RoleType role);
+	AttendeeFullInfoResponseDto getAttendeeInfoDetail(Long attendeeId, String identifier, RoleType role);
 }

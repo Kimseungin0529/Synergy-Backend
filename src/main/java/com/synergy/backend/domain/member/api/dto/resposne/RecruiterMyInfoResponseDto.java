@@ -1,0 +1,19 @@
+package com.synergy.backend.domain.member.api.dto.resposne;
+
+import com.synergy.backend.domain.member.entity.Recruiter;
+
+public record RecruiterMyInfoResponseDto(
+	String companyPhotoUrl,
+	String recruiterName,
+	String company,
+	String responsibility
+) {
+	public static RecruiterMyInfoResponseDto from(Recruiter recruiter) {
+		return new RecruiterMyInfoResponseDto(
+			recruiter.getCompanyPhotoUrl(),
+			recruiter.getName(),
+			recruiter.getCompany(),
+			recruiter.getResponsibility()
+		);
+	}
+}
