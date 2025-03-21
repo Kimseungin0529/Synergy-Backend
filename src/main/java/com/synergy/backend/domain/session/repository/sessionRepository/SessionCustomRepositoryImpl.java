@@ -49,13 +49,13 @@ public class SessionCustomRepositoryImpl implements SessionCustomRepository {
     @Override
     public List<SessionParticipateRateDetailResDto> getSessionParticipateDetailByConferenceId(Long conferenceId) {
         List<Tuple> tuples = queryFactory
-                .select(session.id, session.title, session.progressDate, session.startTime, session.endTime, session.fileUrl)
+                .select(session.id, session.title, session.progressDate, session.startTime, session.endTime, session.qrUrl)
                 .from(session)
                 .where(session.conference.id.eq(conferenceId))
                 .groupBy(session.id)
                 .fetch();
 
-        // 2단계: 각 세션별로 기술(Interest) 참여 인원 정보를 조회하여 record DTO를 새로 생성
+
         return tuples.stream()
                 .map(tuple -> {
                     Long sessionId = tuple.get(session.id);
@@ -63,7 +63,7 @@ public class SessionCustomRepositoryImpl implements SessionCustomRepository {
                     LocalDate progressDate = tuple.get(session.progressDate);
                     LocalDateTime startTime = tuple.get(session.startTime);
                     LocalDateTime endTime = tuple.get(session.endTime);
-                    String fileUrl = tuple.get(session.fileUrl);
+                    String fileUrl = tuple.get(session.qrUrl);
 
                     // 해당 세션의 기술 참여 인원 정보를 조회
                     List<SessionParticipateTechResDto> techDetails =

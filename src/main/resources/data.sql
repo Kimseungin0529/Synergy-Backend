@@ -184,9 +184,9 @@ VALUES
     (1, 'CodeSphere', '클라우드서비스', ' 글로벌 IT 기업 CodeSphere에서 React 기반 프론트엔드 엔지니어와 클라우드 기반 백엔드 엔지니어를 채용합니다. TypeScript, Node.js, Kubernetes 경험자를 환영합니다.','C HALL');
 
 -- 세션
-INSERT INTO session (maximum, progress_date, conference_id, end_time, start_time, speaker_position, speaker, title, description, file_url, secret_code)
+INSERT INTO session (maximum, progress_date, conference_id, end_time, start_time, speaker_position, speaker, title, description, qr_key, qr_url, image_key, image_url, secret_code)
 VALUES
-    (250, '2025-09-15', 1, '2025-09-15 11:30', '2025-09-15 10:30', 'CTO', '김지혁', '최신 기술 동향', '빠르게 변화하는 IT 산업에서 최신 기술 동향을 파악하는 것은 기업의 경쟁력을 높이고 미래를 준비하는 데 필수적입니다. 기업의 CTO가 AI, 클라우드, Web3 등 주요 기술 트렌드와 산업 변화를 분석하고, 기업이 기술 혁신을 어떻게 주도할 수 있는지에 대한 전략과 인사이트를 제공합니다.', ' ', ' ');
+    (250, '2025-09-15', 1, '2025-09-15 11:30', '2025-09-15 10:30', 'CTO', '김지혁', '최신 기술 동향', '빠르게 변화하는 IT 산업에서 최신 기술 동향을 파악하는 것은 기업의 경쟁력을 높이고 미래를 준비하는 데 필수적입니다. 기업의 CTO가 AI, 클라우드, Web3 등 주요 기술 트렌드와 산업 변화를 분석하고, 기업이 기술 혁신을 어떻게 주도할 수 있는지에 대한 전략과 인사이트를 제공합니다.', ' ', ' ', ' ', ' ', ' ');
 
 
 -- 포인트 적립 내역
