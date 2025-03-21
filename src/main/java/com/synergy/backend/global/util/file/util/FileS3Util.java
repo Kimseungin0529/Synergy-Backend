@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -53,23 +54,17 @@ public class FileS3Util implements FileUtil {
     }
 
     @Override
+    public FileInformationDto uploadFile(MultipartFile file) throws IOException {
+        return getFileInformationDto(file);
+    }
+
+    @Override
     public List<FileInformationDto> uploadFilesFrom(List<MultipartFile> files) {
         List<FileInformationDto> fileInformation = new ArrayList<>();
         for (MultipartFile file : files) {
             try {
-                // 고유한 파일 이름 생성
-                String fileKey = generateUniqueFileNameFrom(PREFIX, file.getOriginalFilename());
 
-                // 메타데이터 설정
-                ObjectMetadata metadata = generateMetadata(file);
-
-                // S3에 파일 업로드 요청 생성
-                PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileKey, file.getInputStream(), metadata);
-
-                // S3에 파일 업로드
-                amazonS3Service.putObject(putObjectRequest);
-                String accessUrl = amazonS3Service.getUrl(bucketName, fileKey).toString();
-                fileInformation.add(new FileInformationDto(fileKey, accessUrl));
+                fileInformation.add(getFileInformationDto(file));
 
             } catch (Exception e) {
                 log.error("파일 업로드 ERROR = {}", e.getMessage(), e);
@@ -109,6 +104,23 @@ public class FileS3Util implements FileUtil {
         }
 
         return accessUrls;
+    }
+
+    private FileInformationDto getFileInformationDto(MultipartFile file) throws IOException {
+        // 고유한 파일 이름 생성
+        String fileKey = generateUniqueFileNameFrom(PREFIX, file.getOriginalFilename());
+
+        // 메타데이터 설정
+        ObjectMetadata metadata = generateMetadata(file);
+
+        // S3에 파일 업로드 요청 생성
+        PutObjectRequest putObjectRequest = new PutObjectRequest(bucketName, fileKey, file.getInputStream(), metadata);
+
+        // S3에 파일 업로드
+        amazonS3Service.putObject(putObjectRequest);
+        String accessUrl = amazonS3Service.getUrl(bucketName, fileKey).toString();
+
+        return new FileInformationDto(fileKey, accessUrl);
     }
 
     private ObjectMetadata generateMetadata(MultipartFile file) {
