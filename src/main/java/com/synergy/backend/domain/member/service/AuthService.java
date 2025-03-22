@@ -12,4 +12,8 @@ public interface AuthService {
 	TokenResponseDto loginAsAttendee(String email, String password);
 
 	TokenResponseDto loginAsAdminOrRecruiter(String authCode);
+
+	void passwordResetRequest(String email, String name, String phone);
+
+	void passwordReset(String email, String newPassword);
 }

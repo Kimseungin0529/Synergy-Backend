@@ -9,6 +9,8 @@ import com.synergy.backend.domain.member.api.dto.request.EmailVerificationConfir
 import com.synergy.backend.domain.member.api.dto.request.EmailVerificationRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.LoginAdminRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.LoginAttendeeRequestDto;
+import com.synergy.backend.domain.member.api.dto.request.PasswordResetConfirmDto;
+import com.synergy.backend.domain.member.api.dto.request.PasswordResetRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
 import com.synergy.backend.domain.member.service.AuthService;
@@ -42,6 +44,18 @@ public class AuthController {
 		return ApiResponse.ok(authService.loginAsAdminOrRecruiter(request.adminAuthCode()), 200);
 	}
 
+	@PostMapping("/password/reset/request")
+	public ApiResponse<?> passwordResetRequest(@Valid @RequestBody PasswordResetRequestDto request) {
+		authService.passwordResetRequest(request.email(), request.name(), request.phone());
+		return ApiResponse.ok(null, 200);
+	}
+
+	@PostMapping("/password/reset")
+	public ApiResponse<?> newPassword(@Valid @RequestBody PasswordResetConfirmDto request) {
+		authService.passwordReset(request.email(), request.newPassword());
+		return ApiResponse.ok(null, 200);
+	}
+
 	@PostMapping("/email/verification/request")
 	public ApiResponse<?> emailVerificationRequest(@Valid @RequestBody EmailVerificationRequestDto request) throws
 		MessagingException {
@@ -54,4 +68,5 @@ public class AuthController {
 		mailService.mailVerificationConfirm(request.email(), request.code());
 		return ApiResponse.ok(null, 200);
 	}
+
 }

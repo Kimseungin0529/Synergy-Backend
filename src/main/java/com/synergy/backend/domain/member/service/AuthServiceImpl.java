@@ -12,13 +12,16 @@ import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.member.exception.DuplicateEmailException;
+import com.synergy.backend.domain.member.exception.InvalidAccountInformationException;
 import com.synergy.backend.domain.member.exception.InvalidAuthCodeException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
+import com.synergy.backend.domain.member.exception.SameAsPreviousPasswordException;
 import com.synergy.backend.domain.member.exception.UnauthorizedException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
 import com.synergy.backend.domain.point.service.PointService;
+import com.synergy.backend.global.mail.EmailNotVerifiedException;
 import com.synergy.backend.global.mail.MailService;
 import com.synergy.backend.global.security.CustomUserDetails;
 import com.synergy.backend.global.security.JwtProvider;
@@ -45,7 +48,7 @@ public class AuthServiceImpl implements AuthService {
 
 		// 이메일 인증 여부 확인
 		if (!mailService.isVerified(request.email())) {
-			throw new UnauthorizedException();
+			throw new EmailNotVerifiedException();
 		}
 
 		if (attendeeRepository.findByEmail(request.email()).isPresent()) {
@@ -92,6 +95,35 @@ public class AuthServiceImpl implements AuthService {
 		String token = jwtProvider.generateToken(userDetails);
 
 		return new TokenResponseDto(token, authCode, user.getRole().toString());
+	}
+
+	@Transactional
+	@Override
+	public void passwordResetRequest(String email, String name, String phone) {
+
+		// 이메일 인증 여부 확인
+		if (!mailService.isVerified(email)) {
+			throw new EmailNotVerifiedException();
+		}
+
+		Attendee attendee = findAttendeeWithEmail(email);
+
+		if (!attendee.getName().equals(name) || !attendee.getPhone().equals(phone)) {
+			throw new InvalidAccountInformationException();
+		}
+	}
+
+	@Transactional
+	@Override
+	public void passwordReset(String email, String newPassword) {
+		String newEncodePassword = encodePassword(newPassword);
+
+		Attendee attendee = findAttendeeWithEmail(email);
+		if (attendee.getPassword().equals(newEncodePassword)) {
+			throw new SameAsPreviousPasswordException();
+		}
+
+		attendee.updatePassword(newEncodePassword);
 	}
 
 	@Transactional(readOnly = true)
