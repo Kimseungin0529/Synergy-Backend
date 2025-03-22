@@ -2,14 +2,13 @@ package com.synergy.backend.domain.member.api;
 
 import java.util.List;
 
+import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
+import com.synergy.backend.domain.member.api.dto.AttendeeListResponse;
+import com.synergy.backend.domain.member.service.AttendeeDetailResponse;
+import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.synergy.backend.domain.member.api.dto.resposne.LikedAttendeeResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.RecruiterMyInfoResponseDto;
@@ -64,8 +63,21 @@ public class RecruiterController {
 
 	@PreAuthorize("hasRole('RECRUITER')")
 	@GetMapping("/attendee/{id}")
-	public ApiResponse<?> getAttendee(@PathVariable("id") Long id) {
+	public ApiResponse<AttendeeDetailResponse> getAttendee(@PathVariable("id") Long id) {
 		return ApiResponse.ok(recruiterService.getAttendeeFrom(id), 200);
+	}
+
+	@PreAuthorize("hasRole('RECRUITER')")
+	@GetMapping("/attendees")
+	public ApiResponse<AttendeeListResponse> getAttendees(Pageable pageable,
+														  @RequestParam(required = false) List<String> occupations,
+														  @RequestParam(required = false) String EducationLevel,
+														  @RequestParam(required = false) String ageGroup,
+														  @RequestParam(required = false) List<String> regions
+														  ) {
+
+		AttendeeFilterRequest requestCondition = AttendeeFilterRequest.of(occupations, EducationLevel, ageGroup, regions);
+		return ApiResponse.ok(recruiterService.getAttendeeFrom(pageable, requestCondition), 200);
 	}
 
 
