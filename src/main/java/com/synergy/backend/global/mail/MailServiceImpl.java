@@ -1,10 +1,10 @@
 package com.synergy.backend.global.mail;
 
-import java.util.Map;
+import java.time.Duration;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
@@ -16,34 +16,36 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MailServiceImpl implements MailService {
 
-	private final JavaMailSender mailSender;
-	private final Map<String, String> verificationCodes = new ConcurrentHashMap<>();
+	private static final long CODE_EXPIRE_MINUTES = 5;
+	private static final long VERIFIED_EXPIRE_MINUTES = 10;
 
+	private final JavaMailSender mailSender;
+	private final RedisTemplate<String, String> redisTemplate;
 	@Value("${mail.smtp.address}")
 	private String address;
 
 	@Override
 	public void sendVerificationCodeToMail(String email) throws MessagingException {
 		String code = createVerificationCode();
-		verificationCodes.put(email, code);
+
+		String key = getRedisKey(email);
+		redisTemplate.opsForValue().set(key, code, Duration.ofMinutes(CODE_EXPIRE_MINUTES));
 
 		MimeMessage message = mailSender.createMimeMessage();
 		message.setFrom(address);
 		message.setRecipients(MimeMessage.RecipientType.TO, email);
-
 		message.setSubject("이메일 인증");
-		String body = "";
-		body += "<h3>요청하신 인증 번호입니다.</h3>";
-		body += "<p><strong>" + code + "</strong></p>";
-		body += "<p>인증번호는 5분간 유효합니다.</p>";
-		message.setText(body, "UTF-8", "html");
+		String body = "<h3>요청하신 인증 번호입니다.</h3>"
+			+ "<p><strong>" + code + "</strong></p>"
+			+ "<p>인증번호는 " + CODE_EXPIRE_MINUTES + "분간 유효합니다.</p>";
 
+		message.setText(body, "UTF-8", "html");
 		mailSender.send(message);
 	}
 
 	@Override
 	public void mailVerificationConfirm(String email, String code) {
-		String storedCode = verificationCodes.get(email);
+		String storedCode = redisTemplate.opsForValue().get(getRedisKey(email));
 		if (storedCode == null) {
 			throw new IllegalStateException("인증번호가 존재하지 않거나 만료되었습니다.");
 		}
@@ -51,8 +53,24 @@ public class MailServiceImpl implements MailService {
 			throw new IllegalArgumentException("인증번호가 일치하지 않습니다.");
 		}
 
-		// 성공 처리
-		verificationCodes.remove(email); // 1회성 사용 후 제거
+		// 인증 완료 마킹
+		redisTemplate.opsForValue().set("email:verified:" + email, "true", Duration.ofMinutes(VERIFIED_EXPIRE_MINUTES));
+		redisTemplate.delete("email:verify:" + email);
+	}
+
+	@Override
+	public boolean isVerified(String email) {
+		String verified = redisTemplate.opsForValue().get("email:verified:" + email);
+		if (!"true".equals(verified)) {
+			throw new IllegalStateException("이메일 인증이 완료되지 않았습니다.");
+		}
+
+		redisTemplate.delete("email:verified:" + email);
+		return true;
+	}
+
+	private String getRedisKey(String email) {
+		return "email:verify:" + email;
 	}
 
 	private String createVerificationCode() {

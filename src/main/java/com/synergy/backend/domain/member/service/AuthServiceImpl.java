@@ -18,8 +18,8 @@ import com.synergy.backend.domain.member.exception.UnauthorizedException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
-import com.synergy.backend.domain.point.entity.PointType;
 import com.synergy.backend.domain.point.service.PointService;
+import com.synergy.backend.global.mail.MailService;
 import com.synergy.backend.global.security.CustomUserDetails;
 import com.synergy.backend.global.security.JwtProvider;
 
@@ -37,10 +37,16 @@ public class AuthServiceImpl implements AuthService {
 	private final PointService pointService;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
+	private final MailService mailService;
 
 	@Transactional
 	@Override
 	public SignupAttendeeResponseDto registerAttendee(SignupAttendeeRequestDto request) {
+
+		// 이메일 인증 여부 확인
+		if (!mailService.isVerified(request.email())) {
+			throw new UnauthorizedException();
+		}
 
 		if (attendeeRepository.findByEmail(request.email()).isPresent()) {
 			throw new DuplicateEmailException();
@@ -56,7 +62,6 @@ public class AuthServiceImpl implements AuthService {
 
 		// 회원가입 시 포인트 적립
 		pointService.addSignupPoint(attendee.getId());
-
 		return SignupAttendeeResponseDto.from(attendee);
 	}
 
