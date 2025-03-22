@@ -1,6 +1,7 @@
 package com.synergy.backend.domain.member.service;
 
 import com.synergy.backend.domain.member.entity.Attendee;
+import com.synergy.backend.domain.member.exception.ForbiddenAccessAttendee;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import lombok.extern.slf4j.Slf4j;
@@ -33,7 +34,7 @@ public class RecruiterServiceImpl implements RecruiterService {
 	public AttendeeDetailResponse getAttendeeFrom(Long attendeeId) {
 		Attendee findAttendee = attendeeRepository.findAttendeeBy(attendeeId).orElseThrow(NotFoundUserException::new);
 		if(!findAttendee.getIsHiringInterested()) {
-			throw new IllegalArgumentException("참가자는 채용을 희망하지 않습니다.");
+			throw new ForbiddenAccessAttendee();
 		}
 		return AttendeeDetailResponse.of(findAttendee);
 	}
