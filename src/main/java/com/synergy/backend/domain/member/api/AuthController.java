@@ -37,4 +37,6 @@ public class AuthController {
 		return ApiResponse.ok(authService.loginAsAdminOrRecruiter(request.adminAuthCode()), 200);
 	}
 
+	@PostMapping("/email-verification/request")
+
 }

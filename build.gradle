@@ -48,6 +48,8 @@ dependencies {
     testImplementation 'com.h2database:h2'
     implementation 'com.fasterxml.jackson.datatype:jackson-datatype-jsr310'
 
+    // email
+    implementation 'org.springframework.boot:spring-boot-starter-mail'
 
     // qrCode
     implementation group: 'com.google.zxing', name: 'javase', version: '3.5.0'

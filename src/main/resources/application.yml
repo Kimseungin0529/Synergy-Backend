@@ -42,6 +42,15 @@ spring:
       max-file-size: 2MB
       max-request-size: 15MB
 
+mail:
+  smtp:
+    host: "smtp.gmail.com"
+    address: ${EMAIL_ADDRESS}
+    personal: ${EMAIL_PERSONAL}
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    port: 465
+
 #logging:
 #  level:
 #    org.hibernate.SQL: DEBUG  # ✅ SQL 로그를 DEBUG 수준으로 상세하게 출력
