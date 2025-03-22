@@ -3,6 +3,7 @@ package com.synergy.backend.domain.member.service;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,7 +14,7 @@ import com.synergy.backend.domain.member.repository.RecruiterRepository;
 
 import lombok.RequiredArgsConstructor;
 
-@Service
+@Service @Slf4j
 @RequiredArgsConstructor
 public class RecruiterServiceImpl implements RecruiterService {
 

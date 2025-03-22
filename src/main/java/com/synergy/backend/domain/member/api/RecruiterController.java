@@ -63,7 +63,7 @@ public class RecruiterController {
 	}
 
 	@PreAuthorize("hasRole('RECRUITER')")
-	@GetMapping("/attendee/{id]}")
+	@GetMapping("/attendee/{id}")
 	public ApiResponse<?> getAttendee(@PathVariable("id") Long id) {
 		return ApiResponse.ok(recruiterService.getAttendeeFrom(id), 200);
 	}
