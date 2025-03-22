@@ -2,6 +2,7 @@ package com.synergy.backend.domain.member.service;
 
 import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
 import com.synergy.backend.domain.member.api.dto.AttendeeListResponse;
+import com.synergy.backend.domain.member.api.dto.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.exception.ForbiddenAccessAttendee;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
@@ -47,7 +48,7 @@ public class RecruiterServiceImpl implements RecruiterService {
 	@Transactional(readOnly = true)
 	@Override
 	public AttendeeListResponse getAttendeesBy(Pageable pageable, AttendeeFilterRequest requestCondition) {
-		Page<Attendee> attendees = attendeeRepository.searchAttendeessBy(pageable, requestCondition);
+		Page<AttendeeSimpleResponseDto> attendees = attendeeRepository.searchPageAttendeesBy(pageable, requestCondition);
 		//return AttendeeListResponse.from();
 		return null;
 	}

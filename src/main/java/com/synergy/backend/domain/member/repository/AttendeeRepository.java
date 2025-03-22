@@ -11,7 +11,7 @@ import com.synergy.backend.domain.member.entity.details.MembershipLevelType;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-public interface AttendeeRepository extends JpaRepository<Attendee, Long> {
+public interface AttendeeRepository extends JpaRepository<Attendee, Long>, AttendeeRepositoryCustom {
 	Optional<Attendee> findByEmail(String email);
 
 	Page<Attendee> findByMembershipLevelTypeOrderByTotalPointsDesc(MembershipLevelType membershipLevelType,
