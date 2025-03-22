@@ -3,7 +3,6 @@ package com.synergy.backend.global.mail;
 import java.time.Duration;
 import java.util.Random;
 
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -16,41 +15,28 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MailServiceImpl implements MailService {
 
-	private static final long CODE_EXPIRE_MINUTES = 5;
-	private static final long VERIFIED_EXPIRE_MINUTES = 10;
-	private static final String REDIS_KEY_VERIFY_PREFIX = "email:verify:";
-	private static final String REDIS_KEY_VERIFIED_PREFIX = "email:verified:";
+	private static final long VERIFICATION_CODE_TTL_MINUTES = 5;
+	private static final long VERIFICATION_SUCCESS_TTL_MINUTES = 10;
+	private static final String REDIS_VERIFY_CODE_PREFIX = "email:verify:";
+	private static final String REDIS_VERIFIED_PREFIX = "email:verified:";
 
 	private final JavaMailSender mailSender;
 	private final RedisTemplate<String, String> redisTemplate;
-
-	@Value("${mail.smtp.address}")
-	private String address;
+	private final MailProperties mailProperties;
 
 	@Override
 	public void sendVerificationCodeToMail(String email) throws MessagingException {
-		String code = createVerificationCode();
+		String code = generateVerificationCode();
+		storeToRedis(getVerifyCodeKey(email), code, VERIFICATION_CODE_TTL_MINUTES);
 
-		redisTemplate.opsForValue().set(getVerificationCodeKey(email), code, Duration.ofMinutes(CODE_EXPIRE_MINUTES));
-
-		String body = String.format(
-			"<h2>이메일 인증번호 안내</h2>"
-				+ "<p>아래 인증번호를 <strong>%d분 이내</strong>에 입력해주세요.</p>"
-				+ "<h3 style='color: #2d88ff;'>인증번호: <strong>%s</strong></h3>"
-				+ "<p style='margin-top: 16px;'>"
-				+ "⚠️ 인증 후 <strong>%d분 이내에 절차를 완료</strong>해야 인증이 유지됩니다.<br>"
-				+ "인증이 만료되면 다시 요청해 주세요."
-				+ "</p>"
-				+ "<p style='margin-top: 24px;'>감사합니다.<br/>F'LINK 드림</p>"
-			, CODE_EXPIRE_MINUTES, code, VERIFIED_EXPIRE_MINUTES
-		);
-
+		String body = buildEmailBody(code);
 		sendHtmlEmail(email, "이메일 인증", body);
 	}
 
 	@Override
 	public void mailVerificationConfirm(String email, String code) {
-		String storedCode = redisTemplate.opsForValue().get(getVerificationCodeKey(email));
+		String storedCode = getFromRedis(getVerifyCodeKey(email));
+
 		if (storedCode == null) {
 			throw new VerificationCodeExpiredException();
 		}
@@ -59,49 +45,75 @@ public class MailServiceImpl implements MailService {
 		}
 
 		// 인증 완료 마킹
-		redisTemplate.opsForValue()
-			.set(getVerifiedKey(email), "true", Duration.ofMinutes(VERIFIED_EXPIRE_MINUTES));
+		storeToRedis(getVerifiedKey(email), "true", VERIFICATION_SUCCESS_TTL_MINUTES);
 
 		// 인증 코드 삭제
-		redisTemplate.delete(getVerificationCodeKey(email));
+		deleteFromRedis(getVerifyCodeKey(email));
 	}
 
 	@Override
 	public boolean isVerified(String email) {
-		String verified = redisTemplate.opsForValue().get(getVerifiedKey(email));
+		String verified = getFromRedis(getVerifiedKey(email));
 		if (!"true".equals(verified)) {
 			throw new EmailNotVerifiedException();
 		}
 
-		redisTemplate.delete(getVerifiedKey(email));
+		deleteFromRedis(getVerifiedKey(email));
 		return true;
 	}
 
+	// --- Redis Helpers ---
+	private void storeToRedis(String key, String value, long minutes) {
+		redisTemplate.opsForValue().set(key, value, Duration.ofMinutes(minutes));
+	}
+
+	private String getFromRedis(String key) {
+		return redisTemplate.opsForValue().get(key);
+	}
+
+	private void deleteFromRedis(String key) {
+		redisTemplate.delete(key);
+	}
+
+	private String getVerifyCodeKey(String email) {
+		return REDIS_VERIFY_CODE_PREFIX + email;
+	}
+
+	private String getVerifiedKey(String email) {
+		return REDIS_VERIFIED_PREFIX + email;
+	}
+
+	// --- Mail helpers ---
 	private void sendHtmlEmail(String to, String subject, String htmlBody) throws MessagingException {
 		MimeMessage message = mailSender.createMimeMessage();
-		message.setFrom(address);
+		message.setFrom(mailProperties.getAddress());
 		message.setRecipients(MimeMessage.RecipientType.TO, to);
 		message.setSubject(subject);
 		message.setText(htmlBody, "UTF-8", "html");
 		mailSender.send(message);
 	}
 
-	private String getVerificationCodeKey(String email) {
-		return REDIS_KEY_VERIFY_PREFIX + email;
+	private String buildEmailBody(String verificationCode) {
+		return String.format(
+			"<h2>이메일 인증번호 안내</h2>"
+				+ "<p>아래 인증번호를 <strong>%d분 이내</strong>에 입력해주세요.</p>"
+				+ "<h3 style='color: #2d88ff;'>인증번호: <strong>%s</strong></h3>"
+				+ "<p style='margin-top: 16px;'>"
+				+ "⚠️ 인증 후 <strong>%d분 이내에 절차를 완료</strong>해야 인증이 유지됩니다.<br>"
+				+ "인증이 만료되면 다시 요청해 주세요."
+				+ "</p>"
+				+ "<p style='margin-top: 24px;'>감사합니다.<br/>F'LINK 드림</p>"
+			, VERIFICATION_CODE_TTL_MINUTES, verificationCode, VERIFICATION_SUCCESS_TTL_MINUTES
+		);
 	}
 
-	private String getVerifiedKey(String email) {
-		return REDIS_KEY_VERIFIED_PREFIX + email;
-	}
-
-	private String createVerificationCode() {
+	private String generateVerificationCode() {
 		String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
 		StringBuilder code = new StringBuilder();
 		Random random = new Random();
 
 		for (int i = 0; i < 6; i++) {
-			int index = random.nextInt(characters.length());
-			code.append(characters.charAt(index));
+			code.append(characters.charAt(random.nextInt(characters.length())));
 		}
 		return code.toString();
 	}
