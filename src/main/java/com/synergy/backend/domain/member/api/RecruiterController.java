@@ -77,7 +77,7 @@ public class RecruiterController {
 														  ) {
 
 		AttendeeFilterRequest requestCondition = AttendeeFilterRequest.of(occupations, EducationLevel, ageGroup, regions);
-		return ApiResponse.ok(recruiterService.getAttendeeFrom(pageable, requestCondition), 200);
+		return ApiResponse.ok(recruiterService.getAttendeesBy(pageable, requestCondition), 200);
 	}
 
 
