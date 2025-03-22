@@ -47,9 +47,7 @@ public class AuthServiceImpl implements AuthService {
 	public SignupAttendeeResponseDto registerAttendee(SignupAttendeeRequestDto request) {
 
 		// 이메일 인증 여부 확인
-		if (!mailService.isVerified(request.email())) {
-			throw new EmailNotVerifiedException();
-		}
+		validateEmailVerification(request.email());
 
 		if (attendeeRepository.findByEmail(request.email()).isPresent()) {
 			throw new DuplicateEmailException();
@@ -102,9 +100,7 @@ public class AuthServiceImpl implements AuthService {
 	public void passwordResetRequest(String email, String name, String phone) {
 
 		// 이메일 인증 여부 확인
-		if (!mailService.isVerified(email)) {
-			throw new EmailNotVerifiedException();
-		}
+		validateEmailVerification(email);
 
 		Attendee attendee = findAttendeeWithEmail(email);
 
@@ -116,14 +112,19 @@ public class AuthServiceImpl implements AuthService {
 	@Transactional
 	@Override
 	public void passwordReset(String email, String newPassword) {
-		String newEncodePassword = encodePassword(newPassword);
-
 		Attendee attendee = findAttendeeWithEmail(email);
-		if (attendee.getPassword().equals(newEncodePassword)) {
+
+		if (passwordEncoder.matches(newPassword, attendee.getPassword())) {
 			throw new SameAsPreviousPasswordException();
 		}
 
-		attendee.updatePassword(newEncodePassword);
+		attendee.updatePassword(encodePassword(newPassword));
+	}
+
+	private void validateEmailVerification(String email) {
+		if (!mailService.isVerified(email)) {
+			throw new EmailNotVerifiedException();
+		}
 	}
 
 	@Transactional(readOnly = true)
