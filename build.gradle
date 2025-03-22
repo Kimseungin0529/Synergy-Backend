@@ -51,6 +51,9 @@ dependencies {
     // email
     implementation 'org.springframework.boot:spring-boot-starter-mail'
 
+    // redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+
     // qrCode
     implementation group: 'com.google.zxing', name: 'javase', version: '3.5.0'
     implementation group: 'com.google.zxing', name: 'core', version: '3.5.0'
