@@ -1,10 +1,14 @@
 package com.synergy.backend.domain.member.service;
 
+import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
+import com.synergy.backend.domain.member.api.dto.AttendeeListResponse;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.exception.ForbiddenAccessAttendee;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +20,7 @@ import com.synergy.backend.domain.member.repository.RecruiterRepository;
 import lombok.RequiredArgsConstructor;
 
 @Service @Slf4j
+@Transactional
 @RequiredArgsConstructor
 public class RecruiterServiceImpl implements RecruiterService {
 
@@ -37,6 +42,14 @@ public class RecruiterServiceImpl implements RecruiterService {
 			throw new ForbiddenAccessAttendee();
 		}
 		return AttendeeDetailResponse.of(findAttendee);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public AttendeeListResponse getAttendeeFrom(Pageable pageable, AttendeeFilterRequest requestCondition) {
+		Page<Attendee> attendees = attendeeRepository.searchAttendeessBy(pageable, requestCondition);
+		//return AttendeeListResponse.from();
+		return null;
 	}
 
 	private Recruiter findRecruiterById(Long id) {
