@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.details.MembershipLevelType;
+import org.springframework.data.jpa.repository.Query;
 
 public interface AttendeeRepository extends JpaRepository<Attendee, Long> {
 	Optional<Attendee> findByEmail(String email);
@@ -16,4 +17,7 @@ public interface AttendeeRepository extends JpaRepository<Attendee, Long> {
 		Pageable pageable);
 
 	Page<Attendee> findAllByOrderByTotalPointsDesc(Pageable pageable);
+
+	@Query()
+    Optional<Attendee> findAttendeeBy(Long attendeeId);
 }

@@ -1,5 +1,8 @@
 package com.synergy.backend.domain.member.service;
 
+import com.synergy.backend.domain.member.entity.Attendee;
+import com.synergy.backend.domain.member.exception.NotFoundUserException;
+import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -15,12 +18,23 @@ import lombok.RequiredArgsConstructor;
 public class RecruiterServiceImpl implements RecruiterService {
 
 	private final RecruiterRepository recruiterRepository;
+	private final AttendeeRepository attendeeRepository;
 
 	@Transactional(readOnly = true)
 	@Override
 	public RecruiterMyInfoResponseDto getMyInformation(Long id) {
 		Recruiter recruiter = findRecruiterById(id);
 		return RecruiterMyInfoResponseDto.from(recruiter);
+	}
+
+	@Transactional(readOnly = true)
+	@Override
+	public AttendeeDetailResponse getAttendeeFrom(Long attendeeId) {
+		Attendee findAttendee = attendeeRepository.findAttendeeBy(attendeeId).orElseThrow(NotFoundUserException::new);
+		if(!findAttendee.getIsHiringInterested()) {
+			throw new IllegalArgumentException("참가자는 채용을 희망하지 않습니다.");
+		}
+		return AttendeeDetailResponse.of(findAttendee);
 	}
 
 	private Recruiter findRecruiterById(Long id) {
