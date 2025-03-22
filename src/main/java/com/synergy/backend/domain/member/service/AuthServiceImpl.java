@@ -98,13 +98,15 @@ public class AuthServiceImpl implements AuthService {
 	@Transactional
 	@Override
 	public void passwordResetRequest(String email, String name, String phone) {
-
 		// 이메일 인증 여부 확인
 		validateEmailVerification(email);
 
-		Attendee attendee = findAttendeeWithEmail(email);
-
-		if (!attendee.getName().equals(name) || !attendee.getPhone().equals(phone)) {
+		try {
+			Attendee attendee = findAttendeeWithEmail(email);
+			if (!attendee.getName().equals(name) || !attendee.getPhone().equals(phone)) {
+				throw new InvalidAccountInformationException();
+			}
+		} catch (NotFoundUserException e) {
 			throw new InvalidAccountInformationException();
 		}
 	}
