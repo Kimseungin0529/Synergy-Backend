@@ -21,6 +21,7 @@ public class MailServiceImpl implements MailService {
 
 	private final JavaMailSender mailSender;
 	private final RedisTemplate<String, String> redisTemplate;
+
 	@Value("${mail.smtp.address}")
 	private String address;
 
@@ -35,9 +36,14 @@ public class MailServiceImpl implements MailService {
 		message.setFrom(address);
 		message.setRecipients(MimeMessage.RecipientType.TO, email);
 		message.setSubject("이메일 인증");
-		String body = "<h3>요청하신 인증 번호입니다.</h3>"
-			+ "<p><strong>" + code + "</strong></p>"
-			+ "<p>인증번호는 " + CODE_EXPIRE_MINUTES + "분간 유효합니다.</p>";
+		String body = "<h2>이메일 인증번호 안내</h2>"
+			+ "<p>아래 인증번호를 <strong>" + CODE_EXPIRE_MINUTES + "분 이내</strong>에 입력해주세요.</p>"
+			+ "<h3 style='color: #2d88ff;'>인증번호: <strong>" + code + "</strong></h3>"
+			+ "<p style='margin-top: 16px;'>"
+			+ "⚠️ 인증 후 <strong>" + VERIFIED_EXPIRE_MINUTES + "분 이내에 절차를 완료</strong>해야 인증이 유지됩니다.<br>"
+			+ "인증이 만료되면 다시 요청해 주세요."
+			+ "</p>"
+			+ "<p style='margin-top: 24px;'>감사합니다.<br/>F'LINK 드림</p>";
 
 		message.setText(body, "UTF-8", "html");
 		mailSender.send(message);
