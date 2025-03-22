@@ -62,4 +62,11 @@ public class RecruiterController {
 		return ApiResponse.ok(recruiterAttendeeLikeService.getLikedAttendees(userDetails.getId()), 200);
 	}
 
+	@PreAuthorize("hasRole('RECRUITER')")
+	@GetMapping("/attendee/{id]}")
+	public ApiResponse<?> getAttendee(@PathVariable("id") Long id) {
+		return ApiResponse.ok(recruiterService.getAttendeeFrom(id), 200);
+	}
+
+
 }

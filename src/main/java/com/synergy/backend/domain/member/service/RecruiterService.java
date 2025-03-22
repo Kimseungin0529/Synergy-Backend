@@ -5,4 +5,5 @@ import com.synergy.backend.domain.member.api.dto.resposne.RecruiterMyInfoRespons
 public interface RecruiterService {
 	RecruiterMyInfoResponseDto getMyInformation(Long id);
 
+	AttendeeDetailResponse getAttendeeFrom(Long attendeeId);
 }
