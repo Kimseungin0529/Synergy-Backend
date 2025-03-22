@@ -1,5 +1,6 @@
 package com.synergy.backend.global.mail;
 
+import java.io.UnsupportedEncodingException;
 import java.time.Duration;
 import java.util.Random;
 
@@ -7,7 +8,14 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
+import com.synergy.backend.global.config.MailProperties;
+import com.synergy.backend.global.mail.exception.EmailNotVerifiedException;
+import com.synergy.backend.global.mail.exception.MailSendFailedException;
+import com.synergy.backend.global.mail.exception.VerificationCodeExpiredException;
+import com.synergy.backend.global.mail.exception.VerificationCodeMismatchException;
+
 import jakarta.mail.MessagingException;
+import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import lombok.RequiredArgsConstructor;
 
@@ -25,7 +33,7 @@ public class MailServiceImpl implements MailService {
 	private final MailProperties mailProperties;
 
 	@Override
-	public void sendVerificationCodeToMail(String email) throws MessagingException {
+	public void sendVerificationCodeToMail(String email) {
 		String code = generateVerificationCode();
 		storeToRedis(getVerifyCodeKey(email), code, VERIFICATION_CODE_TTL_MINUTES);
 
@@ -84,13 +92,17 @@ public class MailServiceImpl implements MailService {
 	}
 
 	// --- Mail helpers ---
-	private void sendHtmlEmail(String to, String subject, String htmlBody) throws MessagingException {
-		MimeMessage message = mailSender.createMimeMessage();
-		message.setFrom(mailProperties.getAddress());
-		message.setRecipients(MimeMessage.RecipientType.TO, to);
-		message.setSubject(subject);
-		message.setText(htmlBody, "UTF-8", "html");
-		mailSender.send(message);
+	private void sendHtmlEmail(String to, String subject, String htmlBody) {
+		try {
+			MimeMessage message = mailSender.createMimeMessage();
+			message.setFrom(new InternetAddress(mailProperties.address(), mailProperties.personal()));
+			message.setRecipients(MimeMessage.RecipientType.TO, to);
+			message.setSubject(subject);
+			message.setText(htmlBody, "UTF-8", "html");
+			mailSender.send(message);
+		} catch (MessagingException | UnsupportedEncodingException e) {
+			throw new MailSendFailedException(e.getMessage());
+		}
 	}
 
 	private String buildEmailBody(String verificationCode) {

@@ -21,7 +21,7 @@ import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
 import com.synergy.backend.domain.point.service.PointService;
-import com.synergy.backend.global.mail.EmailNotVerifiedException;
+import com.synergy.backend.global.mail.exception.EmailNotVerifiedException;
 import com.synergy.backend.global.mail.MailService;
 import com.synergy.backend.global.security.CustomUserDetails;
 import com.synergy.backend.global.security.JwtProvider;
