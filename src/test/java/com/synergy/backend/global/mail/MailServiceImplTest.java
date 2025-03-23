@@ -21,6 +21,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.synergy.backend.global.config.MailProperties;
 import com.synergy.backend.global.mail.exception.EmailNotVerifiedException;
+import com.synergy.backend.global.mail.exception.MailSendFailedException;
 import com.synergy.backend.global.mail.exception.VerificationCodeExpiredException;
 import com.synergy.backend.global.mail.exception.VerificationCodeMismatchException;
 
@@ -52,12 +53,11 @@ class MailServiceImplTest {
 		ReflectionTestUtils.setField(mailService, "mailProperties", mailProperties);
 	}
 
-	@DisplayName("메일에 인증번호를 보내고 Redis에 정확한 key와 code를 저장한다.")
+	@DisplayName("메일에 인증번호를 보내고 Redis에 저장 및 메일이 정상 발송된다.")
 	@Test
-	void sendVerificationCodeToMail_shouldStoreCodeInRedis() {
+	void sendVerificationCodeToMail_shouldStoreCodeAndSendMail() {
 		// given
 		String email = "user@example.com";
-
 		ArgumentCaptor<String> keyCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<String> codeCaptor = ArgumentCaptor.forClass(String.class);
 		ArgumentCaptor<Duration> durationCaptor = ArgumentCaptor.forClass(Duration.class);
@@ -72,24 +72,40 @@ class MailServiceImplTest {
 		verify(valueOperations).set(keyCaptor.capture(), codeCaptor.capture(), durationCaptor.capture());
 		verify(mailSender).createMimeMessage();
 		verify(mailSender).send(mimeMessage);
-
 		assertThat(keyCaptor.getValue()).startsWith(REDIS_VERIFY_CODE_PREFIX + email);
 		assertThat(codeCaptor.getValue()).matches("^[a-z0-9]{6}$");
 		assertThat(durationCaptor.getValue()).isEqualTo(Duration.ofMinutes(VERIFICATION_CODE_TTL_MINUTES));
 	}
 
-	@DisplayName("올바른 인증번호 입력시 이메일 인증에 성공한다.")
+	@DisplayName("메일 전송 실패 시 MailSendFailedException을 던진다.")
 	@Test
-	void mailVerificationConfirm_shouldSucceed_whenCodeMatches() {
+	void sendVerificationCodeToMail_shouldThrowMailSendFailedException_whenSendFails() {
+		// given
 		String email = "user@example.com";
-		String key = REDIS_VERIFY_CODE_PREFIX + email;
-		String correctCode = "abc123";
 
 		when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-		when(valueOperations.get(key)).thenReturn(correctCode);
+		when(mailSender.createMimeMessage()).thenReturn(mimeMessage);
+		doThrow(new RuntimeException("SMTP error")).when(mailSender).send(any(MimeMessage.class));
+
+		// when & then
+		assertThatThrownBy(() -> mailService.sendVerificationCodeToMail(email))
+			.isInstanceOf(MailSendFailedException.class)
+			.hasMessageContaining("SMTP error");
+	}
+
+	@DisplayName("올바른 인증번호 입력 시 인증 성공으로 Redis에 저장되고 기존 인증번호는 삭제된다.")
+	@Test
+	void mailVerificationConfirm_shouldSucceed_whenCodeMatches() {
+		// given
+		String email = "user@example.com";
+		String key = REDIS_VERIFY_CODE_PREFIX + email;
+		String code = "abc123";
+
+		when(redisTemplate.opsForValue()).thenReturn(valueOperations);
+		when(valueOperations.get(key)).thenReturn(code);
 
 		// when
-		mailService.mailVerificationConfirm(email, correctCode);
+		mailService.mailVerificationConfirm(email, code);
 
 		// then
 		verify(valueOperations).set(REDIS_VERIFIED_PREFIX + email, "true",
@@ -97,67 +113,69 @@ class MailServiceImplTest {
 		verify(redisTemplate).delete(key);
 	}
 
-	@DisplayName("인증번호 만료")
+	@DisplayName("인증번호가 없으면 VerificationCodeExpiredException을 던진다.")
 	@Test
-	void mailVerificationConfirm_shouldFail_whenCodeMissing() {
+	void mailVerificationConfirm_shouldThrow_whenCodeMissing() {
+		// given
 		String email = "user@example.com";
 		String key = REDIS_VERIFY_CODE_PREFIX + email;
 
 		when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 		when(valueOperations.get(key)).thenReturn(null);
 
+		// then
 		assertThrows(VerificationCodeExpiredException.class, () ->
 			mailService.mailVerificationConfirm(email, "abc123")
 		);
 	}
 
-	@DisplayName("잘못된 코드 VerificationCodeMismatchException")
+	@DisplayName("잘못된 인증번호 입력 시 VerificationCodeMismatchException을 던진다.")
 	@Test
-	void mailVerificationConfirm_shouldFail_whenCodeMismatch() {
+	void mailVerificationConfirm_shouldThrow_whenCodeMismatch() {
+		// given
 		String email = "user@example.com";
 		String key = REDIS_VERIFY_CODE_PREFIX + email;
 
 		when(redisTemplate.opsForValue()).thenReturn(valueOperations);
-		when(valueOperations.get(key)).thenReturn("realcode");
+		when(valueOperations.get(key)).thenReturn("correctCode");
 
+		// then
 		assertThrows(VerificationCodeMismatchException.class, () ->
-			mailService.mailVerificationConfirm(email, "wrongcode")
+			mailService.mailVerificationConfirm(email, "wrongCode")
 		);
 	}
 
+	@DisplayName("인증 여부 확인 시 true 반환 및 키 삭제")
 	@Test
 	void isVerified_shouldReturnTrue_whenVerified() {
+		// given
 		String email = "user@example.com";
 		String key = REDIS_VERIFIED_PREFIX + email;
 
 		when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 		when(valueOperations.get(key)).thenReturn("true");
 
+		// when
 		boolean result = mailService.isVerified(email);
 
+		// then
 		assertTrue(result);
 		verify(redisTemplate).delete(key);
 	}
 
+	@DisplayName("인증 여부 확인 시 인증 정보 없으면 EmailNotVerifiedException 예외 발생")
 	@Test
 	void isVerified_shouldThrow_whenNotVerified() {
+		// given
 		String email = "user@example.com";
 		String key = REDIS_VERIFIED_PREFIX + email;
 
 		when(redisTemplate.opsForValue()).thenReturn(valueOperations);
 		when(valueOperations.get(key)).thenReturn(null);
 
+		// then
 		assertThrows(EmailNotVerifiedException.class, () ->
 			mailService.isVerified(email)
 		);
 	}
-
-	// 메일이 성공적으로 보내진다.
-	// 메일 전송 실패시 MailSendFailedException
-	// redis에 설정한 ttl동안 이메일-인증번호가 저장된다.
-	// redis에 저장된 인증번호가 만료되었거나 존재하지 않으면 VerificationCodeExpiredException
-	// 올바른 인증번호 입력 시 이메일-인증번호는 삭제되고, reids에 설정한 ttl동안 이메일-성공이 저장된다.
-	// redis에 저장된 인증번호가 입력한 인증번호와 일치하지 않으면 VerificationCodeMismatchException
-	// 이메일 인증여부 확인시 true가 반환된다.
-	// 이메일이 인증확인 상태가 아니면 (redis에 이메일-성공이 만료되었거나 존재하지 않으면) EmailNotVerifiedException
 }

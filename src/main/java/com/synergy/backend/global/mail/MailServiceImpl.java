@@ -100,7 +100,7 @@ public class MailServiceImpl implements MailService {
 			message.setSubject(subject);
 			message.setText(htmlBody, "UTF-8", "html");
 			mailSender.send(message);
-		} catch (MessagingException | UnsupportedEncodingException e) {
+		} catch (RuntimeException | MessagingException | UnsupportedEncodingException e) {
 			throw new MailSendFailedException(e.getMessage());
 		}
 	}
