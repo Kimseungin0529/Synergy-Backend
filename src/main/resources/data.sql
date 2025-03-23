@@ -43,15 +43,15 @@ INSERT INTO job_category (code, name, occupation_id) VALUES (402, '취업 준비
 INSERT INTO job_category (code, name, occupation_id) VALUES (403, '연구원', 4);
 INSERT INTO job_category (code, name, occupation_id) VALUES (499, '기타', 4);
 
----- 관리자
+-- 관리자
 INSERT INTO admin (admin_auth_code) VALUES ('ADM12345');
 INSERT INTO admin (admin_auth_code) VALUES ('ADM67890');
 
----- 채용 담당자
+-- 채용 담당자
 INSERT INTO recruiter (recruiter_id, recruiter_auth_code, company, responsibility, name) VALUES (1, 'RC12345', 'CodeSphere', 'HR팀 매니저', '박수진');
 INSERT INTO recruiter (recruiter_id, recruiter_auth_code, company, responsibility, name) VALUES (2, 'RC67890', 'OpenStack Korea', 'HR팀 매니저', '김주은');
 
------- 참가자 기본 데이터
+-- 참가자 기본 데이터
 INSERT INTO attendee (email, password, name, phone, total_points, membership_level_type)
 VALUES
     ('jiwon.kim@example.com', '$2a$10$aO4mzbreIOHJiJDgPaUtG.BS81l7i92I2.D2qkwvM5hvUB8BGBsk2', '김지원', '01012345678', 250, 'BRONZE'),
@@ -61,7 +61,32 @@ VALUES
     ('dayoung.lee@example.com', '$2a$10$hashedpassword5', '이다영', '01099990000', 1500, 'GOLD'),
     ('dahye.kim@example.com', '$2a$10$hashedpassword6', '김다혜', '01011112222', 50, 'DEFAULT');
 
----- 참가자의 현재 직업 및 직무 업데이트
+-- 김지원 (attendee_id = 1) → 수도권, 부산
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (1, 0); -- CAPITAL_AREA
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (1, 1); -- BUSAN
+
+-- 최영호 (attendee_id = 2) → 대구
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (2, 2); -- DAEGU
+
+-- 정서연 (attendee_id = 3) → 대전, 세종
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (3, 3); -- DAEJEON
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (3, 6); -- SEJONG
+
+-- 박시형 (attendee_id = 4) → 강원, 전라
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (4, 7); -- GANGWON
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (4, 9); -- JEOLLA
+
+-- 이다영 (attendee_id = 5) → 경상, 제주
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (5, 10); -- GYEONGSANG
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (5, 11); -- JEJU
+
+-- 김다혜 (attendee_id = 6) → 울산, 충청
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (6, 5); -- ULSAN
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (6, 8); -- CHUNGCHEONG
+
+
+
+-- 참가자의 현재 직업 및 직무 업데이트
 UPDATE attendee
 SET
 is_hiring_interested = 1,
@@ -80,7 +105,12 @@ SET
 is_hiring_interested = 1,
 current_job_id = 12,
 current_occupation_id = 2,
-desired_occupation_id = 2
+desired_occupation_id = 2,
+self_introduction = '최신 사람입니다!',
+tech_stacks = 'AWS',
+age_group = 'AGE_20_24',
+education_level = 2,
+experience_level = 2
 WHERE attendee_id = 2;
 
 UPDATE attendee
@@ -88,7 +118,12 @@ SET
 is_hiring_interested = 1,
 current_job_id = 11,
 current_occupation_id = 2,
-desired_occupation_id = 2
+desired_occupation_id = 2,
+self_introduction = '사람입니다!',
+tech_stacks = 'Ruby',
+age_group = 'AGE_25_29',
+education_level = 1,
+experience_level = 1
 WHERE attendee_id = 3;
 
 UPDATE attendee
@@ -96,7 +131,12 @@ SET
 is_hiring_interested = 1,
 current_job_id = 1,
 current_occupation_id = 1,
-desired_occupation_id = 1
+desired_occupation_id = 1,
+self_introduction = '혼자서 할 수 있는 개발자!',
+tech_stacks = 'Go, C++',
+age_group = 'AGE_35_PLUS',
+education_level = 3,
+experience_level = 3
 WHERE attendee_id = 4;
 
 UPDATE attendee
@@ -104,7 +144,12 @@ SET
 is_hiring_interested = 1,
 current_job_id = 1,
 current_occupation_id = 1,
-desired_occupation_id = 1
+desired_occupation_id = 1,
+self_introduction = '혼자서 할 수 있는 개발자!',
+tech_stacks = 'Go, C++',
+age_group = 'AGE_35_PLUS',
+education_level = 3,
+experience_level = 3
 WHERE attendee_id = 5;
 
 UPDATE attendee
@@ -112,7 +157,12 @@ SET
 is_hiring_interested = 1,
 current_job_id = 1,
 current_occupation_id = 1,
-desired_occupation_id = 1
+desired_occupation_id = 1,
+self_introduction = '100인 분 할 수 있는 개발자!',
+tech_stacks = 'Git, Docker',
+age_group = 'AGE_30_34',
+education_level = 3,
+experience_level = 3
 WHERE attendee_id = 6;
 
 -- 참가자의 관심 분야(Interest) 매핑
@@ -131,10 +181,10 @@ VALUES
 -- 채용담당자 좋아요 업데이트
 desc recruiter_attendee_like;
 INSERT INTO recruiter_attendee_like (id, attendee_id, recruiter_id)
-VALUES
-    (1, 1, 1),
-    (2, 2, 1),
-    (3, 3, 1),
+    VALUES
+        (1, 1, 1),
+        (2, 2, 1),
+        (3, 3, 1),
     (4, 1, 2),
     (5, 2, 2);
 
@@ -172,16 +222,16 @@ VALUES
     (6, 0);
 
 
--- 희망 근무 지역
-INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region)
-VALUES
-    (1, 0),
-    (1, 11),
-    (2, 2),
-    (3, 3),
-    (4, 1),
-    (5, 5),
-    (6, 4);
+# -- 희망 근무 지역
+# INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region)
+# VALUES
+#     (1, 0),
+#     (1, 11),
+#     (2, 2),
+#     (3, 3),
+#     (4, 1),
+#     (5, 5),
+#     (6, 4);
 
 
 -- 컨퍼런스

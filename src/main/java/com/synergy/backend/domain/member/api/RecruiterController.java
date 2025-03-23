@@ -74,13 +74,13 @@ public class RecruiterController {
 														  Pageable pageable,
 														  @PathVariable("id") Long recruiterId,
 														  @RequestParam(required = false) List<String> occupations,
-														  @RequestParam(required = false) String EducationLevel,
+														  @RequestParam(required = false) String educationLevel,
 														  @RequestParam(required = false) String ageGroup,
 														  @RequestParam(required = false) String experienceLevel,
 														  @RequestParam(required = false) List<String> regions
 														  ) {
 
-		AttendeeFilterRequest requestCondition = AttendeeFilterRequest.of(occupations, EducationLevel, ageGroup, experienceLevel, regions);
+		AttendeeFilterRequest requestCondition = AttendeeFilterRequest.of(occupations, educationLevel, ageGroup, experienceLevel, regions);
 		return ApiResponse.ok(recruiterService.getAttendeesBy(pageable, recruiterId, requestCondition), 200);
 	}
 
