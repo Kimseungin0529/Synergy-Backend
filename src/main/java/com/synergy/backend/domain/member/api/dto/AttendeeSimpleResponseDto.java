@@ -1,6 +1,7 @@
 package com.synergy.backend.domain.member.api.dto;
 
 import com.querydsl.core.annotations.QueryProjection;
+import com.synergy.backend.domain.member.entity.details.ExperienceLevelType;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -15,11 +16,11 @@ public class AttendeeSimpleResponseDto {
 
 
     @QueryProjection
-    public AttendeeSimpleResponseDto(String name, String profileUrl, String occupation, String experienceLevel, String techStacks) {
+    public AttendeeSimpleResponseDto(String name, String profileUrl, String occupation, ExperienceLevelType experienceLevel, String techStacks) {
         this.name = name;
         this.profileUrl = profileUrl;
         this.occupation = occupation;
-        this.experienceLevel = experienceLevel;
+        this.experienceLevel = experienceLevel != null ? experienceLevel.getDescription() : null;
         this.techStacks = techStacks;
     }
 }

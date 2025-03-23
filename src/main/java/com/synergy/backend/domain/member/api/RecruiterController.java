@@ -6,6 +6,7 @@ import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
 import com.synergy.backend.domain.member.api.dto.AttendeeListResponse;
 import com.synergy.backend.domain.member.service.AttendeeDetailResponse;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -69,14 +70,16 @@ public class RecruiterController {
 
 	@PreAuthorize("hasRole('RECRUITER')")
 	@GetMapping("/attendees")
-	public ApiResponse<AttendeeListResponse> getAttendees(Pageable pageable,
+	public ApiResponse<AttendeeListResponse> getAttendees(@PageableDefault(page = 0, size = 10)
+														  Pageable pageable,
 														  @RequestParam(required = false) List<String> occupations,
 														  @RequestParam(required = false) String EducationLevel,
 														  @RequestParam(required = false) String ageGroup,
+														  @RequestParam(required = false) String experienceLevel,
 														  @RequestParam(required = false) List<String> regions
 														  ) {
 
-		AttendeeFilterRequest requestCondition = AttendeeFilterRequest.of(occupations, EducationLevel, ageGroup, regions);
+		AttendeeFilterRequest requestCondition = AttendeeFilterRequest.of(occupations, EducationLevel, ageGroup, experienceLevel, regions);
 		return ApiResponse.ok(recruiterService.getAttendeesBy(pageable, requestCondition), 200);
 	}
 
