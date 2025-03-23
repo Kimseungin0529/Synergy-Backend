@@ -28,7 +28,6 @@ import com.synergy.backend.domain.member.exception.UnauthorizedException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
-import com.synergy.backend.domain.point.service.PointServiceImpl;
 import com.synergy.backend.global.security.CustomUserDetails;
 import com.synergy.backend.global.security.JwtProvider;
 
@@ -37,9 +36,6 @@ class AuthServiceImplTest {
 
 	@InjectMocks
 	private AuthServiceImpl authService;
-
-	@Mock
-	private PointServiceImpl pointService;
 
 	@Mock
 	private AttendeeRepository attendeeRepository;
@@ -197,7 +193,7 @@ class AuthServiceImplTest {
 	}
 
 	@Test
-	@DisplayName("잘못된 인증 코드로 로그인하면 예외가 발생한다.")
+	@DisplayName("관리자나 채용담당자가 잘못된 인증 코드로 로그인하면 예외가 발생한다.")
 	void loginAsAdminOrRecruiter_InvalidAuthCode_ThrowsException() {
 		// Given
 		String invalidAuthCode = "invalidAuthCode";
@@ -212,5 +208,13 @@ class AuthServiceImplTest {
 		verify(recruiterRepository).findByRecruiterAuthCode(invalidAuthCode);
 
 		verify(jwtProvider, never()).generateToken(any(CustomUserDetails.class));
+	}
+
+	@Test
+	void passwordResetRequest() {
+	}
+
+	@Test
+	void passwordReset() {
 	}
 }
