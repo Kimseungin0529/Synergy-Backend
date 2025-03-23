@@ -2,6 +2,7 @@ package com.synergy.backend.global.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
@@ -34,10 +35,26 @@ public class SecurityConfig {
 			.csrf(AbstractHttpConfigurer::disable)
 			.sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
 			.authorizeHttpRequests(auth -> auth
-				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
-				.requestMatchers("/api/v1/auth/**").permitAll()
-				.requestMatchers("/api/v1/conference/**").permitAll()
-					.anyRequest().authenticated()
+					.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
+
+					// 컨퍼런스 관리자
+					.requestMatchers("/api/v1/conference/**", "/api/v1/admin/**",
+							"/api/v1/dashboard/**")
+					.hasRole("ADMIN")
+
+					// 참가자
+					.requestMatchers("/api/v1/attendee/onboarding/**", "/api/v1/attendee/my",
+							"/api/v1/attendee/liked-recruiters", "/api/v1/verify/**",
+							"/api/v1/points/**")
+					.hasRole("ATTENDEE")
+
+					// 채용담당자
+					.requestMatchers("/api/v1/recruiter/**").hasRole("RECRUITER")
+
+					// All
+					.requestMatchers(HttpMethod.GET, "/api/v1/conference/**").permitAll()
+					.requestMatchers("/api/v1/auth/**").permitAll()
+					.requestMatchers("/api/v1/attendee/**").authenticated()
 			)
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
