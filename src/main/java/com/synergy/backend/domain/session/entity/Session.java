@@ -5,6 +5,7 @@ import static lombok.AccessLevel.*;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
@@ -14,6 +15,8 @@ import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
 
+import com.synergy.backend.domain.session.exception.NotValidSessionTime;
+import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.Builder;
@@ -63,7 +66,16 @@ public class Session {
 	private String secretCode;
 
 	@Column(nullable = false)
-	private String fileUrl;
+	private String qrKey;
+
+	@Column(nullable = false)
+	private String qrUrl;
+
+	@Column(nullable = false)
+	private String imageKey;
+
+	@Column(nullable = false)
+	private String imageUrl;
 
 	@OneToMany(mappedBy = "session", fetch = LAZY, cascade = CascadeType.ALL)
 	private List<AttendeeSession> attendeeSessions = new ArrayList<>();
@@ -72,14 +84,13 @@ public class Session {
 	private Set<Admin> admins = new HashSet<>();
 
 	@Builder
-	public Session(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
-				   String secretCode, Conference conference) {
+	public Session(SessionReqDto reqDto, String secretCode, Conference conference) {
 		this.title = reqDto.title();
 		this.speaker = reqDto.speaker();
 		this.speakerPosition = reqDto.speakerPosition();
-		this.progressDate = progressDate;
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.progressDate = reqDto.progressDate();
+		this.startTime = reqDto.startTime();
+		this.endTime = reqDto.endTime();
 		this.description = reqDto.description();
 		this.maximum = reqDto.maximum();
 		this.secretCode = secretCode;
@@ -87,31 +98,35 @@ public class Session {
 	}
 
 
-	public static Session of(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime, LocalDateTime endTime,
-							 String secretCode, Conference conference) {
+	public static Session of(SessionReqDto reqDto, String secretCode, Conference conference) {
 		return Session.builder()
 				.reqDto(reqDto)
-				.startTime(startTime)
-				.endTime(endTime)
 				.conference(conference)
 				.secretCode(secretCode)
-				.progressDate(progressDate)
 				.build();
 	}
 
-	public void updateSession(SessionReqDto reqDto, LocalDate progressDate, LocalDateTime startTime,
-		LocalDateTime endTime) {
+	public void updateSession(SessionReqDto reqDto, FileInformationDto fileInfo) {
 		this.title = reqDto.title();
 		this.speaker = reqDto.speaker();
 		this.speakerPosition = reqDto.speakerPosition();
-		this.progressDate = progressDate;
-		this.startTime = startTime;
-		this.endTime = endTime;
+		this.progressDate = reqDto.progressDate();
+		this.startTime = reqDto.startTime();
+		this.endTime = reqDto.endTime();
 		this.description = reqDto.description();
+		this.maximum = reqDto.maximum();
+		this.imageKey = fileInfo.fileKey();
+		this.imageUrl = fileInfo.accessUrl();
 	}
 
-	public void addQRCode(String fileUrl) {
-		this.fileUrl = fileUrl;
+	public void addQRCode(FileInformationDto fileInformationDto) {
+		this.qrKey = fileInformationDto.fileKey();
+		this.qrUrl = fileInformationDto.accessUrl();
+	}
+
+	public void addImage(FileInformationDto fileInformationDto) {
+		this.imageKey = fileInformationDto.fileKey();
+		this.imageUrl = fileInformationDto.accessUrl();
 	}
 
 	public void addAdmin(Admin admin) {

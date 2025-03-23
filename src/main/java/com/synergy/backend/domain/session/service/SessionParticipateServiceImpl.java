@@ -71,7 +71,7 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
     @Override
     public List<SessionParticipateRateResDto> getSessionParticipateRate(String identifier, Long conferenceId) {
         Admin currentMember = findIfAdminExists(identifier);
-        verifyUserAuthentication(currentMember); // 해당 컨퍼런스의 소유자인지 확인해야돰.
+        findIfConferenceMine(currentMember, conferenceId); // 해당 컨퍼런스의 소유자인지 확인해야돰.
         ifConferenceExists(conferenceId);
 
         List<SessionParticipateRateResDto> sessionParticipate =
@@ -88,13 +88,13 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
     public List<SessionParticipateRateDetailResDto> getSessionParticipateRateDetail(String identifier, Long conferenceId) {
         // 이름순으로 관심 분야를 기준으로 조회시키기.
         Admin currentMember = findIfAdminExists(identifier);
-        verifyUserAuthentication(currentMember); // 해당 컨퍼런스의 소유자인지 확인해야 됨.
+        findIfConferenceMine(currentMember, conferenceId); // 해당 컨퍼런스의 소유자인지 확인해야 됨.
 
-
-        return null;
+        return sessionRepository.getSessionParticipateDetailByConferenceId(conferenceId);
     }
 
-    private void verifyUserAuthentication(Admin admin){
+    private void findIfConferenceMine(Admin admin, Long conferenceId) {
+        adminRepository.findByIdAndConferences_Id(admin.getId(), conferenceId);
     }
 
     private Admin findIfAdminExists(String identifier) {
@@ -118,7 +118,7 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
         return conferenceRepository.findById(conferenceId).orElseThrow(NotFoundConference::new);
     }
 
-    private Session ifSessionExists(Long sessionId) {
-        return sessionRepository.findById(sessionId).orElseThrow(NotFoundSession::new);
-    }
+//    private Session ifSessionExists(Long sessionId) {
+//        return sessionRepository.findById(sessionId).orElseThrow(NotFoundSession::new);
+//    }
 }

@@ -24,11 +24,14 @@ import com.synergy.backend.domain.session.repository.AttendeeSessionRepository;
 import com.synergy.backend.domain.session.repository.sessionQuestionRepository.SessionQuestionRepository;
 import com.synergy.backend.domain.session.repository.sessionRepository.SessionRepository;
 import com.synergy.backend.domain.session.service.validate.DateTimeValidator;
+import com.synergy.backend.global.exception.AuthorizedException;
 import com.synergy.backend.global.util.SecurityUtils;
+import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import com.synergy.backend.global.util.file.util.FileS3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -50,19 +53,17 @@ public class SessionServiceImpl implements SessionService {
     private final QrService qrService;
 
     @Override
-    public void createSession(String idenfier, Long conferenceId, SessionReqDto reqDto) throws WriterException {
-        Admin admin = findIfAdminExists(idenfier);
+    public void createSession(String identifier, Long conferenceId, SessionReqDto reqDto, MultipartFile multipartFile) throws WriterException {
+        Admin admin = findIfAdminExists(identifier);
         Conference conference = ifConferenceExists(conferenceId);
 
-        LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
-        LocalDateTime startTime = DateTimeValidator.isValidLocalDateTime(reqDto.startTime());
-        LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
         String secretCode = UUID.randomUUID().toString();
 
-        Session session = Session.of(reqDto, progressDate, startTime, endTime, secretCode, conference);
+        Session session = Session.of(reqDto, secretCode, conference);
         admin.addSession(session);
         byte[] qrCode = qrService.generateQRCode(reqDto.domainAddress(), session.getId(), secretCode);
         session.addQRCode(fileS3Util.uploadQRCode(qrCode, session.getTitle()));
+        session.addImage(fileS3Util.uploadFile(multipartFile));
 
         sessionRepository.save(session);
     }
@@ -95,21 +96,21 @@ public class SessionServiceImpl implements SessionService {
     }
 
     @Override
-    public void updateSession(String idenfier, Long sessionId, SessionReqDto reqDto) {
+    public void updateSession(String identifier, Long sessionId, SessionReqDto reqDto, MultipartFile multipartFile) {
         Session session = ifSessionExists(sessionId);
-        // session에 대한 본인 소지 여부 확인
-        LocalDate progressDate = LocalDate.parse(reqDto.progressDate());
-        LocalDateTime startTime = DateTimeValidator.isValidLocalDateTime(reqDto.startTime());
-        LocalDateTime endTime = DateTimeValidator.isValidLocalDateTime(reqDto.endTime());
+        Admin admin = findIfAdminExists(identifier);
+        verifyAuthenticationRole(session, admin);
 
-        session.updateSession(reqDto, progressDate, startTime, endTime);
+        FileInformationDto fileInfo = fileS3Util.uploadFile(multipartFile);
+        session.updateSession(reqDto, fileInfo);
     }
 
     @Override
-    public void deleteSession(String idenfier, Long sessionId) {
-        Admin admin = findIfAdminExists(idenfier);
-        // session에 대한 권한 확인
+    public void deleteSession(String identifier, Long sessionId) {
         Session session = ifSessionExists(sessionId);
+        Admin admin = findIfAdminExists(identifier);
+        verifyAuthenticationRole(session, admin);
+
         sessionRepository.delete(session);
     }
 
@@ -141,6 +142,12 @@ public class SessionServiceImpl implements SessionService {
 
     private Session ifSessionExists(Long sessionId) {
         return sessionRepository.findById(sessionId).orElseThrow(NotFoundSession::new);
+    }
+
+    private void verifyAuthenticationRole(Session session, Admin admin) {
+        if(!sessionRepository.existsByIdAndAdmins_Id(session.getId(), admin.getId())){
+            throw new AuthorizedException();
+        }
     }
 
 }
