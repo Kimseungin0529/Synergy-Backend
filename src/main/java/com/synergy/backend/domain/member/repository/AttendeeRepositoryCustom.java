@@ -7,5 +7,5 @@ import org.springframework.data.domain.Pageable;
 
 
 public interface AttendeeRepositoryCustom {
-    Page<AttendeeSimpleResponseDto> searchPageAttendeesBy(Pageable pageable, AttendeeFilterRequest requestCondition);
+    Page<AttendeeSimpleResponseDto> searchPageAttendeesBy(Pageable pageable, Long recruiter, AttendeeFilterRequest requestCondition);
 }

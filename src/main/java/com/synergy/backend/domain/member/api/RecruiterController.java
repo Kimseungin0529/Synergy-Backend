@@ -69,9 +69,10 @@ public class RecruiterController {
 	}
 
 	@PreAuthorize("hasRole('RECRUITER')")
-	@GetMapping("/attendees")
-	public ApiResponse<AttendeeListResponse> getAttendees(@PageableDefault(page = 0, size = 10)
+	@GetMapping("/{id}/attendees")
+	public ApiResponse<AttendeeListResponse> getAttendees(@PageableDefault(page = 0, size = 20)
 														  Pageable pageable,
+														  @PathVariable("id") Long recruiterId,
 														  @RequestParam(required = false) List<String> occupations,
 														  @RequestParam(required = false) String EducationLevel,
 														  @RequestParam(required = false) String ageGroup,
@@ -80,7 +81,7 @@ public class RecruiterController {
 														  ) {
 
 		AttendeeFilterRequest requestCondition = AttendeeFilterRequest.of(occupations, EducationLevel, ageGroup, experienceLevel, regions);
-		return ApiResponse.ok(recruiterService.getAttendeesBy(pageable, requestCondition), 200);
+		return ApiResponse.ok(recruiterService.getAttendeesBy(pageable, recruiterId, requestCondition), 200);
 	}
 
 

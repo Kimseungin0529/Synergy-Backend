@@ -48,8 +48,8 @@ INSERT INTO admin (admin_auth_code) VALUES ('ADM12345');
 INSERT INTO admin (admin_auth_code) VALUES ('ADM67890');
 
 ---- 채용 담당자
-INSERT INTO recruiter (recruiter_auth_code, company, responsibility, name) VALUES ('RC12345', 'CodeSphere', 'HR팀 매니저', '박수진');
-INSERT INTO recruiter (recruiter_auth_code, company, responsibility, name) VALUES ('RC67890', 'OpenStack Korea', 'HR팀 매니저', '김주은');
+INSERT INTO recruiter (recruiter_id, recruiter_auth_code, company, responsibility, name) VALUES (1, 'RC12345', 'CodeSphere', 'HR팀 매니저', '박수진');
+INSERT INTO recruiter (recruiter_id, recruiter_auth_code, company, responsibility, name) VALUES (2, 'RC67890', 'OpenStack Korea', 'HR팀 매니저', '김주은');
 
 ------ 참가자 기본 데이터
 INSERT INTO attendee (email, password, name, phone, total_points, membership_level_type)
@@ -126,6 +126,17 @@ VALUES
     (4, 6),
     (5, 7),
     (6, 8);
+
+
+-- 채용담당자 좋아요 업데이트
+desc recruiter_attendee_like;
+INSERT INTO recruiter_attendee_like (id, attendee_id, recruiter_id)
+VALUES
+    (1, 1, 1),
+    (2, 2, 1),
+    (3, 3, 1),
+    (4, 1, 2),
+    (5, 2, 2);
 
 -- 참가자의 선호 기업 문화 업데이트
 INSERT INTO attendee_preferred_corporate_cultures (attendee_id, preferred_corporate_cultures)

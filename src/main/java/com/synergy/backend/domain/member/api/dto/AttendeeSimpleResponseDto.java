@@ -13,14 +13,16 @@ public class AttendeeSimpleResponseDto {
     private String occupation;
     private String techStacks;
     private String experienceLevel;
+    private boolean isLiked;
 
 
     @QueryProjection
-    public AttendeeSimpleResponseDto(String name, String profileUrl, String occupation, ExperienceLevelType experienceLevel, String techStacks) {
+    public AttendeeSimpleResponseDto(String name, String profileUrl, String occupation, ExperienceLevelType experienceLevel, String techStacks, boolean isLiked) {
         this.name = name;
         this.profileUrl = profileUrl;
         this.occupation = occupation;
         this.experienceLevel = experienceLevel != null ? experienceLevel.getDescription() : null;
         this.techStacks = techStacks;
+        this.isLiked = isLiked;
     }
 }

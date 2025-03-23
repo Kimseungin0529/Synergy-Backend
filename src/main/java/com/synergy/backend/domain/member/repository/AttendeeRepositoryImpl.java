@@ -1,10 +1,12 @@
 package com.synergy.backend.domain.member.repository;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
 import com.synergy.backend.domain.member.api.dto.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.api.dto.QAttendeeSimpleResponseDto;
+import com.synergy.backend.domain.member.entity.QRecruiterAttendeeLike;
 import com.synergy.backend.domain.member.entity.details.AgeGroup;
 import com.synergy.backend.domain.member.entity.details.EducationLevelType;
 import com.synergy.backend.domain.member.entity.details.ExperienceLevelType;
@@ -20,6 +22,7 @@ import java.util.stream.Collectors;
 
 import static com.synergy.backend.domain.job.QOccupationCategory.occupationCategory;
 import static com.synergy.backend.domain.member.entity.QAttendee.attendee;
+import static com.synergy.backend.domain.member.entity.QRecruiterAttendeeLike.*;
 
 
 @RequiredArgsConstructor
@@ -28,7 +31,7 @@ public class AttendeeRepositoryImpl implements AttendeeRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public Page<AttendeeSimpleResponseDto> searchPageAttendeesBy(Pageable pageable, AttendeeFilterRequest requestCondition) {
+    public Page<AttendeeSimpleResponseDto> searchPageAttendeesBy(Pageable pageable, Long recruiterId, AttendeeFilterRequest requestCondition) {
 
         List<AttendeeSimpleResponseDto> content = queryFactory
                 .select(
@@ -37,11 +40,17 @@ public class AttendeeRepositoryImpl implements AttendeeRepositoryCustom {
                         attendee.profilePhotoUrl,
                         occupationCategory.name,
                         attendee.experienceLevel,
-                        attendee.techStacks
+                        attendee.techStacks,
+                                new CaseBuilder()
+                                        .when(recruiterAttendeeLike.id.isNotNull()).then(true)
+                                        .otherwise(false)
+                                //좋아요 여부까지 추가
                         )
                 ).from(attendee)
+                .leftJoin(recruiterAttendeeLike)
+                .on(recruiterAttendeeLike.attendee.eq(attendee)
+                        .and(recruiterAttendeeLike.recruiter.id.eq(recruiterId))) // 현재 로그인 리크루터의 좋아요 여부
                 .join(attendee.currentOccupationCategory, occupationCategory)
-                //.fetchJoin()
                 .where(
                         occupationIn(requestCondition.occupations()),
                         educationEq(requestCondition.educationLevel()),

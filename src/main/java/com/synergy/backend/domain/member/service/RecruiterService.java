@@ -10,5 +10,5 @@ public interface RecruiterService {
 
 	AttendeeDetailResponse getAttendeeFrom(Long attendeeId);
 
-	AttendeeListResponse getAttendeesBy(Pageable pageable, AttendeeFilterRequest request);
+	AttendeeListResponse getAttendeesBy(Pageable pageable, Long recruiterId, AttendeeFilterRequest request);
 }
