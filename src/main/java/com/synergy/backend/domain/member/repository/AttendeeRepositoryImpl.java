@@ -3,6 +3,7 @@ package com.synergy.backend.domain.member.repository;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.core.types.dsl.CaseBuilder;
 import com.querydsl.jpa.impl.JPAQueryFactory;
+import com.synergy.backend.domain.job.QJobPosition;
 import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
 import com.synergy.backend.domain.member.api.dto.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.api.dto.QAttendeeSimpleResponseDto;
@@ -22,8 +23,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import static com.synergy.backend.domain.job.QJobCategory.jobCategory;
-import static com.synergy.backend.domain.job.QOccupationCategory.occupationCategory;
+import static com.synergy.backend.domain.job.QJobPosition.*;
 import static com.synergy.backend.domain.member.entity.QAttendee.attendee;
 import static com.synergy.backend.domain.member.entity.QRecruiterAttendeeLike.recruiterAttendeeLike;
 
@@ -42,7 +42,7 @@ public class AttendeeRepositoryImpl implements AttendeeRepositoryCustom {
                         new QAttendeeSimpleResponseDto(
                                 attendee.name,
                                 attendee.profilePhotoUrl,
-                                jobCategory.name,
+                                jobPosition.name,
                                 attendee.experienceLevel,
                                 attendee.techStacks,
                                 new CaseBuilder()
@@ -53,7 +53,7 @@ public class AttendeeRepositoryImpl implements AttendeeRepositoryCustom {
                 .leftJoin(recruiterAttendeeLike)
                 .on(recruiterAttendeeLike.attendee.eq(attendee)
                         .and(recruiterAttendeeLike.recruiter.id.eq(recruiterId))) // 현재 로그인 리크루터의 좋아요 여부
-                .join(attendee.currentJobCategory, jobCategory)
+                .join(attendee.currentJobPosition, jobPosition)
                 .where(
                         occupationIn(requestCondition.occupations()),
                         educationEq(requestCondition.educationLevel()),
@@ -71,7 +71,7 @@ public class AttendeeRepositoryImpl implements AttendeeRepositoryCustom {
 
 
     private BooleanExpression occupationIn(List<String> occupations) {
-        return (occupations == null || occupations.isEmpty()) ? null : attendee.currentJobCategory.name.in(occupations);
+        return (occupations == null || occupations.isEmpty()) ? null : attendee.currentJobPosition.name.in(occupations);
 
     }
 

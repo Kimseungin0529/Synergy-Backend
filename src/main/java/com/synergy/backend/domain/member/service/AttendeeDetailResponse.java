@@ -31,7 +31,7 @@ public record AttendeeDetailResponse(
         return AttendeeDetailResponse.builder()
                 .name(attendee.getName())
                 .profileUrl(attendee.getProfilePhotoUrl())
-                .occupation(attendee.getCurrentOccupationCategory().getName())
+                .occupation(attendee.getCurrentJobPosition().getName())
                 .experienceLevel(attendee.getExperienceLevel().getDescription())
                 .educationLevel(attendee.getEducationLevel().getDescription())
                 .ageGroup(attendee.getAgeGroup().getDescription())

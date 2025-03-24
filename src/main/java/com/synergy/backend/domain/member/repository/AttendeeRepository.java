@@ -19,7 +19,7 @@ public interface AttendeeRepository extends JpaRepository<Attendee, Long>, Atten
 
 	Page<Attendee> findAllByOrderByTotalPointsDesc(Pageable pageable);
 
-	@Query("select a from Attendee a join fetch a.currentJobCategory " +
-			"join fetch a.currentOccupationCategory where a.id = :id")
+	@Query("select a from Attendee a join fetch a.currentJobPosition " +
+			"join fetch a.currentJobGroup where a.id = :id")
     Optional<Attendee> findAttendeeBy(@Param("id") Long attendeeId);
 }
