@@ -10,8 +10,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/v1/conference/{conferenceId}/booths")
 @RequiredArgsConstructor
@@ -69,14 +67,5 @@ public class BoothController {
             @PathVariable Long attendeeId) {
         boothParticipationService.participateInBooth(attendeeId, boothId);
         return ApiResponse.ok("부스 참여가 완료되었습니다.", 201);
-    }
-
-    @DeleteMapping("/{boothId}/cancel/{attendeeId}")
-    public ApiResponse<String> cancelParticipation(
-            @PathVariable Long conferenceId,
-            @PathVariable Long boothId,
-            @PathVariable Long attendeeId) {
-        boothParticipationService.cancelParticipation(attendeeId, boothId);
-        return ApiResponse.ok("부스 참여가 취소되었습니다.", 200);
     }
 }

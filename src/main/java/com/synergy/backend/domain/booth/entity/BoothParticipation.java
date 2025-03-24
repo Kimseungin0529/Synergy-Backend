@@ -11,7 +11,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class AttendeeBooth {
+public class BoothParticipation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,7 +26,7 @@ public class AttendeeBooth {
     @JoinColumn(name = "attendee_id", nullable = false)
     private Attendee attendee;
 
-    public AttendeeBooth(Booth booth, Attendee attendee) {
+    public BoothParticipation(Booth booth, Attendee attendee) {
         this.booth = booth;
         this.attendee = attendee;
     }

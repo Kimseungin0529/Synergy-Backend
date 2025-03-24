@@ -32,23 +32,26 @@ public class BoothServiceImpl implements BoothService {
     public BoothResponseDto createBooth(Long conferenceId, BoothRequestDto request) {
         Conference conference = ifConferenceExists(conferenceId);
         Booth booth = new Booth(
-                request.name(),
-                request.company(),
-                request.location(),
-                request.description(),
-                conference
+                request.companyName(),
+                request.companyType(),
+                request.boothLocation(),
+                request.boothNumber(),
+                request.boothDescription(),
+                conference,
+                request.image()
         );
 
         boothRepository.save(booth);
 
-        String qrCodeUrl = "https://";
-        String secretCode = UUID.randomUUID().toString();
-        try {
-            byte[] qrCode = qrService.generateQRCode(qrCodeUrl, booth.getId(), secretCode);
-            booth.setQrCode(qrCode);
-        } catch (WriterException e) {
-            throw new NotGenerateQRCodeException();
-        }
+        // QR코드 생성 로직 (주석처리된 상태)
+        // String qrCodeUrl = "https://";
+        // String secretCode = UUID.randomUUID().toString();
+        // try {
+        //     byte[] qrCode = qrService.generateQRCode(qrCodeUrl, booth.getId(), secretCode);
+        //     booth.setQrCode(qrCode);
+        // } catch (WriterException e) {
+        //     throw new NotGenerateQRCodeException();
+        // }
 
         return new BoothResponseDto(booth);
     }
@@ -79,10 +82,12 @@ public class BoothServiceImpl implements BoothService {
         }
 
         booth.updateInfo(
-                request.name() != null ? request.name() : booth.getName(),
-                request.company() != null ? request.company() : booth.getCompany(),
-                request.location() != null ? request.location() : booth.getLocation(),
-                request.description() != null ? request.description() : booth.getDescription()
+                request.companyName() != null ? request.companyName() : booth.getCompanyName(),
+                request.companyType() != null ? request.companyType() : booth.getCompanyType(),
+                request.boothLocation() != null ? request.boothLocation() : booth.getBoothLocation(),
+                request.boothNumber() != null ? request.boothNumber() : booth.getBoothNumber(),
+                request.boothDescription() != null ? request.boothDescription() : booth.getBoothDescription(),
+                request.image() != null ? request.image() : booth.getImage()
         );
 
         return new BoothResponseDto(booth);
