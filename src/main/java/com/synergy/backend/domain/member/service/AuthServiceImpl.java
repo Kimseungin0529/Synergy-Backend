@@ -1,7 +1,5 @@
 package com.synergy.backend.domain.member.service;
 
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,14 +10,17 @@ import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.member.exception.DuplicateEmailException;
+import com.synergy.backend.domain.member.exception.InvalidAccountInformationException;
 import com.synergy.backend.domain.member.exception.InvalidAuthCodeException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
+import com.synergy.backend.domain.member.exception.SameAsPreviousPasswordException;
 import com.synergy.backend.domain.member.exception.UnauthorizedException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
-import com.synergy.backend.domain.point.entity.PointType;
 import com.synergy.backend.domain.point.service.PointService;
+import com.synergy.backend.global.mail.MailService;
+import com.synergy.backend.global.mail.exception.EmailNotVerifiedException;
 import com.synergy.backend.global.security.CustomUserDetails;
 import com.synergy.backend.global.security.JwtProvider;
 
@@ -34,47 +35,41 @@ public class AuthServiceImpl implements AuthService {
 	private final AttendeeRepository attendeeRepository;
 	private final AdminRepository adminRepository;
 	private final RecruiterRepository recruiterRepository;
-	private final PointService pointService;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
+	private final PointService pointService;
+	private final MailService mailService;
 
 	@Transactional
 	@Override
 	public SignupAttendeeResponseDto registerAttendee(SignupAttendeeRequestDto request) {
 
-		if (attendeeRepository.findByEmail(request.email()).isPresent()) {
-			throw new DuplicateEmailException();
-		}
+		validateSignupRequest(request);
 
-		Attendee attendee = Attendee.of(
-			request.email(),
-			encodePassword(request.password()),
-			request.name(),
+		Attendee attendee = Attendee.of(request.email(), encodePassword(request.password()), request.name(),
 			request.phone());
 
 		attendeeRepository.save(attendee);
 
-		// 회원가입 시 포인트 적립
 		pointService.addSignupPoint(attendee.getId());
 
 		return SignupAttendeeResponseDto.from(attendee);
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public TokenResponseDto loginAsAttendee(String email, String rawPassword) {
-		Attendee attendee = findAttendeeWithEmail(email);
+		Attendee attendee = findAttendeeByEmail(email);
 
-		if (!passwordEncoder.matches(rawPassword, attendee.getPassword())) {
+		if (!isPasswordMatch(rawPassword, attendee.getPassword())) {
 			throw new UnauthorizedException();
 		}
 
 		String token = jwtProvider.generateToken(new CustomUserDetails(attendee));
-
 		return new TokenResponseDto(token, attendee.getEmail(), attendee.getRole().toString());
 	}
 
-	@Transactional
+	@Transactional(readOnly = true)
 	@Override
 	public TokenResponseDto loginAsAdminOrRecruiter(String authCode) {
 		User user = adminRepository.findByAdminAuthCode(authCode)
@@ -82,45 +77,58 @@ public class AuthServiceImpl implements AuthService {
 			.or(() -> recruiterRepository.findByRecruiterAuthCode(authCode).map(User.class::cast))
 			.orElseThrow(InvalidAuthCodeException::new);
 
-		CustomUserDetails userDetails = new CustomUserDetails(user);
-
-		String token = jwtProvider.generateToken(userDetails);
-
+		String token = jwtProvider.generateToken(new CustomUserDetails(user));
 		return new TokenResponseDto(token, authCode, user.getRole().toString());
 	}
 
-	@Transactional(readOnly = true)
-	private Attendee findAttendeeWithEmail(String email) {
-		return attendeeRepository.findByEmail(email).orElseThrow(NotFoundUserException::new);
+	@Transactional
+	@Override
+	public void passwordResetRequest(String email, String name, String phone) {
+		validateEmailVerification(email);
+
+		try {
+			Attendee attendee = findAttendeeByEmail(email);
+			if (!attendee.getName().equals(name) || !attendee.getPhone().equals(phone)) {
+				throw new InvalidAccountInformationException();
+			}
+		} catch (NotFoundUserException e) {
+			throw new InvalidAccountInformationException();
+		}
 	}
 
 	@Transactional
-	public void logout(String token) {
-		if (token == null || token.isBlank()) {
-			throw new IllegalArgumentException("Token must be provided for logout.");
+	@Override
+	public void passwordReset(String email, String newPassword) {
+		Attendee attendee = findAttendeeByEmail(email);
+
+		if (isPasswordMatch(newPassword, attendee.getPassword())) {
+			throw new SameAsPreviousPasswordException();
+		}
+
+		attendee.updatePassword(encodePassword(newPassword));
+	}
+
+	@Transactional(readOnly = true)
+	private Attendee findAttendeeByEmail(String email) {
+		return attendeeRepository.findByEmail(email).orElseThrow(NotFoundUserException::new);
+	}
+
+	private void validateSignupRequest(SignupAttendeeRequestDto request) {
+		validateEmailVerification(request.email());
+
+		if (attendeeRepository.findByEmail(request.email()).isPresent()) {
+			throw new DuplicateEmailException();
 		}
 	}
 
-	// 로그인된 유저객체 가져오기
-	@Transactional(readOnly = true)
-	public User getCurrentUser() {
-		Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-		if (authentication == null || !authentication.isAuthenticated()) {
-			throw new NotFoundUserException();
+	private void validateEmailVerification(String email) {
+		if (!mailService.isVerified(email)) {
+			throw new EmailNotVerifiedException();
 		}
+	}
 
-		Object principal = authentication.getPrincipal();
-		if (!(principal instanceof CustomUserDetails userDetails)) {
-			throw new NotFoundUserException();
-		}
-
-		String identifier = userDetails.getIdentifier();
-
-		return attendeeRepository.findByEmail(identifier)
-			.map(User.class::cast)
-			.or(() -> adminRepository.findByAdminAuthCode(identifier).map(User.class::cast))
-			.or(() -> recruiterRepository.findByRecruiterAuthCode(identifier).map(User.class::cast))
-			.orElseThrow(NotFoundUserException::new);
+	private boolean isPasswordMatch(String rawPassword, String encodedPassword) {
+		return passwordEncoder.matches(rawPassword, encodedPassword);
 	}
 
 	private String encodePassword(String rawPassword) {

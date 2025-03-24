@@ -6,6 +6,6 @@ import com.synergy.backend.global.exception.BaseErrorException;
 
 public class NotFoundLikeException extends BaseErrorException {
 	public NotFoundLikeException() {
-		super(_LIKE_NOT_FOUND_.getCode(), _LIKE_NOT_FOUND_.getMessage());
+		super(_LIKE_NOT_FOUND.getCode(), _LIKE_NOT_FOUND.getMessage());
 	}
 }

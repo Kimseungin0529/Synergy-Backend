@@ -250,4 +250,8 @@ public class Attendee extends BaseEntity implements User {
 	private void updateMembershipLevel() {
 		this.membershipLevelType = MembershipLevelType.getMembershipLevel(this.totalPoints);
 	}
+
+	public void updatePassword(String newEncodePassword) {
+		this.password = newEncodePassword;
+	}
 }

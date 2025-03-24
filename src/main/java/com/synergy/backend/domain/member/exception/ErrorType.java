@@ -22,7 +22,9 @@ public enum ErrorType {
 	_INVALID_REGION_TYPE_CODE(400, "유효하지 않은 지역코드입니다."),
 	_INVALID_WORKPLACE_SELECTION_FACTOR_CODE(400, "유효하지 않은 직장선택요소 코드입니다."),
 	_DUPLICATE_LIKE(409, "해당 좋아요는 이미 반영되었습니다."),
-	_LIKE_NOT_FOUND_(400, "해당 좋아요를 찾을 수 없습니다."),
+	_LIKE_NOT_FOUND(400, "해당 좋아요를 찾을 수 없습니다."),
+	_INVALID_ACCOUNT_INFORMATION(400, "입력하신 계정정보가 일치하지 않습니다."),
+	_SAME_AS_PREVIOUS_PASSWORD(400, "이전에 사용한 비밀번호와 동일한 비밀번호는 사용할 수 없습니다."),
 	;
 
 	private final int code;
