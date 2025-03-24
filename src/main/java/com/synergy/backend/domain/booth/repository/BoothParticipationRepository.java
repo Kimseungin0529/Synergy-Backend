@@ -22,14 +22,13 @@ public interface BoothParticipationRepository extends JpaRepository<BoothPartici
     @Query("DELETE FROM BoothParticipation bp WHERE bp.booth = :booth")
     void deleteByBooth(@Param("booth") Booth booth);
 
-    @Query("""
-           SELECT new com.synergy.backend.domain.booth.dto.InterestParticipationDto(i.name, COUNT(bp))
-           FROM BoothParticipation bp
-           JOIN bp.attendee a
-           JOIN a.attendeeInterests ai
-           JOIN ai.interest i
-           WHERE bp.booth.id = :boothId
-           GROUP BY i.name
-           """)
+    @Query("SELECT new com.synergy.backend.domain.booth.dto.InterestParticipationDto(i.name, COUNT(bp)) " +
+            "FROM BoothParticipation bp " +
+            "JOIN bp.attendee a " +
+            "JOIN a.attendeeInterests ai " +
+            "JOIN ai.interest i " +
+            "WHERE bp.booth.id = :boothId " +
+            "GROUP BY i.name")
     List<InterestParticipationDto> findParticipationCountByInterest(@Param("boothId") Long boothId);
+
 }

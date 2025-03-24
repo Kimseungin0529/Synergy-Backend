@@ -38,7 +38,7 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
             throw new DuplicateParticipationException();
         }
 
-        boothParticipationRepository.save(new BoothParticipation(booth, attendee));
+        boothParticipationRepository.save(BoothParticipation.of(booth, attendee));
     }
 
     @Transactional(readOnly = true)
