@@ -103,91 +103,66 @@ WHERE attendee_id = 1;
 UPDATE attendee
 SET
 is_hiring_interested = 1,
-self_introduction = '최신 사람입니다!',
 tech_stacks = 'AWS',
 age_group = 'AGE_20_24',
 education_level = 2,
-experience_level = 2
+experience_level = 2,
 current_job_position_id = 12,
 current_job_group_id = 2,
 desired_job_group_id = 2,
-self_introduction = '최신 사람입니다!',
-tech_stacks = 'AWS',
-age_group = 'AGE_20_24',
-education_level = 2,
-experience_level = 2
+self_introduction = '최신 사람입니다!'
 WHERE attendee_id = 2;
 
 UPDATE attendee
 SET
 is_hiring_interested = 1,
-self_introduction = '사람입니다!',
 tech_stacks = 'Ruby',
 age_group = 'AGE_25_29',
 education_level = 1,
-experience_level = 1
+experience_level = 1,
 current_job_position_id = 11,
 current_job_group_id = 2,
 desired_job_group_id = 2,
-self_introduction = '사람입니다!',
-tech_stacks = 'Ruby',
-age_group = 'AGE_25_29',
-education_level = 1,
-experience_level = 1
+self_introduction = '사람입니다!'
 WHERE attendee_id = 3;
 
 UPDATE attendee
 SET
 is_hiring_interested = 1,
-self_introduction = '혼자서 할 수 있는 개발자!',
 tech_stacks = 'Go, C++',
 age_group = 'AGE_35_PLUS',
 education_level = 3,
-experience_level = 3
+experience_level = 3,
 current_job_position_id = 1,
 current_job_group_id = 1,
 desired_job_group_id = 1,
-self_introduction = '혼자서 할 수 있는 개발자!',
-tech_stacks = 'Go, C++',
-age_group = 'AGE_35_PLUS',
-education_level = 3,
-experience_level = 3
+self_introduction = '혼자서 할 수 있는 개발자!'
 WHERE attendee_id = 4;
 
 UPDATE attendee
 SET
 is_hiring_interested = 1,
-self_introduction = '혼자서 할 수 있는 개발자!',
 tech_stacks = 'Go, C++',
 age_group = 'AGE_35_PLUS',
 education_level = 3,
-experience_level = 3
+experience_level = 3,
 current_job_position_id = 1,
 current_job_group_id = 1,
 desired_job_group_id = 1,
-self_introduction = '혼자서 할 수 있는 개발자!',
-tech_stacks = 'Go, C++',
-age_group = 'AGE_35_PLUS',
-education_level = 3,
-experience_level = 3
+self_introduction = '혼자서 할 수 있는 개발자!'
 WHERE attendee_id = 5;
 
 UPDATE attendee
 SET
 is_hiring_interested = 1,
-self_introduction = '100인 분 할 수 있는 개발자!',
 tech_stacks = 'Git, Docker',
 age_group = 'AGE_30_34',
 education_level = 3,
-experience_level = 3
+experience_level = 3,
 current_job_position_id = 1,
 current_job_group_id = 1,
 desired_job_group_id = 1,
-self_introduction = '100인 분 할 수 있는 개발자!',
-tech_stacks = 'Git, Docker',
-age_group = 'AGE_30_34',
-education_level = 3,
-experience_level = 3
+self_introduction = '100인 분 할 수 있는 개발자!'
 WHERE attendee_id = 6;
 
 -- 참가자의 관심 분야(Interest) 매핑
@@ -204,7 +179,6 @@ VALUES
 
 
 -- 채용담당자 좋아요 업데이트
-desc recruiter_attendee_like;
 INSERT INTO recruiter_attendee_like (id, attendee_id, recruiter_id)
     VALUES
         (1, 1, 1),
@@ -246,17 +220,6 @@ VALUES
     (5, 4),
     (6, 0);
 
-
-# -- 희망 근무 지역
-# INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region)
-# VALUES
-#     (1, 0),
-#     (1, 11),
-#     (2, 2),
-#     (3, 3),
-#     (4, 1),
-#     (5, 5),
-#     (6, 4);
 
 
 -- 컨퍼런스
