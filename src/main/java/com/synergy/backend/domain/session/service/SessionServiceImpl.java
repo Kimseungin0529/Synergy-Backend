@@ -7,7 +7,6 @@ import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.RoleType;
-import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
@@ -23,9 +22,7 @@ import com.synergy.backend.domain.session.exception.NotFoundSession;
 import com.synergy.backend.domain.session.repository.AttendeeSessionRepository;
 import com.synergy.backend.domain.session.repository.sessionQuestionRepository.SessionQuestionRepository;
 import com.synergy.backend.domain.session.repository.sessionRepository.SessionRepository;
-import com.synergy.backend.domain.session.service.validate.DateTimeValidator;
 import com.synergy.backend.global.exception.AuthorizedException;
-import com.synergy.backend.global.util.SecurityUtils;
 import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import com.synergy.backend.global.util.file.util.FileS3Util;
 import lombok.RequiredArgsConstructor;
@@ -33,8 +30,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -95,6 +90,7 @@ public class SessionServiceImpl implements SessionService {
         }
     }
 
+    @Transactional
     @Override
     public void updateSession(String identifier, Long sessionId, SessionReqDto reqDto, MultipartFile multipartFile) {
         Session session = ifSessionExists(sessionId);
