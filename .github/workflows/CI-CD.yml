@@ -41,7 +41,7 @@ jobs:
 
       # Gradle을 사용하여 프로젝트를 빌드합니다.
       - name: Build With Gradle
-        run: ./gradlew build -x test
+        run: ./gradlew build
 
       # 디렉토리 생성
       - name: Create deploy directory
