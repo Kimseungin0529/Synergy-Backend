@@ -118,7 +118,7 @@ public class PointServiceImpl implements PointService {
 				if (point.getBoothId() != null) {
 					Booth booth = boothRepository.findById(point.getBoothId())
 						.orElseThrow(() -> new NotFoundBoothException("부스 정보를 찾을 수 없습니다."));
-					yield booth.getName();
+					yield booth.getCompanyName();
 				}
 				yield "";
 			}

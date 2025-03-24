@@ -1,10 +1,11 @@
 package com.synergy.backend.domain.booth.dto;
 
 public record BoothRequestDto(
-        String name,
-        String company,
-        String location,
-        String description,
-        String domainAddress
+        String companyName,
+        String companyType,
+        String boothLocation,
+        Integer boothNumber,
+        String boothDescription,
+        byte[] image
 ) {
 }
