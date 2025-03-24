@@ -2,11 +2,12 @@ version: '3.8'
 
 services:
   app:
-    image: wjd4204/github-action-synergy
+    image: wjd4204/github-action-synergy:latest
     ports:
       - "8080:8080"
     environment:
       - TZ=Asia/Seoul
+    env_file:
       - ./synergy.env
     depends_on:
       - redis
