@@ -8,7 +8,10 @@ import jakarta.validation.constraints.Size;
 
 public record JobInfoDetailsRequestDto(
 	@NotNull
-	Integer desiredOccupationCode, // 희망 직무 (코드값)
+	Integer desiredJobGroupCode, // 희망 직군 (코드값)
+
+	@NotNull
+	Integer desiredJobPositionCode, // 희망 직무 (코드값)
 
 	@NotNull
 	Integer educationLevelCode, // 학력 (코드값)

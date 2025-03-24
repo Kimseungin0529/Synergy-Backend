@@ -1,6 +1,7 @@
 package com.synergy.backend.domain.member.service;
 
 import static com.synergy.backend.domain.member.entity.RoleType.*;
+import static org.assertj.core.api.Assertions.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
@@ -10,10 +11,12 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponseDto;
@@ -22,24 +25,28 @@ import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.exception.DuplicateEmailException;
+import com.synergy.backend.domain.member.exception.InvalidAccountInformationException;
 import com.synergy.backend.domain.member.exception.InvalidAuthCodeException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
+import com.synergy.backend.domain.member.exception.SameAsPreviousPasswordException;
 import com.synergy.backend.domain.member.exception.UnauthorizedException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
-import com.synergy.backend.domain.point.service.PointServiceImpl;
+import com.synergy.backend.domain.point.service.PointService;
+import com.synergy.backend.global.mail.MailService;
+import com.synergy.backend.global.mail.exception.EmailNotVerifiedException;
 import com.synergy.backend.global.security.CustomUserDetails;
 import com.synergy.backend.global.security.JwtProvider;
 
+import lombok.extern.slf4j.Slf4j;
+
 @ExtendWith(MockitoExtension.class)
+@Slf4j
 class AuthServiceImplTest {
 
 	@InjectMocks
 	private AuthServiceImpl authService;
-
-	@Mock
-	private PointServiceImpl pointService;
 
 	@Mock
 	private AttendeeRepository attendeeRepository;
@@ -55,6 +62,12 @@ class AuthServiceImplTest {
 
 	@Mock
 	private JwtProvider jwtProvider;
+
+	@Mock
+	private PointService pointService;
+
+	@Mock
+	private MailService mailService;
 
 	private SignupAttendeeRequestDto requestDto;
 	private Attendee mockAttendee;
@@ -83,6 +96,7 @@ class AuthServiceImplTest {
 		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.empty());
 		when(passwordEncoder.encode(requestDto.password())).thenReturn("encodedPassword");
 		when(attendeeRepository.save(any(Attendee.class))).thenReturn(mockAttendee);
+		when(mailService.isVerified(anyString())).thenReturn(true);
 
 		// When
 		SignupAttendeeResponseDto response = authService.registerAttendee(requestDto);
@@ -99,6 +113,7 @@ class AuthServiceImplTest {
 	void registerAttendee_DuplicateEmail_ThrowsException() {
 		// Given
 		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
+		when(mailService.isVerified(anyString())).thenReturn(true);
 
 		// When & Then
 		assertThrows(DuplicateEmailException.class, () -> authService.registerAttendee(requestDto));
@@ -170,8 +185,8 @@ class AuthServiceImplTest {
 		verify(recruiterRepository, never()).findByRecruiterAuthCode(anyString());
 	}
 
-	@Test
 	@DisplayName("리크루터가 올바른 인증 코드로 로그인하면 JWT 토큰이 발급된다.")
+	@Test
 	void loginAsRecruiter_Success() {
 		// Given
 		String authCode = "validRecruiterAuthCode";
@@ -196,8 +211,8 @@ class AuthServiceImplTest {
 		verify(jwtProvider).generateToken(any(CustomUserDetails.class));
 	}
 
+	@DisplayName("관리자나 채용담당자가 잘못된 인증 코드로 로그인하면 예외가 발생한다.")
 	@Test
-	@DisplayName("잘못된 인증 코드로 로그인하면 예외가 발생한다.")
 	void loginAsAdminOrRecruiter_InvalidAuthCode_ThrowsException() {
 		// Given
 		String invalidAuthCode = "invalidAuthCode";
@@ -212,5 +227,83 @@ class AuthServiceImplTest {
 		verify(recruiterRepository).findByRecruiterAuthCode(invalidAuthCode);
 
 		verify(jwtProvider, never()).generateToken(any(CustomUserDetails.class));
+	}
+
+	@DisplayName("회원가입 성공 시 회원가입 포인트가 적립된다.")
+	@Test
+	void registerEarnPoint() {
+		// given
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.empty());
+		when(passwordEncoder.encode(requestDto.password())).thenReturn("encodedPassword");
+		when(mailService.isVerified(anyString())).thenReturn(true);
+		when(attendeeRepository.save(any(Attendee.class)))
+			.thenAnswer(invocation -> {
+				Attendee attendee = invocation.getArgument(0);
+				ReflectionTestUtils.setField(attendee, "id", 1L);
+				return attendee;
+			});
+
+		// when
+		SignupAttendeeResponseDto response = authService.registerAttendee(requestDto);
+
+		// then
+		assertThat(response.email()).isEqualTo("UserA@example.com");
+		ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
+		verify(pointService).addSignupPoint(captor.capture());
+		assertThat(captor.getValue()).isEqualTo(1L);
+	}
+
+	@DisplayName("이메일 인증이 완료되지 않은 경우 회원가입 시 예외가 발생한다.")
+	@Test
+	void registerAttendee_EmailNotVerified_ThrowsException() {
+		// given
+		when(mailService.isVerified(requestDto.email())).thenReturn(false);
+
+		// when & then
+		assertThatThrownBy(() -> authService.registerAttendee(requestDto))
+			.isInstanceOf(EmailNotVerifiedException.class);
+	}
+
+	@DisplayName("비밀번호 재설정 요청 시 이름 또는 전화번호가 일치하지 않으면 예외가 발생한다.")
+	@Test
+	void passwordResetRequest_InvalidAccountInformation_ThrowsException() {
+		// Given
+		when(mailService.isVerified(requestDto.email())).thenReturn(true);
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
+
+		// 이름 또는 전화번호가 다르게 입력됨
+		String wrongName = "WrongName";
+		String wrongPhone = "01000000000";
+
+		// When & Then
+		assertThatThrownBy(() -> authService.passwordResetRequest(requestDto.email(), wrongName, wrongPhone))
+			.isInstanceOf(InvalidAccountInformationException.class);
+	}
+
+	@DisplayName("비밀번호 재설정 시 기존 비밀번호와 동일한 경우 예외가 발생한다.")
+	@Test
+	void passwordReset_SameAsPreviousPassword_ThrowsException() {
+		// Given
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
+		when(passwordEncoder.matches("samePassword", mockAttendee.getPassword())).thenReturn(true);
+
+		// When & Then
+		assertThatThrownBy(() -> authService.passwordReset(requestDto.email(), "samePassword"))
+			.isInstanceOf(SameAsPreviousPasswordException.class);
+	}
+
+	@DisplayName("비밀번호 재설정이 성공적으로 이루어진다.")
+	@Test
+	void passwordReset_Success() {
+		// Given
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
+		when(passwordEncoder.matches("newPassword", mockAttendee.getPassword())).thenReturn(false);
+		when(passwordEncoder.encode("newPassword")).thenReturn("encodedNewPassword");
+
+		// When
+		authService.passwordReset(requestDto.email(), "newPassword");
+
+		// Then
+		assertThat(mockAttendee.getPassword()).isEqualTo("encodedNewPassword");
 	}
 }
