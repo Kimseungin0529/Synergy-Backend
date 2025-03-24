@@ -3,8 +3,6 @@ package com.synergy.backend.domain.session.controller;
 import java.util.List;
 
 import com.google.zxing.WriterException;
-import com.synergy.backend.domain.member.entity.User;
-import com.synergy.backend.domain.session.service.SessionParticipateService;
 import com.synergy.backend.global.security.CustomUserDetails;
 import jakarta.validation.Valid;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.*;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionDetailResDto;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
-import com.synergy.backend.domain.session.dto.questionDto.QuestionReqDto;
 import com.synergy.backend.domain.session.service.SessionService;
 import com.synergy.backend.global.common.ApiResponse;
 
@@ -27,7 +24,6 @@ import org.springframework.web.multipart.MultipartFile;
 public class SessionController {
 
 	private final SessionService sessionService;
-	private final SessionParticipateService sessionParticipateService;
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@PostMapping
@@ -78,27 +74,5 @@ public class SessionController {
 
 		return ApiResponse.ok("Session deleted successfully!", 200);
 	}
-
-    /* ------------------------------------------ Q&A --------------------------------------*/
-
-	@PreAuthorize("hasAnyRole('ATTENDEE')")
-    @PostMapping("/verify")
-    public ApiResponse<SessionResDto> verifyQRCode(@AuthenticationPrincipal CustomUserDetails user,
-												   @RequestParam(name = "qrCode") String qrCode){
-		SessionResDto sessionResDto = sessionParticipateService.verifyQRCode(user.getIdentifier(), qrCode);
-
-		return ApiResponse.ok(sessionResDto, 200);
-    }
-
-	@PreAuthorize("hasAnyRole('ATTENDEE')")
-    @PostMapping("/{sessionId}/participation")
-    public ApiResponse createQuestion(@AuthenticationPrincipal CustomUserDetails user,
-									  @PathVariable(name = "conferenceId") Long conferenceId,
-                                                      @PathVariable(name = "sessionId") Long sessionId,
-                                                      @RequestBody QuestionReqDto reqDto) {
-
-        sessionParticipateService.createQuestion(user.getIdentifier(), conferenceId, sessionId, reqDto);
-        return ApiResponse.ok("Question created successfully!", 200);
-    }
 
 }
