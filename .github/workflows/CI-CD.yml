@@ -27,12 +27,18 @@ jobs:
       # Gradle Wrapper 파일에 실행 권한을 부여합니다.
       - name: Grant Execute Permission For Gradlew
         run: chmod +x gradlew
+
+      - name: Build With Gradle
+        run: ./gradlew bootJar
         env:
-          JWT_SECRET: ${{ secrets.JWT_SECRET}}
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
           ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
           SECRET_KEY: ${{ secrets.SECRET_KEY }}
           REGION: ${{ secrets.REGION }}
           BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
 
       # gradle caching - 빌드 시간 향상
       - name: Gradle Caching
