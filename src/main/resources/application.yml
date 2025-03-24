@@ -109,6 +109,20 @@ spring:
       max-file-size: 2MB
       max-request-size: 15MB
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+mail:
+  smtp:
+    host: "smtp.gmail.com"
+    address: ${EMAIL_ADDRESS}
+    personal: ${EMAIL_PERSONAL}
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    port: 465
+
 ---
 
 jwt:
