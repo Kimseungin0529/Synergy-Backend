@@ -16,8 +16,8 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import com.synergy.backend.domain.interest.repository.AttendeeInterestRepository;
 import com.synergy.backend.domain.interest.repository.InterestRepository;
-import com.synergy.backend.domain.job.JobCategoryRepository;
-import com.synergy.backend.domain.job.OccupationCategoryRepository;
+import com.synergy.backend.domain.job.JobPositionRepository;
+import com.synergy.backend.domain.job.JobGroupRepository;
 import com.synergy.backend.domain.member.api.dto.resposne.AttendeeFullInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.MyInfoResponseDto;
 import com.synergy.backend.domain.member.entity.Admin;
@@ -35,9 +35,9 @@ class AttendeeServiceImplTest {
 	@Mock
 	private AttendeeInterestRepository attendeeInterestRepository;
 	@Mock
-	private JobCategoryRepository jobCategoryRepository;
+	private JobPositionRepository jobPositionRepository;
 	@Mock
-	private OccupationCategoryRepository occupationCategoryRepository;
+	private JobGroupRepository jobGroupRepository;
 
 	@InjectMocks
 	private AttendeeServiceImpl attendeeService;

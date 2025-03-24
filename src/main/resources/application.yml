@@ -42,6 +42,20 @@ spring:
       max-file-size: 2MB
       max-request-size: 15MB
 
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+mail:
+  smtp:
+    host: "smtp.gmail.com"
+    address: ${EMAIL_ADDRESS}
+    personal: ${EMAIL_PERSONAL}
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    port: 465
+
 #logging:
 #  level:
 #    org.hibernate.SQL: DEBUG  # ✅ SQL 로그를 DEBUG 수준으로 상세하게 출력
@@ -94,6 +108,20 @@ spring:
       # location: 간혹 에러가 생기면 해당 위치에 남는다고 한다. default는 스프링이 내부적으로 설정한다. 실제 운영에서 위치 지정하는 것이 파악하기 빠르다.
       max-file-size: 2MB
       max-request-size: 15MB
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
+mail:
+  smtp:
+    host: "smtp.gmail.com"
+    address: ${EMAIL_ADDRESS}
+    personal: ${EMAIL_PERSONAL}
+    username: ${EMAIL_USERNAME}
+    password: ${EMAIL_PASSWORD}
+    port: 465
 
 ---
 

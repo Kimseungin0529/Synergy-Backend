@@ -7,8 +7,8 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ErrorType {
 
-	_JOB_CATEGORY_NOT_FOUND(400, "해당 직업 카테고리를 찾을 수 없습니다."),
-	_OCCUPATION_CATEGORY_NOT_FOUND(400, "해당 직무 카테고리를 찾을 수 없습니다."),
+	_JOB_POSITION_NOT_FOUND(400, "해당 직무를 찾을 수 없습니다."),
+	_JOB_GROUP_NOT_FOUND(400, "해당 직군을 찾을 수 없습니다."),
 	;
 
 	private final int code;
