@@ -7,14 +7,14 @@ import java.util.List;
 
 @Getter
 public class AttendeeListResponse {
-    private final int number;
+    private final int currentPageNumber;
     private final int totalPages;
     private final long totalElements;
     private final int pageSize;
     private final List<AttendeeSimpleResponseDto> list;
 
-    private AttendeeListResponse(int number, int totalPages, long totalElementsList, int pageSize, List<AttendeeSimpleResponseDto> list) {
-        this.number = number;
+    private AttendeeListResponse(int currentPageNumber, int totalPages, long totalElementsList, int pageSize, List<AttendeeSimpleResponseDto> list) {
+        this.currentPageNumber = currentPageNumber;
         this.totalPages = totalPages;
         this.totalElements = totalElementsList;
         this.pageSize = pageSize;

@@ -71,9 +71,7 @@ public class AttendeeRepositoryImpl implements AttendeeRepositoryCustom {
 
 
     private BooleanExpression occupationIn(List<String> occupations) {
-        return (occupations == null || occupations.isEmpty())
-                ? null
-                : attendee.currentJobCategory.name.in(occupations);
+        return (occupations == null || occupations.isEmpty()) ? null : attendee.currentJobCategory.name.in(occupations);
 
     }
 
