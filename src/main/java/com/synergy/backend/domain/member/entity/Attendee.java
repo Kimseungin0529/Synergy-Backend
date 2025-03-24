@@ -7,8 +7,8 @@ import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.interest.entity.AttendeeInterest;
-import com.synergy.backend.domain.job.JobCategory;
-import com.synergy.backend.domain.job.OccupationCategory;
+import com.synergy.backend.domain.job.JobPosition;
+import com.synergy.backend.domain.job.JobGroup;
 import com.synergy.backend.domain.member.entity.details.AgeGroup;
 import com.synergy.backend.domain.member.entity.details.ConferenceParticipationPurpose;
 import com.synergy.backend.domain.member.entity.details.EducationLevelType;
@@ -81,15 +81,15 @@ public class Attendee extends BaseEntity implements User {
 	private List<Point> points = new ArrayList<>();
 
 	/*------Job Info------*/
-	// 현재 직업
+	// 현재 직군
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "current_job_id")
-	private JobCategory currentJobCategory;
+	@JoinColumn(name = "current_job_group_id")
+	private JobGroup currentJobGroup;
 
 	// 현재 직무
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "current_occupation_id")
-	private OccupationCategory currentOccupationCategory;
+	@JoinColumn(name = "current_job_position_id")
+	private JobPosition currentJobPosition;
 
 	// 채용 희망여부
 	private Boolean isHiringInterested = false;
@@ -97,8 +97,13 @@ public class Attendee extends BaseEntity implements User {
 	/*------Job Info Details------*/
 	// 희망 직무
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "desired_occupation_id")
-	private OccupationCategory desiredOccupationCategory;
+	@JoinColumn(name = "desired_job_group_id")
+	private JobGroup desiredJobGroup;
+
+	// 희망 직무
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "desired_job_position_id")
+	private JobPosition desiredJobPosition;
 
 	// 학력
 	@Enumerated(EnumType.STRING)
@@ -192,15 +197,16 @@ public class Attendee extends BaseEntity implements User {
 		return RoleType.ATTENDEE;
 	}
 
-	public void updateJobInfo(JobCategory jobCategory, OccupationCategory occupationCategory,
+	public void updateJobInfo(JobPosition jobPosition, JobGroup jobGroup,
 		Boolean isHiringInterested) {
-		this.currentJobCategory = jobCategory;
-		this.currentOccupationCategory = occupationCategory;
+		this.currentJobPosition = jobPosition;
+		this.currentJobGroup = jobGroup;
 		this.isHiringInterested = isHiringInterested;
 	}
 
 	public void updateJobInfoDetails(
-		OccupationCategory desiredOccupationCategory,
+		JobGroup desiredJobGroup,
+		JobPosition desiredJobPosition,
 		EducationLevelType educationLevel,
 		AgeGroup ageGroup,
 		String techStacks,
@@ -212,7 +218,8 @@ public class Attendee extends BaseEntity implements User {
 		Set<PreferredCorporateCulture> preferredCorporateCultures,
 		Set<ConferenceParticipationPurpose> conferenceParticipationPurposes
 	) {
-		this.desiredOccupationCategory = desiredOccupationCategory;
+		this.desiredJobGroup = desiredJobGroup;
+		this.desiredJobPosition = desiredJobPosition;
 		this.educationLevel = educationLevel;
 		this.ageGroup = ageGroup;
 		this.techStacks = techStacks;

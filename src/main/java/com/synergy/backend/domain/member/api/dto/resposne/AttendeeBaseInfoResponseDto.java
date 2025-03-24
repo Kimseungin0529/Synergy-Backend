@@ -11,7 +11,7 @@ public record AttendeeBaseInfoResponseDto(
 	public static AttendeeBaseInfoResponseDto from(Attendee attendee) {
 		return new AttendeeBaseInfoResponseDto(
 			attendee.getName(),
-			attendee.getCurrentJobCategory() != null ? attendee.getCurrentJobCategory().getName() : "",
+			attendee.getCurrentJobPosition() != null ? attendee.getCurrentJobPosition().getName() : "",
 			attendee.getExperienceLevel() != null ? attendee.getExperienceLevel().getDescription() : "",
 			attendee.getProfilePhotoUrl()
 		);
