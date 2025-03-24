@@ -11,12 +11,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synergy.backend.domain.member.api.dto.request.InterestRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.JobInfoDetailsRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.JobInfoRequestDto;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeDetailInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.AttendeeFullInfoResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.InterestResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.JobInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.LikedRecruiterResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.MyInfoResponseDto;
@@ -36,17 +33,6 @@ public class AttendeeController {
 
 	private final AttendeeService attendeeService;
 	private final RecruiterAttendeeLikeService recruiterAttendeeLikeService;
-
-	@PreAuthorize("hasRole('ATTENDEE')")
-	@PatchMapping(path = "/onboarding/interest")
-	public ApiResponse<InterestResponseDto> addUserInterest(
-		@AuthenticationPrincipal CustomUserDetails userDetails,
-		@Valid @RequestBody InterestRequestDto request) {
-		String identifier = userDetails.getIdentifier();
-		return ApiResponse.ok(
-			InterestResponseDto.from(attendeeService.addInterests(identifier, request.interestCodes())),
-			200);
-	}
 
 	@PreAuthorize("hasRole('ATTENDEE')")
 	@PatchMapping(path = "/onboarding/job-info")

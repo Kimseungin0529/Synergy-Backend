@@ -9,39 +9,39 @@ INSERT INTO interest (name, code) VALUES ('신기술 연구', 106);
 INSERT INTO interest (name, code) VALUES ('커리어 개발', 107);
 INSERT INTO interest (name, code) VALUES ('기획/운영', 108);
 
--- 직무 (Occupation Categories)
-INSERT INTO occupation_category (code, name) VALUES (1, '개발');
-INSERT INTO occupation_category (code, name) VALUES (2, '디자인');
-INSERT INTO occupation_category (code, name) VALUES (3, '기획/운영');
-INSERT INTO occupation_category (code, name) VALUES (4, '기타');
+-- 직군 (Job Group)
+INSERT INTO job_group (code, name) VALUES (1, '개발');
+INSERT INTO job_group (code, name) VALUES (2, '디자인');
+INSERT INTO job_group (code, name) VALUES (3, '기획/운영');
+INSERT INTO job_group (code, name) VALUES (4, '기타');
 
--- 직업 (Job Categories)
-INSERT INTO job_category (code, name, occupation_id) VALUES (101, '프론트엔드 개발자', 1);
-INSERT INTO job_category (code, name, occupation_id) VALUES (102, '백엔드 개발자', 1);
-INSERT INTO job_category (code, name, occupation_id) VALUES (103, '풀스텍 개발자', 1);
-INSERT INTO job_category (code, name, occupation_id) VALUES (104, 'AI/머신러닝 엔지니어', 1);
-INSERT INTO job_category (code, name, occupation_id) VALUES (105, '클라우드 엔지니어', 1);
-INSERT INTO job_category (code, name, occupation_id) VALUES (106, 'DevOps 엔지니어', 1);
-INSERT INTO job_category (code, name, occupation_id) VALUES (107, '데이터 엔지니어', 1);
-INSERT INTO job_category (code, name, occupation_id) VALUES (108, '모바일 앱 개발자', 1);
-INSERT INTO job_category (code, name, occupation_id) VALUES (109, '임베디드 시스템 개발자', 1);
-INSERT INTO job_category (code, name, occupation_id) VALUES (110, '블록체인 개발자', 1);
+-- 직무 (Job Position)
+INSERT INTO job_position (code, name, job_group_id) VALUES (101, '프론트엔드 개발자', 1);
+INSERT INTO job_position (code, name, job_group_id) VALUES (102, '백엔드 개발자', 1);
+INSERT INTO job_position (code, name, job_group_id) VALUES (103, '풀스텍 개발자', 1);
+INSERT INTO job_position (code, name, job_group_id) VALUES (104, 'AI/머신러닝 엔지니어', 1);
+INSERT INTO job_position (code, name, job_group_id) VALUES (105, '클라우드 엔지니어', 1);
+INSERT INTO job_position (code, name, job_group_id) VALUES (106, 'DevOps 엔지니어', 1);
+INSERT INTO job_position (code, name, job_group_id) VALUES (107, '데이터 엔지니어', 1);
+INSERT INTO job_position (code, name, job_group_id) VALUES (108, '모바일 앱 개발자', 1);
+INSERT INTO job_position (code, name, job_group_id) VALUES (109, '임베디드 시스템 개발자', 1);
+INSERT INTO job_position (code, name, job_group_id) VALUES (110, '블록체인 개발자', 1);
 
 -- 디자인 직군
-INSERT INTO job_category (code, name, occupation_id) VALUES (201, 'UI/UX 디자이너', 2);
-INSERT INTO job_category (code, name, occupation_id) VALUES (202, '그래픽 디자이너', 2);
-INSERT INTO job_category (code, name, occupation_id) VALUES (203, '웹디자이너', 2);
+INSERT INTO job_position (code, name, job_group_id) VALUES (201, 'UI/UX 디자이너', 2);
+INSERT INTO job_position (code, name, job_group_id) VALUES (202, '그래픽 디자이너', 2);
+INSERT INTO job_position (code, name, job_group_id) VALUES (203, '웹디자이너', 2);
 
 -- 기획/운영 직군
-INSERT INTO job_category (code, name, occupation_id) VALUES (301, '프로젝트 매니저', 3);
-INSERT INTO job_category (code, name, occupation_id) VALUES (302, '데이터 분석가', 3);
-INSERT INTO job_category (code, name, occupation_id) VALUES (303, '마케터', 3);
+INSERT INTO job_position (code, name, job_group_id) VALUES (301, '프로젝트 매니저', 3);
+INSERT INTO job_position (code, name, job_group_id) VALUES (302, '데이터 분석가', 3);
+INSERT INTO job_position (code, name, job_group_id) VALUES (303, '마케터', 3);
 
 -- 기타 직군
-INSERT INTO job_category (code, name, occupation_id) VALUES (401, '학생', 4);
-INSERT INTO job_category (code, name, occupation_id) VALUES (402, '취업 준비', 4);
-INSERT INTO job_category (code, name, occupation_id) VALUES (403, '연구원', 4);
-INSERT INTO job_category (code, name, occupation_id) VALUES (499, '기타', 4);
+INSERT INTO job_position (code, name, job_group_id) VALUES (401, '학생', 4);
+INSERT INTO job_position (code, name, job_group_id) VALUES (402, '취업 준비', 4);
+INSERT INTO job_position (code, name, job_group_id) VALUES (403, '연구원', 4);
+INSERT INTO job_position (code, name, job_group_id) VALUES (499, '기타', 4);
 
 ---- 관리자
 INSERT INTO admin (admin_auth_code) VALUES ('ADM12345');
@@ -61,13 +61,13 @@ VALUES
     ('dayoung.lee@example.com', '$2a$10$hashedpassword5', '이다영', '01099990000', 1500, 'GOLD'),
     ('dahye.kim@example.com', '$2a$10$hashedpassword6', '김다혜', '01011112222', 50, 'DEFAULT');
 
----- 참가자의 현재 직업 및 직무 업데이트
+---- 참가자의 현재 직군 및 직무 업데이트
 UPDATE attendee
 SET
 is_hiring_interested = 1,
-current_job_id = 2,
-current_occupation_id = 1,
-desired_occupation_id = 1,
+current_job_position_id = 2,
+current_job_group_id = 1,
+desired_job_group_id = 1,
 self_introduction = '저는 최신 기술을 배우고 IT 업계에서 성장하기 위해 다양한 컨퍼런스와 개발 프로젝트에 참여해왔습니다. 컴퓨터공학 전공자로서 웹 애플리케이션 개발과 데이터베이스 설계 경험이 있으며, 협업과 문제 해결 역량을 갖추고 있습니다. 여러 해커톤과 오픈소스 프로젝트에 참여하며 실무 감각을 익혔고, 컨퍼런스를 통해 업계 트렌드를 학습하며 네트워킹을 적극적으로 활용해왔습니다. 앞으로 데이터 분석과 AI 기술을 활용하여 가치 있는 서비스를 개발하고, 변화하는 환경 속에서 끊임없이 성장하는 개발자가 되고 싶습니다. 이번 기회를 통해 실무 경험을 쌓으며, IT 업계에서 더욱 발전할 수 있도록 최선을 다하겠습니다.',
 tech_stacks = 'Java, AWS, Spring Boot, MySQL, Docker, JPA, github-actions, SonarQube, Redis, junit5, Mockito, Git',
 age_group = 'AGE_20_24',
@@ -78,41 +78,41 @@ WHERE attendee_id = 1;
 UPDATE attendee
 SET
 is_hiring_interested = 1,
-current_job_id = 12,
-current_occupation_id = 2,
-desired_occupation_id = 2
+current_job_position_id = 12,
+current_job_group_id = 2,
+desired_job_group_id = 2
 WHERE attendee_id = 2;
 
 UPDATE attendee
 SET
 is_hiring_interested = 1,
-current_job_id = 11,
-current_occupation_id = 2,
-desired_occupation_id = 2
+current_job_position_id = 11,
+current_job_group_id = 2,
+desired_job_group_id = 2
 WHERE attendee_id = 3;
 
 UPDATE attendee
 SET
 is_hiring_interested = 1,
-current_job_id = 1,
-current_occupation_id = 1,
-desired_occupation_id = 1
+current_job_position_id = 1,
+current_job_group_id = 1,
+desired_job_group_id = 1
 WHERE attendee_id = 4;
 
 UPDATE attendee
 SET
 is_hiring_interested = 1,
-current_job_id = 1,
-current_occupation_id = 1,
-desired_occupation_id = 1
+current_job_position_id = 1,
+current_job_group_id = 1,
+desired_job_group_id = 1
 WHERE attendee_id = 5;
 
 UPDATE attendee
 SET
 is_hiring_interested = 1,
-current_job_id = 1,
-current_occupation_id = 1,
-desired_occupation_id = 1
+current_job_position_id = 1,
+current_job_group_id = 1,
+desired_job_group_id = 1
 WHERE attendee_id = 6;
 
 -- 참가자의 관심 분야(Interest) 매핑

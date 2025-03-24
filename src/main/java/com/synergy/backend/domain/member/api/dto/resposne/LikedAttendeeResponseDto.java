@@ -5,7 +5,7 @@ import com.synergy.backend.domain.member.entity.Attendee;
 public record LikedAttendeeResponseDto(
 	Long attendeeId,
 	String name,
-	String desiredOccupation,
+	String desiredJobPosition,
 	String techStacks,
 	String experienceLevel,
 	String profilePhotoUrl
@@ -14,7 +14,7 @@ public record LikedAttendeeResponseDto(
 		return new LikedAttendeeResponseDto(
 			attendee.getId(),
 			attendee.getName(),
-			attendee.getDesiredOccupationCategory() != null ? attendee.getDesiredOccupationCategory().getName() : "",
+			attendee.getDesiredJobPosition() != null ? attendee.getDesiredJobPosition().getName() : "",
 			attendee.getTechStacks(),
 			attendee.getExperienceLevel() != null ? attendee.getExperienceLevel().getDescription() : "",
 			attendee.getProfilePhotoUrl()

@@ -4,6 +4,6 @@ import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface JobCategoryRepository extends JpaRepository<JobCategory, Long> {
-	Optional<JobCategory> findByCode(Integer code);
+public interface JobPositionRepository extends JpaRepository<JobPosition, Long> {
+	Optional<JobPosition> findByCode(Integer code);
 }
