@@ -2,6 +2,7 @@ package com.synergy.backend.domain.booth.entity;
 
 import com.synergy.backend.domain.member.entity.Attendee;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -26,8 +27,16 @@ public class BoothParticipation {
     @JoinColumn(name = "attendee_id", nullable = false)
     private Attendee attendee;
 
-    public BoothParticipation(Booth booth, Attendee attendee) {
+    @Builder
+    private BoothParticipation(Booth booth, Attendee attendee) {
         this.booth = booth;
         this.attendee = attendee;
+    }
+
+    public static BoothParticipation of(Booth booth, Attendee attendee) {
+        return BoothParticipation.builder()
+                .booth(booth)
+                .attendee(attendee)
+                .build();
     }
 }

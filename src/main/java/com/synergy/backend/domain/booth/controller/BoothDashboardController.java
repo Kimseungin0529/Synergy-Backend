@@ -17,6 +17,7 @@ public class BoothDashboardController {
 
     @GetMapping("/booths/{boothId}/participation/interest")
     public ApiResponse<List<InterestParticipationDto>> getParticipationCountByInterest(
+            @PathVariable Long conferenceId,
             @PathVariable Long boothId) {
         List<InterestParticipationDto> result = boothParticipationService.getParticipationCountByInterest(boothId);
         return ApiResponse.ok(result, 200);
