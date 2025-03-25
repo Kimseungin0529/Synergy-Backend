@@ -6,54 +6,52 @@ import java.util.Collections;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
-import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
-import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.member.entity.User;
-import com.synergy.backend.global.security.exception.UnKnownUserTypeException;
 
 import lombok.Getter;
+import lombok.RequiredArgsConstructor;
 
 @Getter
+@RequiredArgsConstructor
 public class CustomUserDetails implements UserDetails {
 
-	private final Long id;
-	private final RoleType role;
-	private final String identifier;
-	private final String password;
+	private final User user;
 
-	public CustomUserDetails(User user) {
-		this.id = user.getId();
-		this.role = user.getRole();
+	public User getUser() {
+		return user;
+	}
 
-		if (user instanceof Attendee attendee) {
-			this.identifier = attendee.getEmail();
-			this.password = attendee.getPassword();
-		} else if (user instanceof Admin admin) {
-			this.identifier = admin.getAdminAuthCode();
-			this.password = null;
-		} else if (user instanceof Recruiter recruiter) {
-			this.identifier = recruiter.getRecruiterAuthCode();
-			this.password = null;
-		} else {
-			throw new UnKnownUserTypeException();
-		}
+	public Long getId() {
+		return user.getId();
+	}
+
+	public String getIdentifier() {
+		return user.getIdentifier();
+	}
+
+	public RoleType getRole() {
+		return user.getRole();
 	}
 
 	@Override
 	public Collection<? extends GrantedAuthority> getAuthorities() {
-		return Collections.singleton(role);
+		return Collections.singleton(user.getRole());
 	}
 
 	@Override
 	public String getPassword() {
-		return password;
+
+		if (user instanceof Attendee attendee) {
+			return attendee.getPassword();
+		}
+		return null; // 혹은 "", 보안 정책에 따라
 	}
 
 	@Override
 	public String getUsername() {
-		return identifier;
+		return user.getIdentifier();
 	}
 
 	@Override

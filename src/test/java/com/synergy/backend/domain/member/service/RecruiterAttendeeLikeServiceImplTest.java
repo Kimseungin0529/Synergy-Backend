@@ -14,7 +14,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.synergy.backend.domain.member.api.dto.resposne.LikedAttendeeResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.LikedRecruiterResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;
@@ -53,7 +53,7 @@ class RecruiterAttendeeLikeServiceImplTest {
 		attendee1 = Attendee.of("user1@email.com", "pass", "user1", "01012345678");
 		attendee2 = Attendee.of("user2@email.com", "pass", "user2", "01012345678");
 		like1 = RecruiterAttendeeLike.of(recruiter1, attendee1);
-		like2 = RecruiterAttendeeLike.of(recruiter2 ,attendee2);
+		like2 = RecruiterAttendeeLike.of(recruiter2, attendee2);
 	}
 
 	@DisplayName("채용담당자가 참가자 좋아요를 한다.")
@@ -107,11 +107,11 @@ class RecruiterAttendeeLikeServiceImplTest {
 			.thenReturn(List.of(like1));
 
 		// when
-		List<LikedAttendeeResponseDto> response = recruiterAttendeeLikeService.getLikedAttendees(recruiterId);
+		List<AttendeeSimpleResponseDto> response = recruiterAttendeeLikeService.getLikedAttendees(recruiterId);
 
 		// then
 		assertThat(response).hasSize(1);
-		assertThat(response.get(0).name()).isEqualTo(attendee1.getName());
+		assertThat(response.get(0).getName()).isEqualTo(attendee1.getName());
 	}
 
 	@DisplayName("참가자가 좋아요한 채용 담당자 목록을 조회한다.")

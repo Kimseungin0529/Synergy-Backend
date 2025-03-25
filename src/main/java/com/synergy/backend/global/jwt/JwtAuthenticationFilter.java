@@ -1,4 +1,4 @@
-package com.synergy.backend.global.security;
+package com.synergy.backend.global.jwt;
 
 import java.io.IOException;
 import java.util.Arrays;
@@ -13,6 +13,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.common.ApiResponse;
+import com.synergy.backend.global.security.CustomUserDetailsService;
 import com.synergy.backend.global.security.exception.UnKnownUserTypeException;
 
 import jakarta.servlet.FilterChain;
@@ -47,7 +48,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 			String token = resolveToken(request);
 
 			if (token != null && jwtProvider.validateToken(token)) {
-				String username = jwtProvider.getEmailOrAuthCodeFromToken(token);
+				String username = jwtProvider.getIdentifierFromToken(token);
 				RoleType role = jwtProvider.getRoleTypeFromToken(token);
 
 				log.info("REQUEST identifier: {}, role: {}", username, role);

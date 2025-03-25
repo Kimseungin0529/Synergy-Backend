@@ -17,7 +17,7 @@ public class ExceptionResponse<T> {
         this.data = data;
     }
 
-    private ExceptionResponse(int code, String message) {
+    public ExceptionResponse(int code, String message) {
         this.code = code;
         this.message = message;
     }

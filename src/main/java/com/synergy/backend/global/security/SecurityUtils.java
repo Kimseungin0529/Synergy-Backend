@@ -1,4 +1,4 @@
-package com.synergy.backend.global.util;
+package com.synergy.backend.global.security;
 
 import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.global.exception.AuthorizedException;

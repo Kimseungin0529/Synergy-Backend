@@ -8,6 +8,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 
+import com.synergy.backend.global.mail.MailProperties;
+
 import lombok.RequiredArgsConstructor;
 
 @Configuration

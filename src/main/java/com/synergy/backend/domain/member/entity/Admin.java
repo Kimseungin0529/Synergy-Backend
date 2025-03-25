@@ -75,6 +75,11 @@ public class Admin extends BaseEntity implements User {
 		return RoleType.ADMIN;
 	}
 
+	@Override
+	public String getIdentifier() {
+		return this.adminAuthCode;
+	}
+
 	public void addSession(Session session) {
 		this.sessions.add(session);
 		session.getAdmins().add(this);

@@ -9,7 +9,7 @@ import com.synergy.backend.domain.conference.dto.response.ConferenceUpdateRespon
 import com.synergy.backend.domain.conference.service.ConferenceService;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.security.CustomUserDetailsService;
-import com.synergy.backend.global.security.JwtProvider;
+import com.synergy.backend.global.jwt.JwtProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,7 +19,6 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-import java.time.Clock;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
@@ -84,7 +83,7 @@ class ConferenceControllerTest {
         String identifier = "AUTH1";
         given(conferenceService.registerConference(eq(identifier), any(ConferenceCreateRequest.class))).willReturn(response);
         given(jwtProvider.validateToken(anyString())).willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
@@ -118,7 +117,7 @@ class ConferenceControllerTest {
         );
 
         given(jwtProvider.validateToken(anyString())).willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
@@ -151,7 +150,7 @@ class ConferenceControllerTest {
         );
 
         given(jwtProvider.validateToken(anyString())).willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
@@ -183,7 +182,7 @@ class ConferenceControllerTest {
         );
 
         given(jwtProvider.validateToken(anyString())).willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
@@ -216,7 +215,7 @@ class ConferenceControllerTest {
         );
 
         given(jwtProvider.validateToken(anyString())).willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
@@ -248,7 +247,7 @@ class ConferenceControllerTest {
         );
 
         given(jwtProvider.validateToken(anyString())).willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
@@ -281,7 +280,7 @@ class ConferenceControllerTest {
         );
 
         given(jwtProvider.validateToken(anyString())).willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
@@ -323,7 +322,7 @@ class ConferenceControllerTest {
         String identifier = "AUTH1";
         given(conferenceService.updateConference(eq(identifier), anyLong(), eq(request))).willReturn(response);
         given(jwtProvider.validateToken(anyString())).willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
@@ -364,7 +363,7 @@ class ConferenceControllerTest {
         );
 
         given(jwtProvider.validateToken(anyString())).willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
@@ -399,7 +398,7 @@ class ConferenceControllerTest {
         );
 
         given(jwtProvider.validateToken(anyString())).willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("AUTH1");
+        given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 

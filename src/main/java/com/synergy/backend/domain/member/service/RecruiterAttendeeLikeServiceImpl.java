@@ -5,7 +5,7 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synergy.backend.domain.member.api.dto.resposne.LikedAttendeeResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.LikedRecruiterResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;
@@ -51,11 +51,11 @@ public class RecruiterAttendeeLikeServiceImpl implements RecruiterAttendeeLikeSe
 
 	@Transactional(readOnly = true)
 	@Override
-	public List<LikedAttendeeResponseDto> getLikedAttendees(Long recruiterId) {
+	public List<AttendeeSimpleResponseDto> getLikedAttendees(Long recruiterId) {
 		List<RecruiterAttendeeLike> likes = recruiterAttendeeLikeRepository.findAllByRecruiterId(recruiterId);
 
 		return likes.stream()
-			.map(like -> LikedAttendeeResponseDto.from(like.getAttendee()))
+			.map(like -> AttendeeSimpleResponseDto.from(like.getAttendee(), true))
 			.toList();
 	}
 
