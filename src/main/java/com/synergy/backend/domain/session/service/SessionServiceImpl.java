@@ -90,6 +90,7 @@ public class SessionServiceImpl implements SessionService {
         }
     }
 
+    @Transactional
     @Override
     public void updateSession(String identifier, Long sessionId, SessionReqDto reqDto, MultipartFile multipartFile) {
         Session session = ifSessionExists(sessionId);
