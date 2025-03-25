@@ -102,14 +102,17 @@ jobs:
             rm -f ~/deploy/synergy.env
             
             echo "JWT_SECRET=${{ secrets.JWT_SECRET }}" >> ~/deploy/synergy.env
-            echo "DB_URL=${{ secrets.DB_URL }}" >> ~/deploy/synergy.env
-            echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ~/deploy/synergy.env
-            echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ~/deploy/synergy.env
+            echo "DEV_DB_HOST=${{ secrets.DB_URL }}" >> ~/deploy/synergy.env
+            echo "DEV_DB_USER=${{ secrets.DB_USERNAME }}" >> ~/deploy/synergy.env
+            echo "DEV_DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ~/deploy/synergy.env
             echo "ACCESS_KEY=${{ secrets.ACCESS_KEY }}" >> ~/deploy/synergy.env
             echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> ~/deploy/synergy.env
             echo "BUCKET_NAME=${{ secrets.BUCKET_NAME }}" >> ~/deploy/synergy.env
             echo "REGION=${{ secrets.REGION }}" >> ~/deploy/synergy.env
-            echo "dockerhubuserid=${{ secrets.DOCKERHUB_USERNAME }}" >> ~/deploy/synergy.env
+            echo "EMAIL_ADDRESS=${{ secrets.EMAIL_ADDRESS }}" >> ~/deploy/synergy.env
+            echo "EMAIL_PERSONAL=${{ secrets.EMAIL_PERSONAL }}" >> ~/deploy/synergy.env
+            echo "EMAIL_USERNAME=${{ secrets.EMAIL_USERNAME }}" >> ~/deploy/synergy.env
+            echo "EMAIL_PASSWORD=${{ secrets.EMAIL_PASSWORD }}" >> ~/deploy/synergy.env
             
             sudo docker-compose -f ~/deploy/docker-compose.yml pull
             sudo docker-compose -f ~/deploy/docker-compose.yml up -d
