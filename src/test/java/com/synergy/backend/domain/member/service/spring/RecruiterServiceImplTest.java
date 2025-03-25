@@ -2,7 +2,6 @@ package com.synergy.backend.domain.member.service.spring;
 
 import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
 import com.synergy.backend.domain.member.api.dto.AttendeeListResponse;
-import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
@@ -30,6 +29,8 @@ class RecruiterServiceImplTest {
     RecruiterService recruiterService;
     @Autowired
     RecruiterRepository recruiterRepository;
+    @Autowired
+    private AttendeeRepository attendeeRepository;
 
     @DisplayName("필터 조건에 맞는 참가자 리스트를 페이징하여 반환한다.")
     @Test
@@ -44,12 +45,13 @@ class RecruiterServiceImplTest {
          */
 
         Pageable pageable = PageRequest.of(0, 10);
-        List<String> occupations = List.of("백엔드 개발자", "그래픽 디자이너");
+        List<String> desiredOccupations = List.of("백엔드 개발자", "그래픽 디자이너");
         String educationLevel = null;
         String ageGroup = "20~24세 이하";
         String experienceLevel = "1~2년 이하";
         List<String> regions = List.of();
-        AttendeeFilterRequest requestCondition = AttendeeFilterRequest.of(occupations, educationLevel, ageGroup, experienceLevel, regions);
+        AttendeeFilterRequest requestCondition = AttendeeFilterRequest.of(desiredOccupations, educationLevel, ageGroup, experienceLevel, regions);
+
 
         // when
         AttendeeListResponse result = recruiterService.getAttendeesBy(pageable, savedRecruiter.getId(), requestCondition);
@@ -61,7 +63,7 @@ class RecruiterServiceImplTest {
 
         assertThat(result.getList())
                 .hasSize(1)
-                .extracting("name", "occupation", "experienceLevel")
+                .extracting("name", "desiredJobPosition", "experienceLevel")
                 .containsExactlyInAnyOrder(
                         tuple("김지원", "백엔드 개발자", "1~2년 이하")
                 );

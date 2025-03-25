@@ -84,7 +84,7 @@ public class RecruiterController {
 			페이징 처리를 통해 응답을 분할하여 제공합니다.
 			"""
 	)
-	@PreAuthorize("hasRole('RECRUITER')")
+	@PreAuthorize("hasRole('RECRUITER') or hasRole('ADMIN')")
 	@GetMapping("/{id}/attendees")
 	public ApiResponse<AttendeeListResponse> getAttendees(
 		@Parameter(description = "페이징 처리 정보 (기본: page=0, size=20)") @PageableDefault(page = 0, size = 20) Pageable pageable,

@@ -1,13 +1,11 @@
 package com.synergy.backend.domain.member.repository.spring;
 
 import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
-import com.synergy.backend.domain.member.api.dto.AttendeeSimpleResponseDto;
-import com.synergy.backend.domain.member.entity.Attendee;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
 import com.synergy.backend.global.config.QuerydslConfig;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +18,8 @@ import org.springframework.test.context.ActiveProfiles;
 
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.tuple;
 
 @DataJpaTest
 @ActiveProfiles("test")
@@ -46,7 +45,6 @@ class AttendeeRepositoryTest {
         String experienceLevel = null;
         List<String> regions = List.of();
         AttendeeFilterRequest requestCondition = AttendeeFilterRequest.of(occupations, educationLevel, ageGroup, experienceLevel, regions);
-
         // when
         Page<AttendeeSimpleResponseDto> result = attendeeRepository.searchPageAttendeesBy(pageable, savedRecruiter.getId(), requestCondition);
 
@@ -58,12 +56,12 @@ class AttendeeRepositoryTest {
 
         List<AttendeeSimpleResponseDto> content = result.getContent();
         assertThat(content)
-                .extracting("name", "occupation", "experienceLevel", "techStacks")
+                .extracting("name", "desiredJobPosition", "experienceLevel", "techStacks")
                 .containsExactlyInAnyOrder(
                         tuple("김지원", "백엔드 개발자", "1~2년 이하", "Java, AWS, Spring Boot, MySQL, Docker, JPA, github-actions, SonarQube, Redis, junit5, Mockito, Git"),
-                        tuple("박시형", "프론트엔드 개발자", "신입", "Go, C++"),
-                        tuple("이다영", "프론트엔드 개발자", "신입", "Go, C++"),
-                        tuple("김다혜", "프론트엔드 개발자", "신입", "Git, Docker")
+                        tuple("박시형", "백엔드 개발자", "신입", "Go, C++"),
+                        tuple("이다영", "백엔드 개발자", "신입", "Go, C++"),
+                        tuple("김다혜", "백엔드 개발자", "신입", "Git, Docker")
                 );
 
 

@@ -4,13 +4,15 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
 import com.synergy.backend.domain.member.api.dto.AttendeeListResponse;
-import com.synergy.backend.domain.member.api.dto.AttendeeSimpleResponseDto;
+//import com.synergy.backend.domain.member.api.dto.AttendeeSimpleResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.member.entity.details.ExperienceLevelType;
 import com.synergy.backend.domain.member.service.RecruiterAttendeeLikeService;
 import com.synergy.backend.domain.member.service.RecruiterService;
+import com.synergy.backend.global.jwt.JwtProvider;
 import com.synergy.backend.global.security.CustomUserDetailsService;
-import com.synergy.backend.global.security.JwtProvider;
+//import com.synergy.backend.global.security.JwtProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,29 +75,29 @@ class RecruiterControllerTest {
 
         // 전부다 수도권, 부산광역시 / 4년제 졸업, 20~24세 이하 라는 가정
         List<AttendeeSimpleResponseDto> attendeesCandidates = List.of(
-                new AttendeeSimpleResponseDto("김지원1", null, "백엔드 개발자", JUNIOR, "Java, Spring", false),
-                new AttendeeSimpleResponseDto("김지원2", null, "백엔드 개발자", JUNIOR, "Java, Spring", true),
-                new AttendeeSimpleResponseDto("김지원3", null, "백엔드 개발자", MID_LEVEL, "Java, Spring", true),
-                new AttendeeSimpleResponseDto("김지원4", null, "백엔드 개발자", MID_LEVEL, "Java, Spring", true),
-                new AttendeeSimpleResponseDto("김지원5", null, "백엔드 개발자", JUNIOR, "Java, Spring", true),
-                new AttendeeSimpleResponseDto("김지원6", null, "프론트엔드 개발자", JUNIOR, "React", true),
-                new AttendeeSimpleResponseDto("김지원7", null, "프론트엔드 개발자", JUNIOR, "React", true),
-                new AttendeeSimpleResponseDto("김지원8", null, "프론트엔드 개발자", JUNIOR, "React", true),
-                new AttendeeSimpleResponseDto("김지원9", null, "프론트엔드 개발자", MID_LEVEL, "React", true),
-                new AttendeeSimpleResponseDto("김지원10", null, "풀스택 개발자", JUNIOR, "All", true),
-                new AttendeeSimpleResponseDto("김지원11", null, "풀스택 개발자", JUNIOR, "All", true),
-                new AttendeeSimpleResponseDto("정서연12", null, "UI/UX 디자이너", MID_LEVEL, "Figma", true),
-                new AttendeeSimpleResponseDto("정서연13", null, "UI/UX 디자이너", JUNIOR, "Figma", true)
+                new AttendeeSimpleResponseDto(1L, "김지원1", null, "백엔드 개발자", JUNIOR, "Java, Spring", false),
+                new AttendeeSimpleResponseDto(2L,"김지원2", null, "백엔드 개발자", JUNIOR, "Java, Spring", true),
+                new AttendeeSimpleResponseDto(3L,"김지원3", null, "백엔드 개발자", MID_LEVEL, "Java, Spring", true),
+                new AttendeeSimpleResponseDto(3L,"김지원4", null, "백엔드 개발자", MID_LEVEL, "Java, Spring", true),
+                new AttendeeSimpleResponseDto(4L,"김지원5", null, "백엔드 개발자", JUNIOR, "Java, Spring", true),
+                new AttendeeSimpleResponseDto(5L,"김지원6", null, "프론트엔드 개발자", JUNIOR, "React", true),
+                new AttendeeSimpleResponseDto(6L,"김지원7", null, "프론트엔드 개발자", JUNIOR, "React", true),
+                new AttendeeSimpleResponseDto(7L,"김지원8", null, "프론트엔드 개발자", JUNIOR, "React", true),
+                new AttendeeSimpleResponseDto(8L,"김지원9", null, "프론트엔드 개발자", MID_LEVEL, "React", true),
+                new AttendeeSimpleResponseDto(9L,"김지원10", null, "풀스택 개발자", JUNIOR, "All", true),
+                new AttendeeSimpleResponseDto(10L,"김지원11", null, "풀스택 개발자", JUNIOR, "All", true),
+                new AttendeeSimpleResponseDto(11L,"정서연12", null, "UI/UX 디자이너", MID_LEVEL, "Figma", true),
+                new AttendeeSimpleResponseDto(12L,"정서연13", null, "UI/UX 디자이너", JUNIOR, "Figma", true)
         );
 
 
         List<AttendeeSimpleResponseDto> attendees = List.of(
-                new AttendeeSimpleResponseDto("김지원1", null, "백엔드 개발자", JUNIOR, "Java, Spring", false),
-                new AttendeeSimpleResponseDto("김지원2", null, "백엔드 개발자", JUNIOR, "Java, Spring", true),
-                new AttendeeSimpleResponseDto("김지원5", null, "백엔드 개발자", JUNIOR, "Java, Spring", true),
-                new AttendeeSimpleResponseDto("김지원6", null, "프론트엔드 개발자", JUNIOR, "React", true),
-                new AttendeeSimpleResponseDto("김지원7", null, "프론트엔드 개발자", JUNIOR, "React", true),
-                new AttendeeSimpleResponseDto("김지원8", null, "프론트엔드 개발자", JUNIOR, "React", true)
+                new AttendeeSimpleResponseDto(1L,"김지원1", null, "백엔드 개발자", JUNIOR, "Java, Spring", false),
+                new AttendeeSimpleResponseDto(2L,"김지원2", null, "백엔드 개발자", JUNIOR, "Java, Spring", true),
+                new AttendeeSimpleResponseDto(5L,"김지원5", null, "백엔드 개발자", JUNIOR, "Java, Spring", true),
+                new AttendeeSimpleResponseDto(6L,"김지원6", null, "프론트엔드 개발자", JUNIOR, "React", true),
+                new AttendeeSimpleResponseDto(7L,"김지원7", null, "프론트엔드 개발자", JUNIOR, "React", true),
+                new AttendeeSimpleResponseDto(8L,"김지원8", null, "프론트엔드 개발자", JUNIOR, "React", true)
         );
 
         Page<AttendeeSimpleResponseDto> page = new PageImpl<>(attendees, PageRequest.of(0, 10), attendees.size());
@@ -104,7 +106,7 @@ class RecruiterControllerTest {
         given(recruiterService.getAttendeesBy(any(Pageable.class), eq(recruiterId), eq(requestCondition)))
                 .willReturn(response);
         given(jwtProvider.validateToken(anyString())).willReturn(true);
-        given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("RC12345");
+        //given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("RC12345");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.RECRUITER);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
@@ -124,22 +126,22 @@ class RecruiterControllerTest {
                 .andExpect(jsonPath("$.data.currentPageNumber").value(0))
                 .andExpect(jsonPath("$.data.totalElements").value(6))
                 .andExpect(jsonPath("$.data.list[0].name").value("김지원1"))
-                .andExpect(jsonPath("$.data.list[0].occupation").value("백엔드 개발자"))
+                .andExpect(jsonPath("$.data.list[0].desiredJobPosition").value("백엔드 개발자"))
                 .andExpect(jsonPath("$.data.list[0].experienceLevel").value(JUNIOR.getDescription()))
                 .andExpect(jsonPath("$.data.list[1].name").value("김지원2"))
-                .andExpect(jsonPath("$.data.list[1].occupation").value("백엔드 개발자"))
+                .andExpect(jsonPath("$.data.list[1].desiredJobPosition").value("백엔드 개발자"))
                 .andExpect(jsonPath("$.data.list[1].experienceLevel").value(JUNIOR.getDescription()))
                 .andExpect(jsonPath("$.data.list[2].name").value("김지원5"))
-                .andExpect(jsonPath("$.data.list[2].occupation").value("백엔드 개발자"))
+                .andExpect(jsonPath("$.data.list[2].desiredJobPosition").value("백엔드 개발자"))
                 .andExpect(jsonPath("$.data.list[2].experienceLevel").value(JUNIOR.getDescription()))
                 .andExpect(jsonPath("$.data.list[3].name").value("김지원6"))
-                .andExpect(jsonPath("$.data.list[3].occupation").value("프론트엔드 개발자"))
+                .andExpect(jsonPath("$.data.list[3].desiredJobPosition").value("프론트엔드 개발자"))
                 .andExpect(jsonPath("$.data.list[3].experienceLevel").value(JUNIOR.getDescription()))
                 .andExpect(jsonPath("$.data.list[4].name").value("김지원7"))
-                .andExpect(jsonPath("$.data.list[4].occupation").value("프론트엔드 개발자"))
+                .andExpect(jsonPath("$.data.list[4].desiredJobPosition").value("프론트엔드 개발자"))
                 .andExpect(jsonPath("$.data.list[4].experienceLevel").value(JUNIOR.getDescription()))
                 .andExpect(jsonPath("$.data.list[5].name").value("김지원8"))
-                .andExpect(jsonPath("$.data.list[5].occupation").value("프론트엔드 개발자"))
+                .andExpect(jsonPath("$.data.list[5].desiredJobPosition").value("프론트엔드 개발자"))
                 .andExpect(jsonPath("$.data.list[5].experienceLevel").value(JUNIOR.getDescription()))
                 .andDo(print());
 

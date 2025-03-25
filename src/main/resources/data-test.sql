@@ -93,6 +93,7 @@ is_hiring_interested = 1,
 current_job_position_id = 2,
 current_job_group_id = 1,
 desired_job_group_id = 1,
+desired_job_position_id = 2,
 self_introduction = '저는 최신 기술을 배우고 IT 업계에서 성장하기 위해 다양한 컨퍼런스와 개발 프로젝트에 참여해왔습니다. 컴퓨터공학 전공자로서 웹 애플리케이션 개발과 데이터베이스 설계 경험이 있으며, 협업과 문제 해결 역량을 갖추고 있습니다. 여러 해커톤과 오픈소스 프로젝트에 참여하며 실무 감각을 익혔고, 컨퍼런스를 통해 업계 트렌드를 학습하며 네트워킹을 적극적으로 활용해왔습니다. 앞으로 데이터 분석과 AI 기술을 활용하여 가치 있는 서비스를 개발하고, 변화하는 환경 속에서 끊임없이 성장하는 개발자가 되고 싶습니다. 이번 기회를 통해 실무 경험을 쌓으며, IT 업계에서 더욱 발전할 수 있도록 최선을 다하겠습니다.',
 tech_stacks = 'Java, AWS, Spring Boot, MySQL, Docker, JPA, github-actions, SonarQube, Redis, junit5, Mockito, Git',
 age_group = 'AGE_20_24',
@@ -110,6 +111,7 @@ experience_level = 2,
 current_job_position_id = 12,
 current_job_group_id = 2,
 desired_job_group_id = 2,
+desired_job_position_id = 12,
 self_introduction = '최신 사람입니다!'
 WHERE attendee_id = 2;
 
@@ -123,6 +125,7 @@ experience_level = 1,
 current_job_position_id = 11,
 current_job_group_id = 2,
 desired_job_group_id = 2,
+desired_job_position_id = 10,
 self_introduction = '사람입니다!'
 WHERE attendee_id = 3;
 
@@ -136,6 +139,7 @@ experience_level = 3,
 current_job_position_id = 1,
 current_job_group_id = 1,
 desired_job_group_id = 1,
+desired_job_position_id = 2,
 self_introduction = '혼자서 할 수 있는 개발자!'
 WHERE attendee_id = 4;
 
@@ -149,6 +153,7 @@ experience_level = 3,
 current_job_position_id = 1,
 current_job_group_id = 1,
 desired_job_group_id = 1,
+desired_job_position_id = 2,
 self_introduction = '혼자서 할 수 있는 개발자!'
 WHERE attendee_id = 5;
 
@@ -162,6 +167,7 @@ experience_level = 3,
 current_job_position_id = 1,
 current_job_group_id = 1,
 desired_job_group_id = 1,
+desired_job_position_id = 2,
 self_introduction = '100인 분 할 수 있는 개발자!'
 WHERE attendee_id = 6;
 
