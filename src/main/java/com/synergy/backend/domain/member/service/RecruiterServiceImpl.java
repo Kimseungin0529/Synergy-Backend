@@ -2,10 +2,7 @@ package com.synergy.backend.domain.member.service;
 
 import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
 import com.synergy.backend.domain.member.api.dto.AttendeeListResponse;
-import com.synergy.backend.domain.member.api.dto.AttendeeSimpleResponseDto;
-import com.synergy.backend.domain.member.entity.Attendee;
-import com.synergy.backend.domain.member.exception.ForbiddenAccessAttendee;
-import com.synergy.backend.domain.member.exception.NotFoundUserException;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -33,16 +30,6 @@ public class RecruiterServiceImpl implements RecruiterService {
 	public RecruiterMyInfoResponseDto getMyInformation(Long id) {
 		Recruiter recruiter = findRecruiterById(id);
 		return RecruiterMyInfoResponseDto.from(recruiter);
-	}
-
-	@Transactional(readOnly = true)
-	@Override
-	public AttendeeDetailResponse getAttendeeFrom(Long attendeeId) {
-		Attendee findAttendee = attendeeRepository.findAttendeeBy(attendeeId).orElseThrow(NotFoundUserException::new);
-		if(!findAttendee.getIsHiringInterested()) {
-			throw new ForbiddenAccessAttendee();
-		}
-		return AttendeeDetailResponse.of(findAttendee);
 	}
 
 	@Transactional(readOnly = true)

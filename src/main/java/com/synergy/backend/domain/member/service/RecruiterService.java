@@ -8,7 +8,5 @@ import org.springframework.data.domain.Pageable;
 public interface RecruiterService {
 	RecruiterMyInfoResponseDto getMyInformation(Long id);
 
-	AttendeeDetailResponse getAttendeeFrom(Long attendeeId);
-
 	AttendeeListResponse getAttendeesBy(Pageable pageable, Long recruiterId, AttendeeFilterRequest request);
 }

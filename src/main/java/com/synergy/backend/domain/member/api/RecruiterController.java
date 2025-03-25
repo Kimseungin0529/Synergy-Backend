@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
 import com.synergy.backend.domain.member.api.dto.AttendeeListResponse;
-import com.synergy.backend.domain.member.api.dto.resposne.LikedAttendeeResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.RecruiterMyInfoResponseDto;
 import com.synergy.backend.domain.member.service.AttendeeDetailResponse;
 import com.synergy.backend.domain.member.service.RecruiterAttendeeLikeService;
@@ -71,15 +71,9 @@ public class RecruiterController {
 	@Operation(summary = "좋아요한 참가자 목록 조회", description = "채용담당자가 좋아요한 참가자 목록을 조회합니다.")
 	@PreAuthorize("hasRole('RECRUITER')")
 	@GetMapping("/me/liked-attendees")
-	public ApiResponse<List<LikedAttendeeResponseDto>> getLikedAttendees(
+	public ApiResponse<List<AttendeeSimpleResponseDto>> getLikedAttendees(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		return ApiResponse.ok(recruiterAttendeeLikeService.getLikedAttendees(userDetails.getId()), 200);
-	}
-
-	@PreAuthorize("hasRole('RECRUITER')")
-	@GetMapping("/attendee/{id}")
-	public ApiResponse<AttendeeDetailResponse> getAttendee(@PathVariable("id") Long id) {
-		return ApiResponse.ok(recruiterService.getAttendeeFrom(id), 200);
 	}
 
 	@Operation(
@@ -106,5 +100,4 @@ public class RecruiterController {
 			experienceLevel, regions);
 		return ApiResponse.ok(recruiterService.getAttendeesBy(pageable, recruiterId, requestCondition), 200);
 	}
-
 }
