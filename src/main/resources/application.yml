@@ -170,6 +170,9 @@ spring:
       max-file-size: 2MB
       max-request-size: 15MB
 
-
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data-test.sql
 
 
