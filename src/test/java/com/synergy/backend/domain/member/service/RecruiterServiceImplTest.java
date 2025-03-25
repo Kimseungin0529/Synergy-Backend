@@ -1,14 +1,26 @@
 package com.synergy.backend.domain.member.service;
 
+import static com.synergy.backend.domain.member.entity.details.ExperienceLevelType.*;
+import static org.assertj.core.api.Assertions.tuple;
+import static org.assertj.core.api.AssertionsForInterfaceTypes.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.BDDMockito.*;
 import static org.mockito.Mockito.*;
 
+import java.util.List;
 import java.util.Optional;
 
+import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
+import com.synergy.backend.domain.member.api.dto.AttendeeListResponse;
+import com.synergy.backend.domain.member.api.dto.AttendeeSimpleResponseDto;
+import com.synergy.backend.domain.member.entity.details.ExperienceLevelType;
+import com.synergy.backend.domain.member.repository.AttendeeRepository;
+import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -17,12 +29,18 @@ import com.synergy.backend.domain.member.api.dto.resposne.RecruiterMyInfoRespons
 import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.exception.NotFoundRecruiterException;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @ExtendWith(MockitoExtension.class)
 class RecruiterServiceImplTest {
 
 	@Mock
 	private RecruiterRepository recruiterRepository;
+	@Mock
+	private AttendeeRepository attendeeRepository;
 
 	@InjectMocks
 	private RecruiterServiceImpl recruiterService;
@@ -58,4 +76,46 @@ class RecruiterServiceImplTest {
 		//when & then
 		assertThrows(NotFoundRecruiterException.class, () -> recruiterService.getMyInformation(recruiterId));
 	}
+
+
+	@Test
+	@DisplayName("필터 조건에 맞는 참가자 리스트를 페이징하여 반환한다.")
+	void testGetAttendeesBy() {
+		// given
+		Long recruiterId = 1L;
+		Pageable pageable = PageRequest.of(0, 5);
+		AttendeeFilterRequest requestCondition = AttendeeFilterRequest.of(
+				List.of("백엔드", "프론트엔드"),
+				"4년제 졸업",
+				"20~24세 이하",
+				"1~2년 이하",
+				List.of("서울", "부산")
+		);
+		List<AttendeeSimpleResponseDto> mockAttendees = List.of(
+				new AttendeeSimpleResponseDto("김지원", null, "백엔드 개발자", JUNIOR, "Java, Spring", true),
+				new AttendeeSimpleResponseDto("정서연", null, "프론트엔드 개발자", JUNIOR, "React", false)
+		);
+
+		Page<AttendeeSimpleResponseDto> mockPage = new PageImpl<>(mockAttendees, pageable, mockAttendees.size());
+		given(attendeeRepository.searchPageAttendeesBy(eq(pageable), eq(recruiterId), eq(requestCondition)))
+				.willReturn(mockPage);
+
+		// when
+		AttendeeListResponse result = recruiterService.getAttendeesBy(pageable, recruiterId, requestCondition);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result)
+				.extracting("currentPageNumber", "totalPages", "totalElements", "pageSize")
+						.containsExactly(0, 1, 2L, 5);
+
+		assertThat(result.getList())
+				.hasSize(2)
+				.extracting("name", "occupation", "experienceLevel", "liked")
+				.containsExactlyInAnyOrder(
+						tuple("김지원", "백엔드 개발자", JUNIOR.getDescription(), true),
+						tuple("정서연", "프론트엔드 개발자", JUNIOR.getDescription(), false)
+				);
+	}
+
 }
