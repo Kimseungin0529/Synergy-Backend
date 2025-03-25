@@ -99,6 +99,9 @@ jobs:
           key: ${{ secrets.EC2_SSH_KEY }} # EC2 서버에 접근하기 위한 SSH 개인 키
           script: |
             
+            rm -f ~/deploy/synergy.env
+            
+            echo "DB_URL=${{ secrets.JWT_SECRET }}" >> ~/deploy/synergy.env
             echo "DB_URL=${{ secrets.DB_URL }}" >> ~/deploy/synergy.env
             echo "DB_USERNAME=${{ secrets.DB_USERNAME }}" >> ~/deploy/synergy.env
             echo "DB_PASSWORD=${{ secrets.DB_PASSWORD }}" >> ~/deploy/synergy.env
