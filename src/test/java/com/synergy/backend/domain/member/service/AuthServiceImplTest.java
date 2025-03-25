@@ -20,7 +20,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.TokenWithRefreshToken;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;
@@ -34,10 +34,13 @@ import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
 import com.synergy.backend.domain.point.service.PointService;
+import com.synergy.backend.global.jwt.JwtProvider;
 import com.synergy.backend.global.mail.MailService;
 import com.synergy.backend.global.mail.exception.EmailNotVerifiedException;
 import com.synergy.backend.global.security.CustomUserDetails;
-import com.synergy.backend.global.security.JwtProvider;
+import com.synergy.backend.global.security.CustomUserDetailsService;
+import com.synergy.backend.global.token.TokenService;
+import com.synergy.backend.global.token.exception.InvalidRefreshTokenException;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -68,6 +71,12 @@ class AuthServiceImplTest {
 
 	@Mock
 	private MailService mailService;
+
+	@Mock
+	private TokenService tokenService;
+
+	@Mock
+	private CustomUserDetailsService userDetailsService;
 
 	private SignupAttendeeRequestDto requestDto;
 	private Attendee mockAttendee;
@@ -125,16 +134,16 @@ class AuthServiceImplTest {
 		// Given
 		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
 		when(passwordEncoder.matches(requestDto.password(), mockAttendee.getPassword())).thenReturn(true);
-		when(jwtProvider.generateToken(any(CustomUserDetails.class))).thenReturn(("token"));
+		when(jwtProvider.generateAccessToken(any(CustomUserDetails.class))).thenReturn(("token"));
 
 		// When
-		TokenResponseDto response = authService.loginAsAttendee(requestDto.email(), requestDto.password());
+		TokenWithRefreshToken response = authService.loginAsAttendee(requestDto.email(), requestDto.password());
 
 		// Then
 		assertNotNull(response);
-		assertEquals("token", response.accessToken());
-		assertEquals("UserA@example.com", response.identifier());
-		assertEquals(ATTENDEE.toString(), response.role());
+		assertEquals("token", response.tokenResponseDto().accessToken());
+		assertEquals("UserA@example.com", response.tokenResponseDto().identifier());
+		assertEquals(ATTENDEE, response.tokenResponseDto().role());
 	}
 
 	@DisplayName("참가자 로그인 시 이메일이 존재하지 않으면 예외가 발생한다.")
@@ -169,18 +178,18 @@ class AuthServiceImplTest {
 		String expectedToken = "mocked-admin-token";
 
 		when(adminRepository.findByAdminAuthCode(authCode)).thenReturn(Optional.of(mockAdmin));
-		when(jwtProvider.generateToken(any(CustomUserDetails.class))).thenReturn(expectedToken);
+		when(jwtProvider.generateAccessToken(any(CustomUserDetails.class))).thenReturn(expectedToken);
 
 		// When
-		TokenResponseDto response = authService.loginAsAdminOrRecruiter(authCode);
+		TokenWithRefreshToken response = authService.loginAsAdminOrRecruiter(authCode);
 
 		// Then
 		assertNotNull(response);
-		assertEquals("mocked-admin-token", response.accessToken());
-		assertEquals(ADMIN.toString(), response.role());
+		assertEquals("mocked-admin-token", response.tokenResponseDto().accessToken());
+		assertEquals(ADMIN, response.tokenResponseDto().role());
 
 		verify(adminRepository).findByAdminAuthCode(authCode);
-		verify(jwtProvider).generateToken(any(CustomUserDetails.class));
+		verify(jwtProvider).generateAccessToken(any(CustomUserDetails.class));
 
 		verify(recruiterRepository, never()).findByRecruiterAuthCode(anyString());
 	}
@@ -196,19 +205,19 @@ class AuthServiceImplTest {
 
 		when(adminRepository.findByAdminAuthCode(authCode)).thenReturn(Optional.empty()); // 관리자로 찾으면 없음
 		when(recruiterRepository.findByRecruiterAuthCode(authCode)).thenReturn(Optional.of(mockRecruiter));
-		when(jwtProvider.generateToken(any(CustomUserDetails.class))).thenReturn(expectedToken);
+		when(jwtProvider.generateAccessToken(any(CustomUserDetails.class))).thenReturn(expectedToken);
 
 		// When
-		TokenResponseDto response = authService.loginAsAdminOrRecruiter(authCode);
+		TokenWithRefreshToken response = authService.loginAsAdminOrRecruiter(authCode);
 
 		// Then
 		assertNotNull(response);
-		assertEquals("mocked-recruiter-token", response.accessToken());
-		assertEquals(RECRUITER.toString(), response.role());
+		assertEquals("mocked-recruiter-token", response.tokenResponseDto().accessToken());
+		assertEquals(RECRUITER, response.tokenResponseDto().role());
 
 		verify(adminRepository).findByAdminAuthCode(authCode);
 		verify(recruiterRepository).findByRecruiterAuthCode(authCode);
-		verify(jwtProvider).generateToken(any(CustomUserDetails.class));
+		verify(jwtProvider).generateAccessToken(any(CustomUserDetails.class));
 	}
 
 	@DisplayName("관리자나 채용담당자가 잘못된 인증 코드로 로그인하면 예외가 발생한다.")
@@ -226,7 +235,7 @@ class AuthServiceImplTest {
 		verify(adminRepository).findByAdminAuthCode(invalidAuthCode);
 		verify(recruiterRepository).findByRecruiterAuthCode(invalidAuthCode);
 
-		verify(jwtProvider, never()).generateToken(any(CustomUserDetails.class));
+		verify(jwtProvider, never()).generateAccessToken(any(CustomUserDetails.class));
 	}
 
 	@DisplayName("회원가입 성공 시 회원가입 포인트가 적립된다.")
@@ -305,5 +314,84 @@ class AuthServiceImplTest {
 
 		// Then
 		assertThat(mockAttendee.getPassword()).isEqualTo("encodedNewPassword");
+	}
+
+	@DisplayName("사용자 로그인 시 엑세스토큰과 리프래시토큰이 발급된다.")
+	@Test
+	void loginAsAttendee_TokenIssued() {
+		// given
+		String accessToken = "mockAccessToken";
+		String refreshToken = "mockRefreshToken";
+
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
+		when(passwordEncoder.matches(requestDto.password(), mockAttendee.getPassword())).thenReturn(true);
+		when(jwtProvider.generateAccessToken(any(CustomUserDetails.class))).thenReturn(accessToken);
+		when(jwtProvider.generateRefreshToken(any(CustomUserDetails.class))).thenReturn(refreshToken);
+
+		// when
+		TokenWithRefreshToken result = authService.loginAsAttendee(requestDto.email(), requestDto.password());
+
+		// then
+		assertThat(result.tokenResponseDto().accessToken()).isEqualTo(accessToken);
+		assertThat(result.refreshToken()).isEqualTo(refreshToken);
+		verify(tokenService).storeRefreshToken(requestDto.email(), refreshToken);
+	}
+
+	@DisplayName("유효한 리프래시 토큰으로 액세스 토큰과 새로운 리프래시 토큰을 재발급한다.")
+	@Test
+	void reissueRefreshToken_success() {
+		// given
+		String currentRefreshToken = "validRefreshToken";
+		String newAccessToken = "newAccessToken";
+		String newRefreshToken = "newRefreshToken";
+		String identifier = mockAttendee.getIdentifier();
+		CustomUserDetails userDetails = new CustomUserDetails(mockAttendee);
+
+		when(jwtProvider.validateToken(currentRefreshToken)).thenReturn(true);
+		when(jwtProvider.getIdentifierFromToken(currentRefreshToken)).thenReturn(identifier);
+		when(tokenService.getStoredRefreshToken(identifier)).thenReturn(currentRefreshToken);
+		when(userDetailsService.loadUserByUsername(identifier)).thenReturn(userDetails);
+		when(jwtProvider.generateAccessToken(userDetails)).thenReturn(newAccessToken);
+		when(jwtProvider.generateRefreshToken(userDetails)).thenReturn(newRefreshToken);
+
+		// when
+		TokenWithRefreshToken result = authService.reissueRefreshToken(currentRefreshToken);
+
+		// then
+		assertThat(result).isNotNull();
+		assertThat(result.refreshToken()).isEqualTo(newRefreshToken);
+		assertThat(result.tokenResponseDto().accessToken()).isEqualTo(newAccessToken);
+		assertThat(result.tokenResponseDto().identifier()).isEqualTo(identifier);
+		assertThat(result.tokenResponseDto().role()).isEqualTo(mockAttendee.getRole());
+
+		verify(tokenService).storeRefreshToken(identifier, newRefreshToken);
+	}
+
+	@DisplayName("리프래시 토큰이 유효하지 않으면 예외를 던진다.")
+	@Test
+	void reissueRefreshToken_invalidToken() {
+		// given
+		String invalidToken = "invalidToken";
+		when(jwtProvider.validateToken(invalidToken)).thenReturn(false);
+
+		// then
+		assertThatThrownBy(() -> authService.reissueRefreshToken(invalidToken))
+			.isInstanceOf(InvalidRefreshTokenException.class);
+	}
+
+	@DisplayName("저장된 리프래시 토큰과 다르면 예외를 던진다.")
+	@Test
+	void reissueRefreshToken_tokenMismatch() {
+		// given
+		String currentRefreshToken = "current";
+		String identifier = "user@example.com";
+
+		when(jwtProvider.validateToken(currentRefreshToken)).thenReturn(true);
+		when(jwtProvider.getIdentifierFromToken(currentRefreshToken)).thenReturn(identifier);
+		when(tokenService.getStoredRefreshToken(identifier)).thenReturn("different");
+
+		// then
+		assertThatThrownBy(() -> authService.reissueRefreshToken(currentRefreshToken))
+			.isInstanceOf(InvalidRefreshTokenException.class);
 	}
 }

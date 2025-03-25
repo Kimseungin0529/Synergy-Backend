@@ -13,6 +13,14 @@ public record ApiResponse<T>(
 	private static final String SUCCESS = "success";
 	private static final String ERROR = "error";
 
+	public static <T> ApiResponse<T> emptyOk() {
+		return ApiResponse.<T>builder()
+			.status(SUCCESS)
+			.data(null)
+			.code(200)
+			.build();
+	}
+
 	public static <T> ApiResponse<T> ok(T data, int code) {
 		return ApiResponse.<T>builder()
 			.status(SUCCESS)

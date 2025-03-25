@@ -66,4 +66,9 @@ public class Recruiter extends BaseEntity implements User {
 		return RoleType.RECRUITER;
 	}
 
+	@Override
+	public String getIdentifier() {
+		return this.recruiterAuthCode;
+	}
+
 }

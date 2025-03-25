@@ -5,16 +5,13 @@ import com.synergy.backend.domain.conference.dto.requset.ConferenceUpdateRequest
 import com.synergy.backend.domain.conference.dto.response.ConferenceCreateResponse;
 import com.synergy.backend.domain.conference.dto.response.ConferenceUpdateResponse;
 import com.synergy.backend.domain.conference.service.ConferenceService;
-import com.synergy.backend.domain.member.entity.RoleType;
-import com.synergy.backend.domain.member.exception.AccessDeniedException;
-import com.synergy.backend.global.CurrentUser;
+import com.synergy.backend.global.security.CurrentUser;
 import com.synergy.backend.global.common.ApiResponse;
-import com.synergy.backend.global.security.CustomUserDetails;
+
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 @RestController

@@ -1,4 +1,4 @@
-package com.synergy.backend.global;
+package com.synergy.backend.global.security;
 
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 

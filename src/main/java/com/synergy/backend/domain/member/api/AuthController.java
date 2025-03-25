@@ -1,5 +1,6 @@
 package com.synergy.backend.domain.member.api;
 
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,11 +14,14 @@ import com.synergy.backend.domain.member.api.dto.request.PasswordResetConfirmDto
 import com.synergy.backend.domain.member.api.dto.request.PasswordResetRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.TokenWithRefreshToken;
 import com.synergy.backend.domain.member.service.AuthService;
 import com.synergy.backend.global.common.ApiResponse;
 import com.synergy.backend.global.mail.MailService;
+import com.synergy.backend.global.token.CookieUtils;
 
 import jakarta.mail.MessagingException;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
@@ -28,6 +32,7 @@ public class AuthController {
 
 	private final AuthService authService;
 	private final MailService mailService;
+	private final CookieUtils cookieUtils;
 
 	@PostMapping("/attendee/signup")
 	public ApiResponse<?> registerAttendee(@Valid @RequestBody SignupAttendeeRequestDto request) {
@@ -35,38 +40,61 @@ public class AuthController {
 	}
 
 	@PostMapping("/attendee/login")
-	public ApiResponse<TokenResponseDto> loginAttendee(@RequestBody LoginAttendeeRequestDto request) {
-		return ApiResponse.ok(authService.loginAsAttendee(request.email(), request.password()), 200);
+	public ApiResponse<TokenResponseDto> loginAttendee(@RequestBody LoginAttendeeRequestDto request,
+		HttpServletResponse response) {
+
+		TokenWithRefreshToken tokenWithRefreshToken = authService.loginAsAttendee(request.email(), request.password());
+
+		cookieUtils.addRefreshTokenToCookie(response, tokenWithRefreshToken.refreshToken());
+
+		return ApiResponse.ok(tokenWithRefreshToken.tokenResponseDto(), 200);
 	}
 
 	@PostMapping("/admin/login")
-	public ApiResponse<TokenResponseDto> loginAdmin(@RequestBody LoginAdminRequestDto request) {
-		return ApiResponse.ok(authService.loginAsAdminOrRecruiter(request.adminAuthCode()), 200);
+	public ApiResponse<TokenResponseDto> loginAdmin(@RequestBody LoginAdminRequestDto request,
+		HttpServletResponse response) {
+
+		TokenWithRefreshToken tokenWithRefreshToken = authService.loginAsAdminOrRecruiter(request.adminAuthCode());
+
+		cookieUtils.addRefreshTokenToCookie(response, tokenWithRefreshToken.refreshToken());
+
+		return ApiResponse.ok(tokenWithRefreshToken.tokenResponseDto(), 200);
 	}
 
 	@PostMapping("/password/reset/request")
 	public ApiResponse<?> passwordResetRequest(@Valid @RequestBody PasswordResetRequestDto request) {
 		authService.passwordResetRequest(request.email(), request.name(), request.phone());
-		return ApiResponse.ok(null, 200);
+		return ApiResponse.emptyOk();
 	}
 
 	@PostMapping("/password/reset")
 	public ApiResponse<?> newPassword(@Valid @RequestBody PasswordResetConfirmDto request) {
 		authService.passwordReset(request.email(), request.newPassword());
-		return ApiResponse.ok(null, 200);
+		return ApiResponse.emptyOk();
 	}
 
 	@PostMapping("/email/verification/request")
 	public ApiResponse<?> emailVerificationRequest(@Valid @RequestBody EmailVerificationRequestDto request) throws
 		MessagingException {
 		mailService.sendVerificationCodeToMail(request.email());
-		return ApiResponse.ok(null, 200);
+		return ApiResponse.emptyOk();
 	}
 
 	@PostMapping("/email/verification/confirm")
 	public ApiResponse<?> emailVerificationConfirm(@Valid @RequestBody EmailVerificationConfirmDto request) {
 		mailService.mailVerificationConfirm(request.email(), request.code());
-		return ApiResponse.ok(null, 200);
+		return ApiResponse.emptyOk();
 	}
 
+	@PostMapping("/refresh-token/reissue")
+	public ApiResponse<TokenResponseDto> reissueRefreshToken(
+		@CookieValue(CookieUtils.REFRESH_TOKEN_NAME) String refreshToken,
+		HttpServletResponse response) {
+
+		TokenWithRefreshToken tokenWithRefreshToken = authService.reissueRefreshToken(refreshToken);
+
+		cookieUtils.addRefreshTokenToCookie(response, tokenWithRefreshToken.refreshToken());
+
+		return ApiResponse.ok(tokenWithRefreshToken.tokenResponseDto(), 200);
+	}
 }

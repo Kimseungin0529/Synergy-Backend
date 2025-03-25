@@ -8,7 +8,6 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
-import com.synergy.backend.global.config.MailProperties;
 import com.synergy.backend.global.mail.exception.EmailNotVerifiedException;
 import com.synergy.backend.global.mail.exception.MailSendFailedException;
 import com.synergy.backend.global.mail.exception.VerificationCodeExpiredException;

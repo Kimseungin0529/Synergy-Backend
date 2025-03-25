@@ -7,8 +7,8 @@ import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.interest.entity.AttendeeInterest;
-import com.synergy.backend.domain.job.JobPosition;
 import com.synergy.backend.domain.job.JobGroup;
+import com.synergy.backend.domain.job.JobPosition;
 import com.synergy.backend.domain.member.entity.details.AgeGroup;
 import com.synergy.backend.domain.member.entity.details.ConferenceParticipationPurpose;
 import com.synergy.backend.domain.member.entity.details.EducationLevelType;
@@ -195,6 +195,11 @@ public class Attendee extends BaseEntity implements User {
 	@Override
 	public RoleType getRole() {
 		return RoleType.ATTENDEE;
+	}
+
+	@Override
+	public String getIdentifier() {
+		return this.email;
 	}
 
 	public void updateJobInfo(JobPosition jobPosition, JobGroup jobGroup,

@@ -19,7 +19,6 @@ import org.springframework.data.redis.core.ValueOperations;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.synergy.backend.global.config.MailProperties;
 import com.synergy.backend.global.mail.exception.EmailNotVerifiedException;
 import com.synergy.backend.global.mail.exception.MailSendFailedException;
 import com.synergy.backend.global.mail.exception.VerificationCodeExpiredException;

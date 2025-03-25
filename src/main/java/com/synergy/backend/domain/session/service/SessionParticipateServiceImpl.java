@@ -5,7 +5,6 @@ import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
-import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
@@ -23,7 +22,7 @@ import com.synergy.backend.domain.session.exception.NotFoundSession;
 import com.synergy.backend.domain.session.repository.AttendeeSessionRepository;
 import com.synergy.backend.domain.session.repository.sessionQuestionRepository.SessionQuestionRepository;
 import com.synergy.backend.domain.session.repository.sessionRepository.SessionRepository;
-import com.synergy.backend.global.util.SecurityUtils;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

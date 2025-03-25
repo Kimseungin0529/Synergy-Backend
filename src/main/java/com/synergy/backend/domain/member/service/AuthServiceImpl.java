@@ -7,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.TokenWithRefreshToken;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.member.exception.DuplicateEmailException;
@@ -19,10 +20,13 @@ import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
 import com.synergy.backend.domain.point.service.PointService;
+import com.synergy.backend.global.jwt.JwtProvider;
 import com.synergy.backend.global.mail.MailService;
 import com.synergy.backend.global.mail.exception.EmailNotVerifiedException;
 import com.synergy.backend.global.security.CustomUserDetails;
-import com.synergy.backend.global.security.JwtProvider;
+import com.synergy.backend.global.security.CustomUserDetailsService;
+import com.synergy.backend.global.token.TokenService;
+import com.synergy.backend.global.token.exception.InvalidRefreshTokenException;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -39,6 +43,8 @@ public class AuthServiceImpl implements AuthService {
 	private final JwtProvider jwtProvider;
 	private final PointService pointService;
 	private final MailService mailService;
+	private final TokenService tokenService;
+	private final CustomUserDetailsService userDetailsService;
 
 	@Transactional
 	@Override
@@ -58,27 +64,35 @@ public class AuthServiceImpl implements AuthService {
 
 	@Transactional(readOnly = true)
 	@Override
-	public TokenResponseDto loginAsAttendee(String email, String rawPassword) {
+	public TokenWithRefreshToken loginAsAttendee(String email, String rawPassword) {
 		Attendee attendee = findAttendeeByEmail(email);
 
 		if (!isPasswordMatch(rawPassword, attendee.getPassword())) {
 			throw new UnauthorizedException();
 		}
 
-		String token = jwtProvider.generateToken(new CustomUserDetails(attendee));
-		return new TokenResponseDto(token, attendee.getEmail(), attendee.getRole().toString());
+		String accessToken = jwtProvider.generateAccessToken(new CustomUserDetails(attendee));
+		String refreshToken = jwtProvider.generateRefreshToken(new CustomUserDetails(attendee));
+
+		tokenService.storeRefreshToken(email, refreshToken);
+
+		return TokenWithRefreshToken.of(refreshToken, TokenResponseDto.of(accessToken, attendee));
 	}
 
 	@Transactional(readOnly = true)
 	@Override
-	public TokenResponseDto loginAsAdminOrRecruiter(String authCode) {
+	public TokenWithRefreshToken loginAsAdminOrRecruiter(String authCode) {
 		User user = adminRepository.findByAdminAuthCode(authCode)
 			.map(User.class::cast)
 			.or(() -> recruiterRepository.findByRecruiterAuthCode(authCode).map(User.class::cast))
 			.orElseThrow(InvalidAuthCodeException::new);
 
-		String token = jwtProvider.generateToken(new CustomUserDetails(user));
-		return new TokenResponseDto(token, authCode, user.getRole().toString());
+		String accessToken = jwtProvider.generateAccessToken(new CustomUserDetails(user));
+
+		String refreshToken = jwtProvider.generateRefreshToken(new CustomUserDetails(user));
+		tokenService.storeRefreshToken(authCode, refreshToken);
+
+		return TokenWithRefreshToken.of(refreshToken, TokenResponseDto.of(accessToken, user));
 	}
 
 	@Transactional
@@ -108,6 +122,30 @@ public class AuthServiceImpl implements AuthService {
 		attendee.updatePassword(encodePassword(newPassword));
 	}
 
+	@Override
+	public TokenWithRefreshToken reissueRefreshToken(String currentRefreshToken) {
+
+		if (!jwtProvider.validateToken(currentRefreshToken)) {
+			throw new InvalidRefreshTokenException();
+		}
+
+		String identifier = jwtProvider.getIdentifierFromToken(currentRefreshToken);
+
+		String savedRefreshToken = tokenService.getStoredRefreshToken(identifier);
+		if (!currentRefreshToken.equals(savedRefreshToken)) {
+			throw new InvalidRefreshTokenException();
+		}
+
+		CustomUserDetails userDetails = (CustomUserDetails)userDetailsService.loadUserByUsername(identifier);
+
+		String newAccessToken = jwtProvider.generateAccessToken(userDetails);
+		String newRefreshToken = jwtProvider.generateRefreshToken(userDetails);
+
+		tokenService.storeRefreshToken(identifier, newRefreshToken);
+
+		return TokenWithRefreshToken.of(newRefreshToken, TokenResponseDto.of(newAccessToken, userDetails.getUser()));
+	}
+
 	@Transactional(readOnly = true)
 	private Attendee findAttendeeByEmail(String email) {
 		return attendeeRepository.findByEmail(email).orElseThrow(NotFoundUserException::new);
@@ -115,8 +153,11 @@ public class AuthServiceImpl implements AuthService {
 
 	private void validateSignupRequest(SignupAttendeeRequestDto request) {
 		validateEmailVerification(request.email());
+		validateEmailDuplicate(request.email());
+	}
 
-		if (attendeeRepository.findByEmail(request.email()).isPresent()) {
+	private void validateEmailDuplicate(String email) {
+		if (attendeeRepository.findByEmail(email).isPresent()) {
 			throw new DuplicateEmailException();
 		}
 	}

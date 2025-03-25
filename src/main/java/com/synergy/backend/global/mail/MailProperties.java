@@ -1,4 +1,4 @@
-package com.synergy.backend.global.config;
+package com.synergy.backend.global.mail;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 
