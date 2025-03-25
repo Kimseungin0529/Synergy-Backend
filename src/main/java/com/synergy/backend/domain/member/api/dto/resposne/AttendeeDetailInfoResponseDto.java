@@ -7,14 +7,32 @@ import java.util.stream.Collectors;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.details.BaseAttendeeDetailEnum;
 
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "참가자 상세 정보 응답 DTO")
 public record AttendeeDetailInfoResponseDto(
+	@Schema(description = "학력", example = "4년제 대학 졸업")
 	String education,
+
+	@Schema(description = "연령대", example = "20~24세 이하")
 	String ageGroup,
+
+	@Schema(description = "보유 기술", example = "Java, AWS, Spring Boot")
 	String techStacks,
+
+	@Schema(description = "희망 근무 지역 리스트", example = "수도권")
 	Set<String> desiredWorkRegion,
+
+	@Schema(description = "자기소개")
 	String selfIntroduction,
+
+	@Schema(description = "경험 및 기타 정보")
 	String information,
+
+	@Schema(description = "직장 선택 요소 리스트")
 	Set<String> workplaceSelectionFactors,
+
+	@Schema(description = "선호하는 기업 문화 리스트")
 	Set<String> preferredCorporateCultures
 ) {
 	public static AttendeeDetailInfoResponseDto from(Attendee attendee) {

@@ -1,7 +1,9 @@
 package com.synergy.backend.global.common;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 
+@Schema(description = "공통 응답 바디")
 @Builder
 public record ApiResponse<T>(
 	String status,
