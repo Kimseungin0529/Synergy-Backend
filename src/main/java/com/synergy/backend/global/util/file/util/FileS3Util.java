@@ -124,7 +124,8 @@ public class FileS3Util implements FileUtil {
 
     private ObjectMetadata generateMetadata(MultipartFile file) {
         ObjectMetadata metadata = new ObjectMetadata();
-        metadata.setContentType(file.getContentType());
+        metadata.setContentType("image/png");
+        metadata.setContentDisposition("inline");
         metadata.setContentLength(file.getSize());
         return metadata;
     }
