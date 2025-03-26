@@ -133,4 +133,11 @@ public class Session {
 		this.admins.add(admin);
 		admin.getSessions().add(this);
 	}
+
+	public void removeAllAdmins() {
+		for (Admin admin : this.admins) {
+			admin.getSessions().remove(this); // 양방향 관계 제거
+		}
+		this.admins.clear();
+	}
 }
