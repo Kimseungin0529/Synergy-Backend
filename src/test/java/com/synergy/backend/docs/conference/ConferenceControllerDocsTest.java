@@ -12,20 +12,18 @@ import org.junit.jupiter.api.Test;
 import org.springframework.http.MediaType;
 import org.springframework.restdocs.payload.JsonFieldType;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
-import static org.mockito.ArgumentMatchers.*;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
-import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
 import static org.springframework.restdocs.headers.HeaderDocumentation.requestHeaders;
 import static org.springframework.restdocs.mockmvc.MockMvcRestDocumentation.document;
 import static org.springframework.restdocs.operation.preprocess.Preprocessors.*;
 import static org.springframework.restdocs.payload.PayloadDocumentation.*;
-import static org.springframework.restdocs.request.RequestDocumentation.parameterWithName;
-import static org.springframework.restdocs.request.RequestDocumentation.pathParameters;
-import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.patch;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -45,16 +43,18 @@ public class ConferenceControllerDocsTest extends RestDocsSupport {
     void registerConference() throws Exception {
         ConferenceCreateRequest request = new ConferenceCreateRequest(
                 "컨퍼런스명",
-                LocalDateTime.of(3025, 5, 10, 9, 0),
-                LocalDateTime.of(3025, 5, 11, 18, 0),
-                "부천시 오정구 고강동 311-25 1층",
                 "김승진",
+                LocalDate.of(3025, 5, 10),
+                LocalTime.of(9, 0),
+                LocalDate.of(3025, 5, 11),
+                LocalTime.of(18, 0),
+                "부천시 오정구 고강동 311-25 1층",
+                "A로비",
                 "IT"
         );
 
         given(conferenceService.registerConference(any(), any(ConferenceCreateRequest.class)))
                 .willReturn(new ConferenceCreateResponse(1L));
-
 
         mockMvc.perform(
                         post("/api/v1/conference")
@@ -65,68 +65,61 @@ public class ConferenceControllerDocsTest extends RestDocsSupport {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andDo(document("conference-register",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestHeaders(
-                                        headerWithName("Authorization").description("JWT 토큰 (형식: `Bearer {token}`)"),
-                                        headerWithName("Content-Type").description("요청 데이터 타입 (application/json)")
-                                ),
-                                requestFields(
-                                        fieldWithPath("name").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스명"),
-                                        fieldWithPath("startDate").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스 시작 날짜 및 시간 (ISO 8601 형식: yyyy-MM-dd'T'HH:mm:ss)"),
-                                        fieldWithPath("endDate").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스 종료 날짜 및 시간 (ISO 8601 형식: yyyy-MM-dd'T'HH:mm:ss)"),
-                                        fieldWithPath("location").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스 개최 장소"),
-                                        fieldWithPath("organizer").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스 주최자"),
-                                        fieldWithPath("type").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스 유형 (예: IT, 교육, 비즈니스 등)")
-                                ),
-                                responseFields(
-                                        fieldWithPath("status").type(JsonFieldType.STRING)
-                                                .description("결과 상태 (실패 시, 없음)"),
-                                        fieldWithPath("code").type(JsonFieldType.NUMBER)
-                                                .description("HTTP 상태 코드"),
-                                        fieldWithPath("message").type(JsonFieldType.NULL)
-                                                .description("응답 메시지 (오류 발생 시 포함, 성공 시 null)"),
-                                        fieldWithPath("data.id").type(JsonFieldType.NUMBER)
-                                                .description("생성된 컨퍼런스의 고유 ID")
-                                )
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("JWT 토큰 (형식: `Bearer {token}`)"),
+                                headerWithName("Content-Type").description("요청 데이터 타입 (application/json)")
+                        ),
+                        requestFields(
+                                fieldWithPath("name").type(JsonFieldType.STRING).description("컨퍼런스명"),
+                                fieldWithPath("organizer").type(JsonFieldType.STRING).description("주최자"),
+                                fieldWithPath("startDate").type(JsonFieldType.STRING).description("시작 날짜 (yyyy-MM-dd)"),
+                                fieldWithPath("startTime").type(JsonFieldType.STRING).description("시작 시간 (HH:mm)"),
+                                fieldWithPath("endDate").type(JsonFieldType.STRING).description("종료 날짜 (yyyy-MM-dd)"),
+                                fieldWithPath("endTime").type(JsonFieldType.STRING).description("종료 시간 (HH:mm)"),
+                                fieldWithPath("location").type(JsonFieldType.STRING).description("장소"),
+                                fieldWithPath("position").type(JsonFieldType.STRING).description("상세 장소"),
+                                fieldWithPath("type").type(JsonFieldType.STRING).description("컨퍼런스 유형 (예: IT, 교육 등)")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").type(JsonFieldType.STRING).description("응답 상태"),
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.NULL).description("응답 메시지"),
+                                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 컨퍼런스 ID")
                         )
-                );
+                ));
     }
 
     @DisplayName("컨퍼런스를 수정하는 API")
     @Test
     void updateConference() throws Exception {
-        // given
         ConferenceUpdateRequest request = new ConferenceUpdateRequest(
-                "Spring Boot Conference 2025",
-                LocalDateTime.of(3025, 6, 15, 10, 0),
-                LocalDateTime.of(3025, 6, 16, 18, 0),
-                "Seoul, South Korea",
+                "컨퍼런스명",
                 "김승진",
+                LocalDate.of(3025, 5, 10),
+                LocalTime.of(9, 0),
+                LocalDate.of(3025, 5, 11),
+                LocalTime.of(18, 0),
+                "부천시 오정구 고강동 311-25 1층",
+                "A로비",
                 "IT"
         );
 
-
         given(conferenceService.updateConference(any(), anyLong(), any(ConferenceUpdateRequest.class)))
                 .willReturn(new ConferenceUpdateResponse(
-                        "Spring Boot Conference 2025",
-                        LocalDateTime.of(3025, 6, 15, 10, 0),
-                        LocalDateTime.of(3025, 6, 16, 18, 0),
-                        "Seoul, South Korea",
+                        "컨퍼런스명",
                         "김승진",
+                        LocalDate.of(3025, 5, 10),
+                        LocalTime.of(9, 0),
+                        LocalDate.of(3025, 5, 11),
+                        LocalTime.of(18, 0),
+                        "부천시 오정구 고강동 311-25 1층",
+                        "A로비",
                         "IT"
                 ));
 
-
-        // when & then
         mockMvc.perform(patch("/api/v1/conference/{id}", 1L)
-                        //.with(csrf())
                         .content(objectMapper.writeValueAsString(request))
                         .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(MediaType.APPLICATION_JSON)
@@ -134,55 +127,37 @@ public class ConferenceControllerDocsTest extends RestDocsSupport {
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andDo(document("conference-update",
-                                preprocessRequest(prettyPrint()),
-                                preprocessResponse(prettyPrint()),
-                                requestHeaders(
-                                        headerWithName("Authorization").description("JWT 토큰 (형식: `Bearer {token}`)"),
-                                        headerWithName("Content-Type").description("요청 데이터 타입 (application/json)")
-                                ),
-                                requestFields(
-                                        fieldWithPath("name").type(JsonFieldType.STRING)
-                                                .optional()
-                                                .description("컨퍼런스명"),
-                                        fieldWithPath("startDate").type(JsonFieldType.STRING)
-                                                .optional()
-                                                .description("컨퍼런스 시작 날짜 및 시간 (ISO 8601 형식: yyyy-MM-dd'T'HH:mm:ss)"),
-                                        fieldWithPath("endDate").type(JsonFieldType.STRING)
-                                                .optional()
-                                                .description("컨퍼런스 종료 날짜 및 시간 (ISO 8601 형식: yyyy-MM-dd'T'HH:mm:ss)"),
-                                        fieldWithPath("location").type(JsonFieldType.STRING)
-                                                .optional()
-                                                .description("컨퍼런스 개최 장소"),
-                                        fieldWithPath("organizer").type(JsonFieldType.STRING)
-                                                .optional()
-                                                .description("컨퍼런스 주최자"),
-                                        fieldWithPath("type").type(JsonFieldType.STRING)
-                                                .optional()
-                                                .description("컨퍼런스 유형 (예: IT, 교육, 비즈니스 등)")
-                                ),
-                                responseFields(
-                                        fieldWithPath("status").type(JsonFieldType.STRING)
-                                                .description("결과 상태"),
-                                        fieldWithPath("code").type(JsonFieldType.NUMBER)
-                                                .description("응답 코드 (200: 성공)"),
-                                        fieldWithPath("message").type(JsonFieldType.NULL)
-                                                .description("응답 메시지 (오류 발생 시 포함, 성공 시 null)"),
-                                        fieldWithPath("data.name").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스명"),
-                                        fieldWithPath("data.startDate").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스 시작 날짜 및 시간 (ISO 8601 형식)"),
-                                        fieldWithPath("data.endDate").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스 종료 날짜 및 시간 (ISO 8601 형식)"),
-                                        fieldWithPath("data.location").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스 개최 장소"),
-                                        fieldWithPath("data.organizer").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스 주최자"),
-                                        fieldWithPath("data.type").type(JsonFieldType.STRING)
-                                                .description("컨퍼런스 유형 (예: IT, 교육, 비즈니스 등)")
-                                )
+                        preprocessRequest(prettyPrint()),
+                        preprocessResponse(prettyPrint()),
+                        requestHeaders(
+                                headerWithName("Authorization").description("JWT 토큰 (형식: `Bearer {token}`)"),
+                                headerWithName("Content-Type").description("요청 데이터 타입 (application/json)")
+                        ),
+                        requestFields(
+                                fieldWithPath("name").type(JsonFieldType.STRING).optional().description("컨퍼런스명"),
+                                fieldWithPath("organizer").type(JsonFieldType.STRING).optional().description("주최자"),
+                                fieldWithPath("startDate").type(JsonFieldType.STRING).optional().description("시작 날짜 (yyyy-MM-dd)"),
+                                fieldWithPath("startTime").type(JsonFieldType.STRING).optional().description("시작 시간 (HH:mm)"),
+                                fieldWithPath("endDate").type(JsonFieldType.STRING).optional().description("종료 날짜 (yyyy-MM-dd)"),
+                                fieldWithPath("endTime").type(JsonFieldType.STRING).optional().description("종료 시간 (HH:mm)"),
+                                fieldWithPath("location").type(JsonFieldType.STRING).optional().description("장소"),
+                                fieldWithPath("position").type(JsonFieldType.STRING).optional().description("상세 장소"),
+                                fieldWithPath("type").type(JsonFieldType.STRING).optional().description("유형 (예: IT)")
+                        ),
+                        responseFields(
+                                fieldWithPath("status").type(JsonFieldType.STRING).description("응답 상태"),
+                                fieldWithPath("code").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
+                                fieldWithPath("message").type(JsonFieldType.NULL).description("응답 메시지"),
+                                fieldWithPath("data.name").type(JsonFieldType.STRING).description("컨퍼런스명"),
+                                fieldWithPath("data.organizer").type(JsonFieldType.STRING).description("주최자"),
+                                fieldWithPath("data.startDate").type(JsonFieldType.STRING).description("시작 날짜 (yyyy-MM-dd)"),
+                                fieldWithPath("data.startTime").type(JsonFieldType.STRING).description("시작 시간 (HH:mm)"),
+                                fieldWithPath("data.endDate").type(JsonFieldType.STRING).description("종료 날짜 (yyyy-MM-dd)"),
+                                fieldWithPath("data.endTime").type(JsonFieldType.STRING).description("종료 시간 (HH:mm)"),
+                                fieldWithPath("data.location").type(JsonFieldType.STRING).description("장소"),
+                                fieldWithPath("data.position").type(JsonFieldType.STRING).description("상세 장소"),
+                                fieldWithPath("data.type").type(JsonFieldType.STRING).description("유형")
                         )
-                );
-
-
+                ));
     }
 }

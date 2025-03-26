@@ -19,9 +19,13 @@ import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
+import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -72,10 +76,13 @@ class ConferenceControllerTest {
         // given
         ConferenceCreateRequest request = new ConferenceCreateRequest(
                 "Spring Boot Conference 2025",
-                LocalDateTime.of(3025, 6, 15, 10, 0, 0),
-                LocalDateTime.of(3025, 6, 16, 18, 0, 0),
-                "Seoul, South Korea",
                 "김승진",
+                LocalDate.of(3025, 6, 15),
+                LocalTime.of(10, 0),
+                LocalDate.of(3025, 6, 15),
+                LocalTime.of( 10, 0),
+                "Seoul, South Korea",
+                "A로비",
                 "IT"
         );
         ConferenceCreateResponse response = new ConferenceCreateResponse(1L);
@@ -109,11 +116,16 @@ class ConferenceControllerTest {
         // given
         ConferenceCreateRequest request = new ConferenceCreateRequest(
                 null,
-                LocalDateTime.of(3025, 6, 15, 10, 0),
-                LocalDateTime.of(3025, 6, 16, 18, 0),
-                "Seoul, South Korea",
                 "김승진",
+                LocalDate.of(3025, 6, 15),
+                LocalTime.of(10, 0),
+                LocalDate.of(3025, 6, 15),
+                LocalTime.of( 18, 0),
+                "Seoul, South Korea",
+                "A로비",
                 "IT"
+
+
         );
 
         given(jwtProvider.validateToken(anyString())).willReturn(true);
@@ -142,10 +154,13 @@ class ConferenceControllerTest {
         // given
         ConferenceCreateRequest request = new ConferenceCreateRequest(
                 "카카오 대규모 IT 행사",
-                LocalDateTime.of(2025, 3, 18, 17, 0),
-                LocalDateTime.of(3000, 3, 20, 18, 0),
-                "Seoul, South Korea",
                 "김승진",
+                LocalDate.of(2024, 6, 15),
+                LocalTime.of(13, 0),
+                LocalDate.of(3025, 6, 18),
+                LocalTime.of( 18, 0),
+                "Seoul, South Korea",
+                "A로비",
                 "IT"
         );
 
@@ -174,10 +189,13 @@ class ConferenceControllerTest {
         // given
         ConferenceCreateRequest request = new ConferenceCreateRequest(
                 "카카오 대규모 IT 행사",
-                LocalDateTime.of(3025, 3, 18, 17, 0),
-                LocalDateTime.of(2025, 3, 18, 15, 0),
-                "Seoul, South Korea",
                 "김승진",
+                LocalDate.of(3024, 6, 15),
+                LocalTime.of(13, 0),
+                LocalDate.of(2025, 3, 18),
+                LocalTime.of( 18, 0),
+                "Seoul, South Korea",
+                "로비 BB",
                 "IT"
         );
 
@@ -207,10 +225,13 @@ class ConferenceControllerTest {
         // given
         ConferenceCreateRequest request = new ConferenceCreateRequest(
                 "카카오 대규모 IT 행사",
-                LocalDateTime.of(3000, 3, 18, 17, 0),
-                LocalDateTime.of(3025, 3, 18, 15, 0),
-                "  ",
                 "김승진",
+                LocalDate.of(3024, 6, 15),
+                LocalTime.of(13, 0),
+                LocalDate.of(3022, 6, 18),
+                LocalTime.of( 18, 0),
+                "  ",
+                "로비 A",
                 "IT"
         );
 
@@ -227,7 +248,7 @@ class ConferenceControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("컨퍼런스 위치 정보는 필수입니다. 공백 이하는 불가능합니다."));
+                .andExpect(jsonPath("$.message").value("컨퍼런스 장소 정보는 필수입니다. 공백 이하는 불가능합니다."));
 
 
     }
@@ -239,10 +260,13 @@ class ConferenceControllerTest {
         // given
         ConferenceCreateRequest request = new ConferenceCreateRequest(
                 "카카오 대규모 IT 행사",
-                LocalDateTime.of(3000, 3, 18, 17, 0),
-                LocalDateTime.of(3025, 3, 18, 15, 0),
+                " ",
+                LocalDate.of(3024, 6, 15),
+                LocalTime.of(13, 0),
+                LocalDate.of(3022, 6, 18),
+                LocalTime.of( 18, 0),
                 "Seoul, South Korea",
-                "  ",
+                "로비",
                 "IT"
         );
 
@@ -272,10 +296,13 @@ class ConferenceControllerTest {
         // given
         ConferenceCreateRequest request = new ConferenceCreateRequest(
                 "카카오 대규모 IT 행사",
-                LocalDateTime.of(3000, 3, 18, 17, 0),
-                LocalDateTime.of(3025, 3, 18, 15, 0),
-                "Seoul, South Korea",
                 "홍길동",
+                LocalDate.of(3024, 6, 15),
+                LocalTime.of(13, 0),
+                LocalDate.of(3022, 6, 18),
+                LocalTime.of( 18, 0),
+                "Seoul, South Korea",
+                "로비",
                 "   "
         );
 
@@ -305,18 +332,24 @@ class ConferenceControllerTest {
         // given
         ConferenceUpdateRequest request = new ConferenceUpdateRequest(
                 "Spring Boot Conference 2025",
-                LocalDateTime.of(3025, 6, 15, 10, 0, 0),
-                LocalDateTime.of(3025, 6, 16, 18, 0, 0),
+                "홍길동",
+                LocalDate.of(3024, 6, 15),
+                LocalTime.of(13, 0),
+                LocalDate.of(3022, 6, 18),
+                LocalTime.of( 18, 0),
                 "Seoul, South Korea",
-                "김승진",
+                "로비",
                 "IT"
         );
         ConferenceUpdateResponse response = new ConferenceUpdateResponse(
                 "Spring Boot Conference 2025",
-                LocalDateTime.of(3025, 6, 15, 10, 0, 0),
-                LocalDateTime.of(3025, 6, 16, 18, 0, 0),
+                "홍길동",
+                LocalDate.of(3024, 6, 15),
+                LocalTime.of(13, 0),
+                LocalDate.of(3022, 6, 18),
+                LocalTime.of( 18, 0),
                 "Seoul, South Korea",
-                "김승진",
+                "로비",
                 "IT"
         );
         String identifier = "AUTH1";
@@ -339,8 +372,10 @@ class ConferenceControllerTest {
                 .andExpect(jsonPath("$.code").value(200))
                 .andExpect(jsonPath("$.message").isEmpty())
                 .andExpect(jsonPath("$.data.name").value(request.name()))
-                .andExpect(jsonPath("$.data.startDate").value(request.startDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // startDate 검증
-                .andExpect(jsonPath("$.data.endDate").value(request.endDate().format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))) // endDate 검증
+                .andExpect(jsonPath("$.data.startDate").value(request.startDate().format(ISO_LOCAL_DATE)))
+                .andExpect(jsonPath("$.data.endDate").value(request.endDate().format(ISO_LOCAL_DATE)))
+                .andExpect(jsonPath("$.data.startTime").value(request.startTime().format(DateTimeFormatter.ofPattern("HH:mm"))))
+                .andExpect(jsonPath("$.data.endTime").value(request.endTime().format(DateTimeFormatter.ofPattern("HH:mm"))))
                 .andExpect(jsonPath("$.data.location").value(request.location()))
                 .andExpect(jsonPath("$.data.organizer").value(request.organizer()))
                 .andExpect(jsonPath("$.data.type").value(request.type()));
@@ -355,10 +390,13 @@ class ConferenceControllerTest {
         // given
         ConferenceUpdateRequest request = new ConferenceUpdateRequest(
                 "Spring Boot Conference 2025",
-                LocalDateTime.of(2024, 6, 15, 10, 0),
-                LocalDateTime.of(3025, 6, 16, 18, 0),
+                "홍길동",
+                LocalDate.of(2024, 6, 15),
+                LocalTime.of(13, 0),
+                LocalDate.of(3022, 6, 18),
+                LocalTime.of( 18, 0),
                 "Seoul, South Korea",
-                "김승진",
+                "로비",
                 "IT"
         );
 
@@ -390,10 +428,13 @@ class ConferenceControllerTest {
         // given
         ConferenceUpdateRequest request = new ConferenceUpdateRequest(
                 "Spring Boot Conference 2025",
-                LocalDateTime.of(3025, 6, 15, 10, 0),
-                LocalDateTime.of(2024, 6, 16, 18, 0),
+                "홍길동",
+                LocalDate.of(3024, 6, 15),
+                LocalTime.of(13, 0),
+                LocalDate.of(2024, 6, 18),
+                LocalTime.of( 18, 0),
                 "Seoul, South Korea",
-                "김승진",
+                "로비",
                 "IT"
         );
 
