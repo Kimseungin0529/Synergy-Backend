@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParticipateRateDetailResDto;
 import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParticipateRateResDto;
 import com.synergy.backend.domain.session.service.SessionParticipateService;
+import com.synergy.backend.global.annotation.SwaggerSummaryRole;
 import com.synergy.backend.global.common.ApiResponse;
 import com.synergy.backend.global.security.CustomUserDetails;
 
@@ -30,6 +32,7 @@ public class SessionDashboardController {
 		summary = "세션별 참여율 조회",
 		description = "컨퍼런스 ID에 해당하는 세션들의 전체 참여율(%)을 조회합니다."
 	)
+	@SwaggerSummaryRole({RoleType.ADMIN})
 	@GetMapping
 	public ApiResponse<List<SessionParticipateRateResDto>> getSessionParticipateRates(
 		@AuthenticationPrincipal CustomUserDetails user,
@@ -43,6 +46,7 @@ public class SessionDashboardController {
 		summary = "세션별 상세 참여율 조회",
 		description = "컨퍼런스 ID에 해당하는 세션들의 상세 참여율 정보를 조회합니다."
 	)
+	@SwaggerSummaryRole({RoleType.ADMIN})
 	@GetMapping("/detail")
 	public ApiResponse<List<SessionParticipateRateDetailResDto>> getSessionParticipateRateDetails(
 		@AuthenticationPrincipal CustomUserDetails user,

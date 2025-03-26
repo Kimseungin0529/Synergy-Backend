@@ -1,4 +1,10 @@
 package com.synergy.backend.domain.member.api.dto.request;
 
-public record LoginAdminRequestDto(String adminAuthCode) {
+import io.swagger.v3.oas.annotations.media.Schema;
+
+@Schema(description = "관리자 로그인 요청 DTO")
+public record LoginAdminRequestDto(
+	@Schema(description = "관리자 인증 코드", example = "ADM12345")
+	String adminAuthCode
+) {
 }

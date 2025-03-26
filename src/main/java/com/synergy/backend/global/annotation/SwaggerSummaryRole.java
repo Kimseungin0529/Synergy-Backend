@@ -1,0 +1,14 @@
+package com.synergy.backend.global.annotation;
+
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
+
+import com.synergy.backend.domain.member.entity.RoleType;
+
+@Target({ElementType.METHOD})
+@Retention(RetentionPolicy.RUNTIME)
+public @interface SwaggerSummaryRole {
+	RoleType[] value();
+}

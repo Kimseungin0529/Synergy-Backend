@@ -234,9 +234,9 @@ VALUES
     ('2025-09-15 09:00', '2025-09-16 18:00', 'FlowLink', 'F’LINK 2025', 'IT', '그랜드볼룸');
 
 -- 부스
-INSERT INTO booth (conference_id, company, name, description, location)
+INSERT INTO booth (conference_id, company_name, company_type, booth_location, booth_number, booth_description, image)
 VALUES
-    (1, 'CodeSphere', '클라우드서비스', ' 글로벌 IT 기업 CodeSphere에서 React 기반 프론트엔드 엔지니어와 클라우드 기반 백엔드 엔지니어를 채용합니다. TypeScript, Node.js, Kubernetes 경험자를 환영합니다.','C HALL');
+    (1, 'CodeSphere', 'YourCompanyType', 'C HALL', 101, '클라우드서비스: 글로벌 IT 기업 CodeSphere에서 React 기반 프론트엔드 엔지니어와 클라우드 기반 백엔드 엔지니어를 채용합니다. TypeScript, Node.js, Kubernetes 경험자를 환영합니다.', null);
 
 -- 세션
 INSERT INTO session (maximum, progress_date, conference_id, end_time, start_time, speaker_position, speaker, title, description, qr_key, qr_url, image_key, image_url, secret_code)

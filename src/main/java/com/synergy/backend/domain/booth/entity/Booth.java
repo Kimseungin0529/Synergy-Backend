@@ -9,7 +9,15 @@ import java.util.Set;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.member.entity.Admin;
 
-import jakarta.persistence.*;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.Lob;
+import jakarta.persistence.ManyToMany;
+import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -41,7 +49,7 @@ public class Booth {
 	private String boothDescription;
 
 	@Lob
-	private byte[] image;	// 수정. 바이트는 안됨 정곤님꺼 참고
+	private byte[] image;    // 수정. 바이트는 안됨 정곤님꺼 참고
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "conference_id")
@@ -51,10 +59,10 @@ public class Booth {
 	private Set<Admin> admins = new HashSet<>();
 
 	@Lob
-	private byte[] qrCode;	// 수정. 바이트는 안됨 정곤님꺼 참고
+	private byte[] qrCode;    // 수정. 바이트는 안됨 정곤님꺼 참고
 
 	public Booth(String companyName, String companyType, String boothLocation, Integer boothNumber,
-				 String boothDescription, Conference conference, byte[] image) {
+		String boothDescription, Conference conference, byte[] image) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
@@ -70,7 +78,7 @@ public class Booth {
 	}
 
 	public void updateInfo(String companyName, String companyType, String boothLocation, Integer boothNumber,
-						   String boothDescription, byte[] image) {
+		String boothDescription, byte[] image) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;

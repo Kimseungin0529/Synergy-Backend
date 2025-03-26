@@ -7,15 +7,19 @@ public record MyInfoResponseDto(
 	String name,
 	String membershipLevel,
 	Integer totalPoints,
-	Boolean isHiringInterested
+	Boolean isHiringInterested,
+	String profileImg,
+	NextPointResponseDto nextPointResponseDto
 ) {
-	public static MyInfoResponseDto from(Attendee attendee) {
+	public static MyInfoResponseDto from(Attendee attendee, NextPointResponseDto nextPointResponseDto) {
 		return new MyInfoResponseDto(
 			attendee.getId(),
 			attendee.getName(),
 			attendee.getMembershipLevelType().name(),
 			attendee.getTotalPoints(),
-			attendee.getIsHiringInterested()
+			attendee.getIsHiringInterested(),
+			attendee.getProfileImageUrl(),
+			nextPointResponseDto
 		);
 	}
 }

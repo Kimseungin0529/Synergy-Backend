@@ -16,19 +16,20 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.zxing.WriterException;
+import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionDetailResDto;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionReqDto;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
 import com.synergy.backend.domain.session.service.SessionService;
+import com.synergy.backend.global.annotation.SwaggerSummaryRole;
 import com.synergy.backend.global.common.ApiResponse;
 import com.synergy.backend.global.security.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-@Tag(name = "Session Controller", description = "세션 관련 API")
+// @Tag(name = "Session Controller", description = "세션 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/conference/{conferenceId}/session")
@@ -38,6 +39,7 @@ public class SessionController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "세션 생성", description = "관리자가 세션을 생성합니다.")
+	@SwaggerSummaryRole({RoleType.ADMIN})
 	@PostMapping
 	public ApiResponse createSession(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable(name = "conferenceId") Long conferenceId,
@@ -50,6 +52,7 @@ public class SessionController {
 
 	@PreAuthorize("hasAnyRole('ADMIN', 'ATTENDEE', 'RECRUITER')")
 	@Operation(summary = "세션 목록 조회", description = "관리자, 참가자, 채용담당자가 세션 목록을 조회합니다.")
+	@SwaggerSummaryRole({RoleType.ADMIN, RoleType.RECRUITER, RoleType.ATTENDEE})
 	@GetMapping
 	public ApiResponse getSessions(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable(name = "conferenceId") Long conferenceId) {
@@ -60,6 +63,7 @@ public class SessionController {
 
 	@PreAuthorize("hasAnyRole('ADMIN', 'ATTENDEE', 'RECRUITER')")
 	@Operation(summary = "세션 상세 조회", description = "관리자, 참가자, 채용담당자가 특정 세션의 상세 정보를 조회합니다.")
+	@SwaggerSummaryRole({RoleType.ADMIN, RoleType.RECRUITER, RoleType.ATTENDEE})
 	@GetMapping("/{sessionId}")
 	public ApiResponse getSession(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable(name = "conferenceId") Long conferenceId,
@@ -72,6 +76,7 @@ public class SessionController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "세션 수정", description = "관리자가 세션 정보를 수정합니다.")
+	@SwaggerSummaryRole({RoleType.ADMIN})
 	@PatchMapping
 	public ApiResponse updateSession(@AuthenticationPrincipal CustomUserDetails user,
 		@RequestParam Long sessionId,
@@ -84,6 +89,7 @@ public class SessionController {
 
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "세션 삭제", description = "관리자가 세션을 삭제합니다.")
+	@SwaggerSummaryRole({RoleType.ADMIN})
 	@DeleteMapping
 	public ApiResponse deleteSession(@AuthenticationPrincipal CustomUserDetails user,
 		@RequestParam Long sessionId) {
