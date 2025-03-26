@@ -41,7 +41,7 @@ public class Booth {
 	private String boothDescription;
 
 	@Lob
-	private byte[] image;
+	private byte[] image;	// 수정. 바이트는 안됨 정곤님꺼 참고
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "conference_id")
@@ -51,7 +51,7 @@ public class Booth {
 	private Set<Admin> admins = new HashSet<>();
 
 	@Lob
-	private byte[] qrCode;
+	private byte[] qrCode;	// 수정. 바이트는 안됨 정곤님꺼 참고
 
 	public Booth(String companyName, String companyType, String boothLocation, Integer boothNumber,
 				 String boothDescription, Conference conference, byte[] image) {
