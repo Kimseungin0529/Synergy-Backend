@@ -16,7 +16,7 @@ public class BoothTest {
         String companyName = "부스A";
         String companyType = "회사A";
         String boothLocation = "위치A";
-        Integer boothNumber = 101;
+        String boothNumber = "101C";
         String boothDescription = "설명A";
         String imageKey = "image-key";
         String imageUrl = "image-url";
@@ -43,16 +43,16 @@ public class BoothTest {
     void updateBoothInfo() {
         // given
         Conference conference = mock(Conference.class);
-        Booth booth = new Booth("부스A", "회사A", "위치A", 101, "설명A", conference);
+        Booth booth = new Booth("부스A", "회사A", "위치A", "101C", "설명A", conference);
 
         // when
-        booth.updateInfo("부스B", "회사B", "위치B", 202, "설명B", "new-image-key", "new-image-url");
+        booth.updateInfo("부스B", "회사B", "위치B", "202C", "설명B", "new-image-key", "new-image-url");
 
         // then
         assertThat(booth.getCompanyName()).isEqualTo("부스B");
         assertThat(booth.getCompanyType()).isEqualTo("회사B");
         assertThat(booth.getBoothLocation()).isEqualTo("위치B");
-        assertThat(booth.getBoothNumber()).isEqualTo(202);
+        assertThat(booth.getBoothNumber()).isEqualTo("202C");
         assertThat(booth.getBoothDescription()).isEqualTo("설명B");
         assertThat(booth.getImageKey()).isEqualTo("new-image-key");
         assertThat(booth.getImageUrl()).isEqualTo("new-image-url");

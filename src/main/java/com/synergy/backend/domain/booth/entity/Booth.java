@@ -35,7 +35,7 @@ public class Booth {
 	private String boothLocation;
 
 	@Column(nullable = false)
-	private Integer boothNumber;
+	private String boothNumber;
 
 	@Column(nullable = false)
 	private String boothDescription;
@@ -67,7 +67,7 @@ public class Booth {
 		admin.getBooths().add(this);
 	}
 
-	public Booth(String companyName, String companyType, String boothLocation, Integer boothNumber,
+	public Booth(String companyName, String companyType, String boothLocation, String boothNumber,
 				 String boothDescription, Conference conference) {
 		this.companyName = companyName;
 		this.companyType = companyType;
@@ -77,7 +77,7 @@ public class Booth {
 		this.conference = conference;
 	}
 
-	public void updateInfo(String companyName, String companyType, String boothLocation, Integer boothNumber,
+	public void updateInfo(String companyName, String companyType, String boothLocation, String boothNumber,
 						   String boothDescription, String imageKey, String imageUrl) {
 		this.companyName = companyName;
 		this.companyType = companyType;

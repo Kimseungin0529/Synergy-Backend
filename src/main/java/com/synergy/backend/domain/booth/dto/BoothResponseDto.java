@@ -7,7 +7,7 @@ public record BoothResponseDto(
         String companyName,
         String companyType,
         String boothLocation,
-        Integer boothNumber,
+        String boothNumber,
         String boothDescription,
         String qrUrl,
         String imageUrl

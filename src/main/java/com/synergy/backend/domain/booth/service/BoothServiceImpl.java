@@ -9,7 +9,6 @@ import com.synergy.backend.domain.booth.repository.BoothRepository;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
-import com.synergy.backend.domain.qrCode.exception.NotGenerateQRCodeException;
 import com.synergy.backend.domain.qrCode.service.QrService;
 import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import com.synergy.backend.global.util.file.util.FileS3Util;

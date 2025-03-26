@@ -4,7 +4,7 @@ public record BoothRequestDto(
         String companyName,
         String companyType,
         String boothLocation,
-        Integer boothNumber,
+        String boothNumber,
         String boothDescription
 ) {
 }
