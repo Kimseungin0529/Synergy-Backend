@@ -19,9 +19,8 @@ public class BoothVerifyController {
     @SwaggerSummaryRole({RoleType.ATTENDEE})
     @PostMapping("/{boothId}/participate/{attendeeId}")
     public ApiResponse<String> participateInBooth(
-            @PathVariable Long conferenceId,
-            @PathVariable Long boothId,
-            @PathVariable Long attendeeId) {
+            @PathVariable(name = "boothId") Long boothId,
+            @PathVariable(name = "attendeeId") Long attendeeId) {
         boothParticipationService.participateInBooth(attendeeId, boothId);
         return ApiResponse.ok("부스 참여가 완료되었습니다.", 201);
     }
