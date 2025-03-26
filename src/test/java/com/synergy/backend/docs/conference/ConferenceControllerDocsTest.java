@@ -73,14 +73,14 @@ public class ConferenceControllerDocsTest extends RestDocsSupport {
                         ),
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).description("컨퍼런스명"),
-                                fieldWithPath("organizer").type(JsonFieldType.STRING).description("주최자"),
+                                fieldWithPath("host").type(JsonFieldType.STRING).description("주최자"),
                                 fieldWithPath("startDate").type(JsonFieldType.STRING).description("시작 날짜 (yyyy-MM-dd)"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).description("시작 시간 (HH:mm)"),
                                 fieldWithPath("endDate").type(JsonFieldType.STRING).description("종료 날짜 (yyyy-MM-dd)"),
                                 fieldWithPath("endTime").type(JsonFieldType.STRING).description("종료 시간 (HH:mm)"),
                                 fieldWithPath("location").type(JsonFieldType.STRING).description("장소"),
-                                fieldWithPath("position").type(JsonFieldType.STRING).description("상세 장소"),
-                                fieldWithPath("type").type(JsonFieldType.STRING).description("컨퍼런스 유형 (예: IT, 교육 등)")
+                                fieldWithPath("place").type(JsonFieldType.STRING).description("상세 장소"),
+                                fieldWithPath("conferenceType").type(JsonFieldType.STRING).description("컨퍼런스 유형 (예: IT, 교육 등)")
                         ),
                         responseFields(
                                 fieldWithPath("status").type(JsonFieldType.STRING).description("응답 상태"),
@@ -135,14 +135,14 @@ public class ConferenceControllerDocsTest extends RestDocsSupport {
                         ),
                         requestFields(
                                 fieldWithPath("name").type(JsonFieldType.STRING).optional().description("컨퍼런스명"),
-                                fieldWithPath("organizer").type(JsonFieldType.STRING).optional().description("주최자"),
+                                fieldWithPath("host").type(JsonFieldType.STRING).optional().description("주최자"),
                                 fieldWithPath("startDate").type(JsonFieldType.STRING).optional().description("시작 날짜 (yyyy-MM-dd)"),
                                 fieldWithPath("startTime").type(JsonFieldType.STRING).optional().description("시작 시간 (HH:mm)"),
                                 fieldWithPath("endDate").type(JsonFieldType.STRING).optional().description("종료 날짜 (yyyy-MM-dd)"),
                                 fieldWithPath("endTime").type(JsonFieldType.STRING).optional().description("종료 시간 (HH:mm)"),
                                 fieldWithPath("location").type(JsonFieldType.STRING).optional().description("장소"),
-                                fieldWithPath("position").type(JsonFieldType.STRING).optional().description("상세 장소"),
-                                fieldWithPath("type").type(JsonFieldType.STRING).optional().description("유형 (예: IT)")
+                                fieldWithPath("place").type(JsonFieldType.STRING).optional().description("상세 장소"),
+                                fieldWithPath("conferenceType").type(JsonFieldType.STRING).optional().description("유형 (예: IT)")
                         ),
                         responseFields(
                                 fieldWithPath("status").type(JsonFieldType.STRING).description("응답 상태"),
