@@ -242,7 +242,7 @@ VALUES
 -- 컨퍼런스
 INSERT INTO conference (start_date, end_date, start_time, end_time, organizer, name, type, location, position)
 VALUES
-    ('2025-09-15', '2025-09-16','09:00', '18:00', 'FlowLink', 'F’LINK 2025', 'IT', '그랜드볼룸', '3층 A로비');
+    ('2025-09-15', '2025-09-16','09:00', '18:00', 'FlowLink', 'F’LINK 2025', 'IT', '그랜드볼룸', '로비 A');
 
 -- 부스
 INSERT INTO booth (conference_id, company_name, company_type, booth_location, booth_number, booth_description, image)
@@ -253,6 +253,7 @@ VALUES
 INSERT INTO session (maximum, progress_date, conference_id, end_time, start_time, speaker_position, speaker, title, description, qr_key, qr_url, image_key, image_url, secret_code)
 VALUES
     (250, '2025-09-15', 1, '2025-09-15 11:30', '2025-09-15 10:30', 'CTO', '김지혁', '최신 기술 동향', '빠르게 변화하는 IT 산업에서 최신 기술 동향을 파악하는 것은 기업의 경쟁력을 높이고 미래를 준비하는 데 필수적입니다. 기업의 CTO가 AI, 클라우드, Web3 등 주요 기술 트렌드와 산업 변화를 분석하고, 기업이 기술 혁신을 어떻게 주도할 수 있는지에 대한 전략과 인사이트를 제공합니다.', ' ', ' ', ' ', ' ', ' ');
+
 
 
 -- 포인트 적립 내역
