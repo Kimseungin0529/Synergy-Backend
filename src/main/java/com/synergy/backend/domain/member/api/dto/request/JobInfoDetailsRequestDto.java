@@ -26,10 +26,10 @@ public record JobInfoDetailsRequestDto(
 	Integer experienceLevelCode, // 경력 (코드값)
 
 	@NotNull
-	Set<Integer> preferredRegionCodes, // 희망 근무 지역 (코드값 리스트)
+	Set<Integer> desiredWorkRegionCodes, // 희망 근무 지역 (코드값 리스트)
 
 	String selfIntroduction, // 자기소개서
-	String profileImageUrl, // 증명사진 (파일 업로드 시 URL 저장)
+
 	String additionalInfo, // 경험 및 기타 정보
 
 	@Size(max = 3, message = "직장 선택 요소는 최대 3개까지 선택 가능합니다.")

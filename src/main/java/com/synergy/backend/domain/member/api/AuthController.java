@@ -14,7 +14,7 @@ import com.synergy.backend.domain.member.api.dto.request.PasswordResetConfirmDto
 import com.synergy.backend.domain.member.api.dto.request.PasswordResetRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.TokenWithRefreshToken;
+import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 import com.synergy.backend.domain.member.service.AuthService;
 import com.synergy.backend.global.annotation.DisableSwaggerSecurity;
 import com.synergy.backend.global.common.ApiResponse;
@@ -22,6 +22,9 @@ import com.synergy.backend.global.mail.MailService;
 import com.synergy.backend.global.token.CookieUtils;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.ExampleObject;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.mail.MessagingException;
 import jakarta.servlet.http.HttpServletResponse;
@@ -58,7 +61,36 @@ public class AuthController {
 		return ApiResponse.ok(tokenWithRefreshToken.tokenResponseDto(), 200);
 	}
 
-	@Operation(summary = "관리자/리크루터 로그인", description = "인증코드를 통해 관리자 또는 채용담당자가 로그인합니다.")
+	@Operation(
+		summary = "관리자/채용담당자 로그인",
+		description = "관리자 인증 코드로 로그인합니다.",
+		requestBody = @io.swagger.v3.oas.annotations.parameters.RequestBody(
+			content = @Content(
+				mediaType = "application/json",
+				schema = @Schema(implementation = LoginAdminRequestDto.class),
+				examples = {
+					@ExampleObject(
+						name = "관리자",
+						summary = "관리자 코드 입력 예시",
+						value = """
+							{
+							  "adminAuthCode": "ADM12345"
+							}
+							"""
+					),
+					@ExampleObject(
+						name = "채용담당자",
+						summary = "채용담당자 코드 입력 예시",
+						value = """
+							{
+							  "adminAuthCode": "RC12345"
+							}
+							"""
+					)
+				}
+			)
+		)
+	)
 	@DisableSwaggerSecurity
 	@PostMapping("/admin/login")
 	public ApiResponse<TokenResponseDto> loginAdmin(@RequestBody LoginAdminRequestDto request,

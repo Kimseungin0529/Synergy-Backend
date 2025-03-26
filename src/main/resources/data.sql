@@ -227,6 +227,17 @@ VALUES
     (6, 0);
 
 
+-- 희망 근무 지역
+INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region)
+VALUES
+    (1, 0),
+    (1, 11),
+    (2, 2),
+    (3, 3),
+    (4, 1),
+    (5, 5),
+    (6, 4);
+
 
 -- 컨퍼런스
 INSERT INTO conference (start_date_time, end_date_time, organizer, name, type, location)

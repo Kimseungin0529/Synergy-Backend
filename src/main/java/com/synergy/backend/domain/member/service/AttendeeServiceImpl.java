@@ -7,22 +7,24 @@ import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import com.synergy.backend.domain.interest.entity.AttendeeInterest;
 import com.synergy.backend.domain.interest.entity.Interest;
 import com.synergy.backend.domain.interest.exception.NotFoundInterestException;
 import com.synergy.backend.domain.interest.repository.AttendeeInterestRepository;
 import com.synergy.backend.domain.interest.repository.InterestRepository;
-import com.synergy.backend.domain.job.JobPosition;
-import com.synergy.backend.domain.job.JobPositionRepository;
 import com.synergy.backend.domain.job.JobGroup;
 import com.synergy.backend.domain.job.JobGroupRepository;
-import com.synergy.backend.domain.job.exception.NotFoundJobPositionException;
+import com.synergy.backend.domain.job.JobPosition;
+import com.synergy.backend.domain.job.JobPositionRepository;
 import com.synergy.backend.domain.job.exception.NotFoundJobGroupException;
+import com.synergy.backend.domain.job.exception.NotFoundJobPositionException;
 import com.synergy.backend.domain.member.api.dto.request.JobInfoDetailsRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.JobInfoRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.AttendeeFullInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.MyInfoResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.NextPointResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.member.entity.details.AgeGroup;
@@ -30,11 +32,15 @@ import com.synergy.backend.domain.member.entity.details.BaseAttendeeDetailEnum;
 import com.synergy.backend.domain.member.entity.details.ConferenceParticipationPurpose;
 import com.synergy.backend.domain.member.entity.details.EducationLevelType;
 import com.synergy.backend.domain.member.entity.details.ExperienceLevelType;
+import com.synergy.backend.domain.member.entity.details.MembershipLevelType;
 import com.synergy.backend.domain.member.entity.details.PreferredCorporateCulture;
+import com.synergy.backend.domain.member.entity.details.RegionType;
 import com.synergy.backend.domain.member.entity.details.WorkplaceSelectionFactor;
 import com.synergy.backend.domain.member.exception.AccessDeniedException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
+import com.synergy.backend.domain.member.vo.NextPointInfo;
+import com.synergy.backend.global.util.file.util.FileS3Util;
 
 import lombok.RequiredArgsConstructor;
 
@@ -47,6 +53,7 @@ public class AttendeeServiceImpl implements AttendeeService {
 	private final AttendeeInterestRepository attendeeInterestRepository;
 	private final JobPositionRepository jobPositionRepository;
 	private final JobGroupRepository jobGroupRepository;
+	private final FileS3Util fileS3Util;
 
 	/** 직무 정보 추가 */
 	@Transactional
@@ -66,8 +73,12 @@ public class AttendeeServiceImpl implements AttendeeService {
 	/** 직무 상세 정보 추가 */
 	@Transactional
 	@Override
-	public void addJobInfoDetails(String email, JobInfoDetailsRequestDto request) {
+	public void addJobInfoDetails(String email, JobInfoDetailsRequestDto request, MultipartFile multipartFile) {
 		Attendee attendee = findAttendeeByEmail(email);
+
+		if (multipartFile != null && !multipartFile.isEmpty()) {
+			attendee.addImage(fileS3Util.uploadFile(multipartFile));
+		}
 
 		attendee.updateJobInfoDetails(
 			findJobGroupByCode(request.desiredJobGroupCode()),
@@ -75,17 +86,13 @@ public class AttendeeServiceImpl implements AttendeeService {
 			convertToEnum(request.educationLevelCode(), EducationLevelType.class),
 			convertToEnum(request.ageGroupCode(), AgeGroup.class),
 			request.techStacks(),
-			convertToEnum(request.experienceLevelCode(),
-				ExperienceLevelType.class),
+			convertToEnum(request.experienceLevelCode(), ExperienceLevelType.class),
+			convertToEnumSet(request.desiredWorkRegionCodes(), RegionType.class),
 			request.selfIntroduction(),
-			request.profileImageUrl(),
 			request.additionalInfo(),
-			convertToEnumSet(
-				request.workplaceSelectionFactorCodes(), WorkplaceSelectionFactor.class),
-			convertToEnumSet(
-				request.preferredRegionCodes(), PreferredCorporateCulture.class),
-			convertToEnumSet(
-				request.conferencePurposeCodes(), ConferenceParticipationPurpose.class)
+			convertToEnumSet(request.workplaceSelectionFactorCodes(), WorkplaceSelectionFactor.class),
+			convertToEnumSet(request.preferredCorporateCultureCodes(), PreferredCorporateCulture.class),
+			convertToEnumSet(request.conferencePurposeCodes(), ConferenceParticipationPurpose.class)
 		);
 	}
 
@@ -94,7 +101,9 @@ public class AttendeeServiceImpl implements AttendeeService {
 	@Override
 	public MyInfoResponseDto getMyInformation(String identifier) {
 		Attendee attendee = findAttendeeByEmail(identifier);
-		return MyInfoResponseDto.from(attendee);
+		NextPointInfo info = MembershipLevelType.getNextLevelInfo(attendee.getTotalPoints());
+
+		return MyInfoResponseDto.from(attendee, NextPointResponseDto.from(info));
 	}
 
 	/** 참가자 상세 정보 */

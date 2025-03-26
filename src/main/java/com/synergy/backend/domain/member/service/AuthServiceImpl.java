@@ -7,7 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.TokenWithRefreshToken;
+import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.member.exception.DuplicateEmailException;
