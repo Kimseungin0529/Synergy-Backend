@@ -85,7 +85,7 @@ public class SessionServiceImpl implements SessionService {
                 Attendee attendee = findIfAttendeeExists(identifier);
                 ifAttendeeSessionExists(sessionId, attendee.getId());
             }
-            List<QuestionResDto> questions = getQuestions(conferenceId, sessionId);
+            List<QuestionResDto> questions = getQuestions(conference, sessionId);
             return SessionDetailResDto.from(session, questions);
         } catch (Exception e) {
             return SessionDetailResDto.from(session, List.of());
@@ -128,9 +128,8 @@ public class SessionServiceImpl implements SessionService {
         return attendeeRepository.findByEmail(identifier).orElseThrow(NotFoundUserException::new);
     }
 
-    private List<QuestionResDto> getQuestions(Long conferenceId, Long sessionId) {
-        ifConferenceExists(conferenceId);
-        ifSessionExists(sessionId);
+    private List<QuestionResDto> getQuestions(Conference conference, Long sessionId) {
+        findByConferenceId(sessionId, conference);
 
         return sessionQuestionRepository.findBySessionIdJoinAttendeeSession(sessionId);
     }
