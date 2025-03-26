@@ -248,7 +248,7 @@ class ConferenceControllerTest {
                 )
                 .andDo(print())
                 .andExpect(status().isBadRequest())
-                .andExpect(jsonPath("$.message").value("컨퍼런스 장소 정보는 필수입니다. 공백 이하는 불가능합니다."));
+                .andExpect(jsonPath("$.message").value("컨퍼런스 위치 정보는 필수입니다. 공백 이하는 불가능합니다."));
 
 
     }
@@ -377,8 +377,8 @@ class ConferenceControllerTest {
                 .andExpect(jsonPath("$.data.startTime").value(request.startTime().format(DateTimeFormatter.ofPattern("HH:mm"))))
                 .andExpect(jsonPath("$.data.endTime").value(request.endTime().format(DateTimeFormatter.ofPattern("HH:mm"))))
                 .andExpect(jsonPath("$.data.location").value(request.location()))
-                .andExpect(jsonPath("$.data.organizer").value(request.organizer()))
-                .andExpect(jsonPath("$.data.type").value(request.type()));
+                .andExpect(jsonPath("$.data.organizer").value(request.host()))
+                .andExpect(jsonPath("$.data.type").value(request.conferenceType()));
 
 
     }

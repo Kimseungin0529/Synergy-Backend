@@ -35,7 +35,7 @@ public class ConferenceServiceImpl implements ConferenceService {
     public ConferenceCreateResponse registerConference(String identifier, ConferenceCreateRequest request) {
         Admin findAdmin = adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
         TimePeriod timePeriod = TimePeriod.of(request.startDate(), request.endDate(), request.startTime(), request.endTime());
-        Conference conference = Conference.of(request.name(), timePeriod, request.organizer(), request.location(), request.position(), request.type());
+        Conference conference = Conference.of(request.name(), timePeriod, request.host(), request.location(), request.place(), request.conferenceType());
         Conference savedConference = conferenceRepository.save(conference);
 
         findAdmin.addConference(conference);
@@ -87,7 +87,8 @@ public class ConferenceServiceImpl implements ConferenceService {
     private void updateInform(ConferenceUpdateRequest request, Conference findConference) {
         Optional.ofNullable(request.name()).ifPresent(findConference::updateName);
         Optional.ofNullable(request.location()).ifPresent(findConference::updateLocation);
-        Optional.ofNullable(request.organizer()).ifPresent(findConference::updateOrganizer);
-        Optional.ofNullable(request.type()).ifPresent(findConference::updateType);
+        Optional.ofNullable(request.host()).ifPresent(findConference::updateOrganizer);
+        Optional.ofNullable(request.conferenceType()).ifPresent(findConference::updateType);
+        Optional.ofNullable(request.place()).ifPresent(findConference::updatePosition);
     }
 }

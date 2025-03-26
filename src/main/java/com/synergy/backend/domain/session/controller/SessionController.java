@@ -28,7 +28,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
-// @Tag(name = "Session Controller", description = "세션 관련 API")
+// @Tag(name = "Session Controller", name = "세션 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/conference/{conferenceId}/session")

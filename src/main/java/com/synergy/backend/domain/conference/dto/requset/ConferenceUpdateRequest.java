@@ -9,7 +9,7 @@ import java.time.LocalTime;
 
 public record ConferenceUpdateRequest(
         String name,
-        String organizer,
+        String host,
 
         @Future(message = "시작 날짜는 미래여야 합니다.")
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
@@ -26,8 +26,8 @@ public record ConferenceUpdateRequest(
         LocalTime endTime,
 
         String location,
-        String position,
-        String type
+        String place,
+        String conferenceType
 
 
 ) {
