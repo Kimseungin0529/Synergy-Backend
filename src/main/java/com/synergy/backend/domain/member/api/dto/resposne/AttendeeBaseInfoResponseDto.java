@@ -17,14 +17,14 @@ public record AttendeeBaseInfoResponseDto(
 	String experience,
 
 	@Schema(description = "프로필 이미지 URL", example = "https://example.com/profile.jpg")
-	String profilePhotoUrl
+	String profileImg
 ) {
 	public static AttendeeBaseInfoResponseDto from(Attendee attendee) {
 		return new AttendeeBaseInfoResponseDto(
 			attendee.getName(),
 			attendee.getCurrentJobPosition() != null ? attendee.getCurrentJobPosition().getName() : "",
 			attendee.getExperienceLevel() != null ? attendee.getExperienceLevel().getDescription() : "",
-			attendee.getProfilePhotoUrl()
+			attendee.getProfileImageUrl()
 		);
 	}
 }

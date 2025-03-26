@@ -15,6 +15,8 @@ import com.synergy.backend.domain.conference.dto.response.ConferenceCreateRespon
 import com.synergy.backend.domain.conference.dto.response.ConferenceUpdateResponse;
 import com.synergy.backend.domain.conference.service.ConferenceService;
 
+import com.synergy.backend.domain.member.entity.RoleType;
+import com.synergy.backend.global.annotation.SwaggerSummaryRole;
 import com.synergy.backend.global.security.CurrentUser;
 import com.synergy.backend.global.common.ApiResponse;
 
@@ -22,9 +24,6 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Conference Controller", description = "컨퍼런스 관련 API")
 @RestController @Slf4j
@@ -37,6 +36,7 @@ public class ConferenceController {
 	@ResponseStatus(HttpStatus.CREATED)
 	@PostMapping
 	@Operation(summary = "컨퍼런스 등록", description = "새로운 컨퍼런스를 생성합니다.")
+	@SwaggerSummaryRole({RoleType.ADMIN})
 	public ApiResponse<ConferenceCreateResponse> registerConference(@CurrentUser String identifier
 		, @RequestBody @Valid ConferenceCreateRequest request) {
 		return ApiResponse.ok(conferenceService.registerConference(identifier, request), 201);
@@ -44,6 +44,7 @@ public class ConferenceController {
 
 	@PatchMapping("/{id}")
 	@Operation(summary = "컨퍼런스 수정", description = "기존 컨퍼런스 정보를 수정합니다.")
+	@SwaggerSummaryRole({RoleType.ADMIN})
 	public ApiResponse<ConferenceUpdateResponse> updateConference(@CurrentUser String identifier,
 		@PathVariable(name = "id") Long id, @RequestBody @Valid ConferenceUpdateRequest request) {
 		return ApiResponse.ok(conferenceService.updateConference(identifier, id, request), 200);

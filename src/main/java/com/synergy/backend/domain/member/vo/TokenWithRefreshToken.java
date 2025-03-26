@@ -1,4 +1,6 @@
-package com.synergy.backend.domain.member.api.dto.resposne;
+package com.synergy.backend.domain.member.vo;
+
+import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
 
 public record TokenWithRefreshToken(
 	String refreshToken,

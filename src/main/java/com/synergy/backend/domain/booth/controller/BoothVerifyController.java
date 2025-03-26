@@ -1,6 +1,8 @@
 package com.synergy.backend.domain.booth.controller;
 
 import com.synergy.backend.domain.booth.service.BoothParticipationService;
+import com.synergy.backend.domain.member.entity.RoleType;
+import com.synergy.backend.global.annotation.SwaggerSummaryRole;
 import com.synergy.backend.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import lombok.RequiredArgsConstructor;
@@ -14,6 +16,7 @@ public class BoothVerifyController {
     private final BoothParticipationService boothParticipationService;
 
     @Operation(summary = "부스 참여", description = "부스 ID를 기준으로 해당 부스에 참여합니다.")
+    @SwaggerSummaryRole({RoleType.ATTENDEE})
     @PostMapping("/{boothId}/participate/{attendeeId}")
     public ApiResponse<String> participateInBooth(
             @PathVariable Long conferenceId,

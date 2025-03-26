@@ -20,7 +20,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.TokenWithRefreshToken;
+import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;

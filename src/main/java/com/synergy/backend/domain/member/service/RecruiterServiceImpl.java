@@ -1,7 +1,7 @@
 package com.synergy.backend.domain.member.service;
 
-import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
-import com.synergy.backend.domain.member.api.dto.AttendeeListResponse;
+import com.synergy.backend.domain.member.api.dto.request.AttendeeFilterRequest;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeListResponse;
 import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import lombok.extern.slf4j.Slf4j;
