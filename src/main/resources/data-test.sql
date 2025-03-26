@@ -48,8 +48,8 @@ INSERT INTO admin (admin_auth_code) VALUES ('ADM12345');
 INSERT INTO admin (admin_auth_code) VALUES ('ADM67890');
 
 -- 채용 담당자
-INSERT INTO recruiter (recruiter_id, recruiter_auth_code, company, responsibility, name) VALUES (1, 'RC12345', 'CodeSphere', 'HR팀 매니저', '박수진');
-INSERT INTO recruiter (recruiter_id, recruiter_auth_code, company, responsibility, name) VALUES (2, 'RC67890', 'OpenStack Korea', 'HR팀 매니저', '김주은');
+INSERT INTO recruiter (recruiter_auth_code, company, responsibility, name) VALUES ('RC12345', 'CodeSphere', 'HR팀 매니저', '박수진');
+INSERT INTO recruiter (recruiter_auth_code, company, responsibility, name) VALUES ( 'RC67890', 'OpenStack Korea', 'HR팀 매니저', '김주은');
 
 -- 참가자 기본 데이터
 INSERT INTO attendee (email, password, name, phone, total_points, membership_level_type)
@@ -89,86 +89,86 @@ INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALU
 -- 참가자의 현재 직업 및 직무 업데이트
 UPDATE attendee
 SET
-    is_hiring_interested = 1,
-    current_job_position_id = 2,
-    current_job_group_id = 1,
-    desired_job_group_id = 1,
-    desired_job_position_id = 2,
-    self_introduction = '저는 최신 기술을 배우고 IT 업계에서 성장하기 위해 다양한 컨퍼런스와 개발 프로젝트에 참여해왔습니다. 컴퓨터공학 전공자로서 웹 애플리케이션 개발과 데이터베이스 설계 경험이 있으며, 협업과 문제 해결 역량을 갖추고 있습니다. 여러 해커톤과 오픈소스 프로젝트에 참여하며 실무 감각을 익혔고, 컨퍼런스를 통해 업계 트렌드를 학습하며 네트워킹을 적극적으로 활용해왔습니다. 앞으로 데이터 분석과 AI 기술을 활용하여 가치 있는 서비스를 개발하고, 변화하는 환경 속에서 끊임없이 성장하는 개발자가 되고 싶습니다. 이번 기회를 통해 실무 경험을 쌓으며, IT 업계에서 더욱 발전할 수 있도록 최선을 다하겠습니다.',
-    tech_stacks = 'Java, AWS, Spring Boot, MySQL, Docker, JPA, github-actions, SonarQube, Redis, junit5, Mockito, Git',
-    age_group = 'AGE_20_24',
-    education_level = 2,
-    experience_level = 1
+is_hiring_interested = 1,
+current_job_position_id = 2,
+current_job_group_id = 1,
+desired_job_group_id = 1,
+desired_job_position_id = 2,
+self_introduction = '저는 최신 기술을 배우고 IT 업계에서 성장하기 위해 다양한 컨퍼런스와 개발 프로젝트에 참여해왔습니다. 컴퓨터공학 전공자로서 웹 애플리케이션 개발과 데이터베이스 설계 경험이 있으며, 협업과 문제 해결 역량을 갖추고 있습니다. 여러 해커톤과 오픈소스 프로젝트에 참여하며 실무 감각을 익혔고, 컨퍼런스를 통해 업계 트렌드를 학습하며 네트워킹을 적극적으로 활용해왔습니다. 앞으로 데이터 분석과 AI 기술을 활용하여 가치 있는 서비스를 개발하고, 변화하는 환경 속에서 끊임없이 성장하는 개발자가 되고 싶습니다. 이번 기회를 통해 실무 경험을 쌓으며, IT 업계에서 더욱 발전할 수 있도록 최선을 다하겠습니다.',
+tech_stacks = 'Java, AWS, Spring Boot, MySQL, Docker, JPA, github-actions, SonarQube, Redis, junit5, Mockito, Git',
+age_group = 'AGE_20_24',
+education_level = 2,
+experience_level = 1
 WHERE attendee_id = 1;
 
 UPDATE attendee
 SET
-    is_hiring_interested = 1,
-    tech_stacks = 'AWS',
-    age_group = 'AGE_20_24',
-    education_level = 2,
-    experience_level = 2,
-    current_job_position_id = 12,
-    current_job_group_id = 2,
-    desired_job_group_id = 2,
-    desired_job_position_id = 12,
-    self_introduction = '최신 사람입니다!'
+is_hiring_interested = 1,
+tech_stacks = 'AWS',
+age_group = 'AGE_20_24',
+education_level = 2,
+experience_level = 2,
+current_job_position_id = 12,
+current_job_group_id = 2,
+desired_job_group_id = 2,
+desired_job_position_id = 12,
+self_introduction = '최신 사람입니다!'
 WHERE attendee_id = 2;
 
 UPDATE attendee
 SET
-    is_hiring_interested = 1,
-    tech_stacks = 'Ruby',
-    age_group = 'AGE_25_29',
-    education_level = 1,
-    experience_level = 1,
-    current_job_position_id = 11,
-    current_job_group_id = 2,
-    desired_job_group_id = 2,
-    desired_job_position_id = 10,
-    self_introduction = '사람입니다!'
+is_hiring_interested = 1,
+tech_stacks = 'Ruby',
+age_group = 'AGE_25_29',
+education_level = 1,
+experience_level = 1,
+current_job_position_id = 11,
+current_job_group_id = 2,
+desired_job_group_id = 2,
+desired_job_position_id = 10,
+self_introduction = '사람입니다!'
 WHERE attendee_id = 3;
 
 UPDATE attendee
 SET
-    is_hiring_interested = 1,
-    tech_stacks = 'Go, C++',
-    age_group = 'AGE_35_PLUS',
-    education_level = 3,
-    experience_level = 3,
-    current_job_position_id = 1,
-    current_job_group_id = 1,
-    desired_job_group_id = 1,
-    desired_job_position_id = 2,
-    self_introduction = '혼자서 할 수 있는 개발자!'
+is_hiring_interested = 1,
+tech_stacks = 'Go, C++',
+age_group = 'AGE_35_PLUS',
+education_level = 3,
+experience_level = 3,
+current_job_position_id = 1,
+current_job_group_id = 1,
+desired_job_group_id = 1,
+desired_job_position_id = 2,
+self_introduction = '혼자서 할 수 있는 개발자!'
 WHERE attendee_id = 4;
 
 UPDATE attendee
 SET
-    is_hiring_interested = 1,
-    tech_stacks = 'Go, C++',
-    age_group = 'AGE_35_PLUS',
-    education_level = 3,
-    experience_level = 3,
-    current_job_position_id = 1,
-    current_job_group_id = 1,
-    desired_job_group_id = 1,
-    desired_job_position_id = 2,
-    self_introduction = '혼자서 할 수 있는 개발자!'
+is_hiring_interested = 1,
+tech_stacks = 'Go, C++',
+age_group = 'AGE_35_PLUS',
+education_level = 3,
+experience_level = 3,
+current_job_position_id = 1,
+current_job_group_id = 1,
+desired_job_group_id = 1,
+desired_job_position_id = 2,
+self_introduction = '혼자서 할 수 있는 개발자!'
 WHERE attendee_id = 5;
 
 UPDATE attendee
 SET
-    is_hiring_interested = 1,
-    tech_stacks = 'Git, Docker',
-    age_group = 'AGE_30_34',
-    education_level = 3,
-    experience_level = 3,
-    current_job_position_id = 1,
-    current_job_group_id = 1,
-    desired_job_group_id = 1,
-    desired_job_position_id = 2,
-    self_introduction = '100인 분 할 수 있는 개발자!'
+is_hiring_interested = 1,
+tech_stacks = 'Git, Docker',
+age_group = 'AGE_30_34',
+education_level = 3,
+experience_level = 3,
+current_job_position_id = 1,
+current_job_group_id = 1,
+desired_job_group_id = 1,
+desired_job_position_id = 2,
+self_introduction = '100인 분 할 수 있는 개발자!'
 WHERE attendee_id = 6;
 
 -- 참가자의 관심 분야(Interest) 매핑
@@ -234,30 +234,14 @@ VALUES
     ('2025-09-15 09:00', '2025-09-16 18:00', 'FlowLink', 'F’LINK 2025', 'IT', '그랜드볼룸');
 
 -- 부스
-INSERT INTO booth (conference_id, company_name, company_type, booth_location, booth_number, booth_description, image)
+INSERT INTO booth (conference_id, company, name, description, location)
 VALUES
-    (1, 'CodeSphere', 'YourCompanyType', 'C HALL', 101, '클라우드서비스: 글로벌 IT 기업 CodeSphere에서 React 기반 프론트엔드 엔지니어와 클라우드 기반 백엔드 엔지니어를 채용합니다. TypeScript, Node.js, Kubernetes 경험자를 환영합니다.', null);
+    (1, 'CodeSphere', '클라우드서비스', ' 글로벌 IT 기업 CodeSphere에서 React 기반 프론트엔드 엔지니어와 클라우드 기반 백엔드 엔지니어를 채용합니다. TypeScript, Node.js, Kubernetes 경험자를 환영합니다.','C HALL');
 
 -- 세션
 INSERT INTO session (maximum, progress_date, conference_id, end_time, start_time, speaker_position, speaker, title, description, qr_key, qr_url, image_key, image_url, secret_code)
 VALUES
     (250, '2025-09-15', 1, '2025-09-15 11:30', '2025-09-15 10:30', 'CTO', '김지혁', '최신 기술 동향', '빠르게 변화하는 IT 산업에서 최신 기술 동향을 파악하는 것은 기업의 경쟁력을 높이고 미래를 준비하는 데 필수적입니다. 기업의 CTO가 AI, 클라우드, Web3 등 주요 기술 트렌드와 산업 변화를 분석하고, 기업이 기술 혁신을 어떻게 주도할 수 있는지에 대한 전략과 인사이트를 제공합니다.', ' ', ' ', ' ', ' ', ' ');
 
-
--- 포인트 적립 내역
-INSERT INTO point (attendee_id, created_time, point_type, booth_id, recruiter_id, session_id)
-VALUES
-    (1, '2025-03-20 15:30:00', 'SIGN_UP', null, null, null),
-    (1, '2025-04-02 08:30:00', 'SESSION_ATTEND', null, null, 1),
-    (1, '2025-04-02 10:30:00', 'SESSION_QNA', null, null, 1),
-    (1, '2025-04-02 11:30:00', 'BOOTH_VISIT', 1, null, null),
-    (1, '2025-04-02 13:30:00', 'CONTENT_SHARE', null, null, null),
-    (1, '2025-04-02 13:34:00', 'SURVEY_PARTICIPATION', null, null, null),
-    (1, '2025-04-02 15:30:00', 'RECRUITER_MEETING', null, 1, null),
-    (2, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null),
-    (3, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null),
-    (4, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null),
-    (5, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null),
-    (6, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null);
 
 

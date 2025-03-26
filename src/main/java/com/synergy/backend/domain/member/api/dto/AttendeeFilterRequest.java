@@ -7,15 +7,15 @@ import java.util.List;
 
 @Builder
 public record AttendeeFilterRequest(
-        List<String> occupations,
+        List<String> desiredOccupations,
         String educationLevel,
         String ageGroup,
         String experienceLevel,
         List<String> regions
 ) {
-    public static AttendeeFilterRequest of(List<String> occupations, String educationLevel, String ageGroup, String experienceLevel, List<String> regions) {
+    public static AttendeeFilterRequest of(List<String> desiredOccupations, String educationLevel, String ageGroup, String experienceLevel, List<String> regions) {
         return AttendeeFilterRequest.builder()
-                .occupations(occupations)
+                .desiredOccupations(desiredOccupations)
                 .educationLevel(educationLevel)
                 .ageGroup(ageGroup)
                 .experienceLevel(experienceLevel)

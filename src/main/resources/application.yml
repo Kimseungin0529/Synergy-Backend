@@ -12,7 +12,7 @@ spring:
 
   jpa:
     hibernate:
-      ddl-auto: update
+      ddl-auto: create
     properties:
       hibernate:
         format_sql: true
@@ -58,10 +58,10 @@ mail:
     password: ${EMAIL_PASSWORD}
     port: 465
 
-#logging:
-#  level:
-#    org.hibernate.SQL: DEBUG  # ✅ SQL 로그를 DEBUG 수준으로 상세하게 출력
-#    org.hibernate.type.descriptor.sql: TRACE  # ✅ 바인딩된 파라미터도 함께 출력
+logging:
+  level:
+    org.hibernate.SQL: DEBUG  # ✅ SQL 로그를 DEBUG 수준으로 상세하게 출력
+    org.hibernate.type.descriptor.sql: TRACE  # ✅ 바인딩된 파라미터도 함께 출력
 ---
 jwt:
   secret: ${JWT_SECRET}
@@ -170,6 +170,9 @@ spring:
       max-file-size: 2MB
       max-request-size: 15MB
 
-
+  sql:
+    init:
+      mode: always
+      data-locations: classpath:data-test.sql
 
 
