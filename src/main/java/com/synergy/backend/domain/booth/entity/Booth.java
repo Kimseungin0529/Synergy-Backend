@@ -25,10 +25,10 @@ public class Booth {
 	@Column(name = "booth_id")
 	private Long id;
 
-	@Column(nullable = false, length = 10)
+	@Column(nullable = false)
 	private String companyName;
 
-	@Column(nullable = false, length = 20)
+	@Column(nullable = false)
 	private String companyType;
 
 	@Column(nullable = false)
@@ -37,7 +37,7 @@ public class Booth {
 	@Column(nullable = false)
 	private Integer boothNumber;
 
-	@Column(nullable = false, length = 150)
+	@Column(nullable = false)
 	private String boothDescription;
 
 	@ManyToOne(fetch = LAZY)
