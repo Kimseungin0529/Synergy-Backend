@@ -26,7 +26,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 
 @Tag(name = "Conference Controller", description = "컨퍼런스 관련 API")
-@RestController @Slf4j
+@RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/conference")
 public class ConferenceController {
