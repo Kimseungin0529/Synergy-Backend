@@ -77,8 +77,8 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(readOnly = true)
     @Override
     public SessionDetailResDto getSessionInfo(String identifier, RoleType role, Long conferenceId, Long sessionId) {
-        ifConferenceExists(conferenceId);
-        Session session = ifSessionExists(sessionId);
+        Conference conference = ifConferenceExists(conferenceId);
+        Session session = findByConferenceId(sessionId, conference);
 
         try {
             if(role.equals(RoleType.ATTENDEE)) {
@@ -115,6 +115,10 @@ public class SessionServiceImpl implements SessionService {
     }
 
     // --------------------------------- private method ----------------------------------------
+
+    private Session findByConferenceId(Long sessionId, Conference conference) {
+        return sessionRepository.findByIdAndConference(sessionId, conference).orElseThrow(NotFoundSession::new);
+    }
 
     private Admin findIfAdminExists(String identifier) {
         return adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
