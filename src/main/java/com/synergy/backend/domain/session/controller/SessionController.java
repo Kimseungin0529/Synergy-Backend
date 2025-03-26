@@ -89,7 +89,7 @@ public class SessionController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "세션 삭제", description = "관리자가 세션을 삭제합니다.")
 	@SwaggerSummaryRole({RoleType.ADMIN})
-	@DeleteMapping
+	@DeleteMapping("/{sessionId}")
 	public ApiResponse deleteSession(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable Long sessionId) {
 		sessionService.deleteSession(user.getIdentifier(), sessionId);
