@@ -14,13 +14,14 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synergy.backend.domain.member.api.dto.AttendeeFilterRequest;
-import com.synergy.backend.domain.member.api.dto.AttendeeListResponse;
+import com.synergy.backend.domain.member.api.dto.request.AttendeeFilterRequest;
+import com.synergy.backend.domain.member.api.dto.resposne.AttendeeListResponse;
 import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.RecruiterMyInfoResponseDto;
-import com.synergy.backend.domain.member.service.AttendeeDetailResponse;
+import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.member.service.RecruiterAttendeeLikeService;
 import com.synergy.backend.domain.member.service.RecruiterService;
+import com.synergy.backend.global.annotation.SwaggerSummaryRole;
 import com.synergy.backend.global.common.ApiResponse;
 import com.synergy.backend.global.security.CustomUserDetails;
 
@@ -39,6 +40,7 @@ public class RecruiterController {
 	private final RecruiterAttendeeLikeService recruiterAttendeeLikeService;
 
 	@Operation(summary = "내 정보 조회", description = "로그인된 채용담당자의 정보를 조회합니다.")
+	@SwaggerSummaryRole({RoleType.RECRUITER})
 	@PreAuthorize("hasRole('RECRUITER')")
 	@GetMapping("/my")
 	public ApiResponse<RecruiterMyInfoResponseDto> getMyInformation(
@@ -47,6 +49,7 @@ public class RecruiterController {
 	}
 
 	@Operation(summary = "참가자 좋아요", description = "채용담당자가 특정 참가자에게 좋아요를 누릅니다.")
+	@SwaggerSummaryRole({RoleType.RECRUITER})
 	@PreAuthorize("hasRole('RECRUITER')")
 	@PostMapping("/attendees/{attendeeId}/like")
 	public ApiResponse<?> likeAttendee(
@@ -58,6 +61,7 @@ public class RecruiterController {
 	}
 
 	@Operation(summary = "참가자 좋아요 취소", description = "채용담당자가 특정 참가자에게 눌렀던 좋아요를 취소합니다.")
+	@SwaggerSummaryRole({RoleType.RECRUITER})
 	@PreAuthorize("hasRole('RECRUITER')")
 	@DeleteMapping("/attendees/{attendeeId}/unlike")
 	public ApiResponse<?> unlikeAttendee(
@@ -69,6 +73,7 @@ public class RecruiterController {
 	}
 
 	@Operation(summary = "좋아요한 참가자 목록 조회", description = "채용담당자가 좋아요한 참가자 목록을 조회합니다.")
+	@SwaggerSummaryRole({RoleType.RECRUITER})
 	@PreAuthorize("hasRole('RECRUITER')")
 	@GetMapping("/me/liked-attendees")
 	public ApiResponse<List<AttendeeSimpleResponseDto>> getLikedAttendees(
@@ -84,6 +89,7 @@ public class RecruiterController {
 			페이징 처리를 통해 응답을 분할하여 제공합니다.
 			"""
 	)
+	@SwaggerSummaryRole({RoleType.RECRUITER, RoleType.ADMIN})
 	@PreAuthorize("hasRole('RECRUITER') or hasRole('ADMIN')")
 	@GetMapping("/{id}/attendees")
 	public ApiResponse<AttendeeListResponse> getAttendees(

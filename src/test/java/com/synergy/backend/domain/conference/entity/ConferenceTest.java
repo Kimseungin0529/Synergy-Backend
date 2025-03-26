@@ -7,7 +7,9 @@ import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.TestFactory;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.Collection;
 import java.util.List;
 
@@ -22,12 +24,19 @@ class ConferenceTest {
     void of() {
         // given
         String name = "컨퍼런스 제목";
-        TimePeriod timePeriod = TimePeriod.of(LocalDateTime.of(2025, 4, 14, 9, 0), LocalDateTime.of(2025, 4, 15, 16, 0));
+        TimePeriod timePeriod = TimePeriod.of(
+                LocalDate.of(3025, 4, 14),
+                LocalDate.of(3025, 4, 15),
+                LocalTime.of(9, 0),
+                LocalTime.of(16, 0)
+        );
         String organizer = "김승진";
         String location = "컨퍼런스 위치";
+        String position = "A로비";
         String type = "IT";
+
         // when
-        Conference conference = Conference.of(name, timePeriod, organizer, location, type);
+        Conference conference = Conference.of(name, timePeriod, organizer, location, position, type);
         // then
         assertThat(conference)
                 .extracting("name", "organizer", "location", "type")
@@ -38,10 +47,16 @@ class ConferenceTest {
     @TestFactory
     Collection<DynamicTest> ofExceptionName() {
         // given
-        TimePeriod timePeriod = TimePeriod.of(LocalDateTime.of(2025, 4, 14, 9, 0), LocalDateTime.of(2025, 4, 15, 16, 0));
-        String location = "컨퍼런스 위치";
+        TimePeriod timePeriod = TimePeriod.of(
+                LocalDate.of(3025, 4, 14),
+                LocalDate.of(3025, 4, 15),
+                LocalTime.of(9, 0),
+                LocalTime.of(16, 0)
+        );
         String organizer = "김승진";
-        String type = "산업";
+        String location = "컨퍼런스 위치";
+        String position = "A로비";
+        String type = "IT";
 
         // when & then
         return List.of(
@@ -49,7 +64,7 @@ class ConferenceTest {
                             //given
                             String name = "  ";
                             // when & then
-                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, type))
+                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, position, type))
                                     .hasMessage(_INVALID_CONFERENCE_NAME.getMessage())
                                     .isInstanceOf(InvalidNameException.class);
                         }
@@ -58,7 +73,7 @@ class ConferenceTest {
                             //given
                             String name = "123456789/123456789/123456789/1";
                             // when & then
-                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, type))
+                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, position, type))
                                     .hasMessage(_INVALID_CONFERENCE_NAME.getMessage())
                                     .isInstanceOf(InvalidNameException.class);
                         }
@@ -70,17 +85,24 @@ class ConferenceTest {
     @TestFactory
     Collection<DynamicTest> ofExceptionOrganizer() {
         // given
-        TimePeriod timePeriod = TimePeriod.of(LocalDateTime.of(2025, 4, 14, 9, 0), LocalDateTime.of(2025, 4, 15, 16, 0));
-        String name = "카카오 IT 컨퍼런스";
+        String name = "컨퍼런스 제목";
+        TimePeriod timePeriod = TimePeriod.of(
+                LocalDate.of(3025, 4, 14),
+                LocalDate.of(3025, 4, 15),
+                LocalTime.of(9, 0),
+                LocalTime.of(16, 0)
+        );
         String location = "컨퍼런스 위치";
-        String type = "산업";
+        String position = "A로비";
+        String type = "IT";
+
         // when & then
         return List.of(
                 DynamicTest.dynamicTest("주최자명은 공백으로 작성할 수 없습니다.", () -> {
                             //given
                             String organizer = "  ";
                             // when & then
-                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, type))
+                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, position, type))
                                     .hasMessage(_INVALID_ORGANIZER.getMessage())
                                     .isInstanceOf(InvalidOrganizerException.class);
                         }
@@ -89,7 +111,7 @@ class ConferenceTest {
                             //given
                             String organizer = "김 승진 수수깡, /";
                             // when & then
-                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, type))
+                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, position, type))
                                     .hasMessage(_INVALID_ORGANIZER.getMessage())
                                     .isInstanceOf(InvalidOrganizerException.class);
                         }
@@ -101,17 +123,24 @@ class ConferenceTest {
     @TestFactory
     Collection<DynamicTest> ofExceptionLocation() {
         // given
-        TimePeriod timePeriod = TimePeriod.of(LocalDateTime.of(2025, 4, 14, 9, 0), LocalDateTime.of(2025, 4, 15, 16, 0));
-        String name = "카카오 IT 컨퍼런스";
+        String name = "컨퍼런스 제목";
+        TimePeriod timePeriod = TimePeriod.of(
+                LocalDate.of(3025, 4, 14),
+                LocalDate.of(3025, 4, 15),
+                LocalTime.of(9, 0),
+                LocalTime.of(16, 0)
+        );
         String organizer = "김승진";
-        String type = "산업";
+        String position = "A로비";
+        String type = "IT";
+
         // when & then
         return List.of(
                 DynamicTest.dynamicTest("컨퍼런스 위치는 공백으로 작성할 수 없습니다..", () -> {
                             //given
                             String location = "  ";
                             // when & then
-                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, type))
+                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, position, type))
                                     .hasMessage(_INVALID_CONFERENCE_LOCATION.getMessage())
                                     .isInstanceOf(InvalidLocationException.class);
                         }
@@ -121,7 +150,7 @@ class ConferenceTest {
                             String location = "지구에 존재하는 동양 국가로 대한민국 서울특별시에 존재하는 어쩌구 저쩌구 어쩌구 저쩌구 어쩌구 저쩌구 어쩌구 저쩌구저쩌구저쩌구저쩌구저쩌구저쩌구저쩌구저쩌구 마포에 있는 커스텀 건물12";
 
                             // when & then
-                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, type))
+                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, position, type))
                                     .hasMessage(_INVALID_CONFERENCE_LOCATION.getMessage())
                                     .isInstanceOf(InvalidLocationException.class);
                         }
@@ -133,17 +162,24 @@ class ConferenceTest {
     @TestFactory
     Collection<DynamicTest> ofExceptionType() {
         // given
-        TimePeriod timePeriod = TimePeriod.of(LocalDateTime.of(2025, 4, 14, 9, 0), LocalDateTime.of(2025, 4, 15, 16, 0));
+        TimePeriod timePeriod = TimePeriod.of(
+                LocalDate.of(3025, 4, 14),
+                LocalDate.of(3025, 4, 15),
+                LocalTime.of(9, 0),
+                LocalTime.of(16, 0)
+        );
         String name = "카카오 IT 컨퍼런스";
         String organizer = "김승진";
+        String position = "A로비";
         String location = "서울 마포대로 지하 축제 공간";
+
         // when & then
         return List.of(
                 DynamicTest.dynamicTest("유형은 공백으로 작성할 수 없습니다..", () -> {
                             //given
                             String type = "  ";
                             // when & then
-                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, type))
+                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, position, type))
                                     .hasMessage(_INVALID_COMMON.getMessage())
                                     .isInstanceOf(InvalidCommonException.class);
                         }
@@ -152,7 +188,7 @@ class ConferenceTest {
                             //given
                             String type = "  ";
                             // when & then
-                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, type))
+                            assertThatThrownBy(() -> Conference.of(name, timePeriod, organizer, location, position, type))
                                     .hasMessage(_INVALID_COMMON.getMessage())
                                     .isInstanceOf(InvalidCommonException.class);
                         }

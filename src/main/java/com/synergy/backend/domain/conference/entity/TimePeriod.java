@@ -6,8 +6,8 @@ import jakarta.persistence.Embeddable;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
-import java.util.Objects;
+import java.time.LocalDate;
+import java.time.LocalTime;
 
 import static lombok.AccessLevel.PROTECTED;
 
@@ -17,33 +17,40 @@ import static lombok.AccessLevel.PROTECTED;
 public class TimePeriod {
 
     @Column(nullable = false)
-    private LocalDateTime startDateTime;
+    private LocalDate startDate;
 
     @Column(nullable = false)
-    private LocalDateTime endDateTime;
+    private LocalDate endDate;
 
-    private TimePeriod(LocalDateTime startDateTime, LocalDateTime endDateTime) {
-        this.startDateTime = startDateTime;
-        this.endDateTime = endDateTime;
+    @Column(nullable = false)
+    private LocalTime startTime;
+
+    @Column(nullable = false)
+    private LocalTime endTime;
+
+    private TimePeriod(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        this.startDate = startDate;
+        this.endDate = endDate;
+        this.startTime = startTime;
+        this.endTime = endTime;
     }
 
-    public static TimePeriod of(LocalDateTime startDateTime, LocalDateTime endDate) {
-        if(startDateTime.isAfter(endDate) || startDateTime.isEqual(endDate)) {
+    public static TimePeriod of(LocalDate startDate, LocalDate endDate, LocalTime startTime, LocalTime endTime) {
+        // 시작 날짜 <= 종료 날짜
+        // 시작 시간 < 종료 시간
+        if(isNotValidDateBetween(startDate, endDate) || isNotValidTimeBetween(startTime, endTime)) {
             throw new InvalidTimePeriodException();
         }
-        return new TimePeriod(startDateTime, endDate);
+        return new TimePeriod(startDate, endDate, startTime, endTime);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        TimePeriod that = (TimePeriod) o;
-        return Objects.equals(startDateTime, that.startDateTime) && Objects.equals(endDateTime, that.endDateTime);
+    private static boolean isNotValidTimeBetween(LocalTime startTime, LocalTime endTime) {
+        return startTime.isAfter(endTime) || startTime.equals(endTime);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(startDateTime, endDateTime);
+    private static boolean isNotValidDateBetween(LocalDate startDate, LocalDate endDate) {
+        return startDate.isAfter(endDate);
     }
+
+
 }

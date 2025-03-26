@@ -1,8 +1,10 @@
 package com.synergy.backend.domain.session.controller;
 
+import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.session.dto.questionDto.QuestionReqDto;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
 import com.synergy.backend.domain.session.service.SessionParticipateService;
+import com.synergy.backend.global.annotation.SwaggerSummaryRole;
 import com.synergy.backend.global.common.ApiResponse;
 import com.synergy.backend.global.security.CustomUserDetails;
 import lombok.RequiredArgsConstructor;
@@ -18,6 +20,7 @@ public class SessionVerifyController {
     private final SessionParticipateService sessionParticipateService;
 
     @PreAuthorize("hasAnyRole('ATTENDEE')")
+    @SwaggerSummaryRole({RoleType.ATTENDEE})
     @PostMapping("/session")
     public ApiResponse<SessionResDto> verifyQRCode(@AuthenticationPrincipal CustomUserDetails user,
                                                    @RequestParam(name = "qrCode") String qrCode){
@@ -27,6 +30,7 @@ public class SessionVerifyController {
     }
 
     @PreAuthorize("hasAnyRole('ATTENDEE')")
+    @SwaggerSummaryRole({RoleType.ATTENDEE})
     @PostMapping("/{sessionId}/participation")
     public ApiResponse createQuestion(@AuthenticationPrincipal CustomUserDetails user,
                                       @PathVariable(name = "conferenceId") Long conferenceId,

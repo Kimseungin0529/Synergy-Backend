@@ -18,7 +18,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.Optional;
 
 @Slf4j
@@ -28,12 +29,13 @@ import java.util.Optional;
 public class ConferenceServiceImpl implements ConferenceService {
     private final ConferenceRepository conferenceRepository;
     private final AdminRepository adminRepository;
+
     @Transactional
     @Override
     public ConferenceCreateResponse registerConference(String identifier, ConferenceCreateRequest request) {
         Admin findAdmin = adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
-        TimePeriod timePeriod = TimePeriod.of(request.startDate(), request.endDate());
-        Conference conference = Conference.of(request.name(), timePeriod, request.organizer(), request.location(), request.type());
+        TimePeriod timePeriod = TimePeriod.of(request.startDate(), request.endDate(), request.startTime(), request.endTime());
+        Conference conference = Conference.of(request.name(), timePeriod, request.host(), request.location(), request.place(), request.conferenceType());
         Conference savedConference = conferenceRepository.save(conference);
 
         findAdmin.addConference(conference);
@@ -62,19 +64,31 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
     private void applyUpdatesToConference(ConferenceUpdateRequest request, Conference findConference) {
+        updateInform(request, findConference);
+
+        updateDateTimeInform(request, findConference);
+
+    }
+
+    private void updateDateTimeInform(ConferenceUpdateRequest request, Conference findConference) {
+        LocalDate currentStartDate = findConference.getPeriod().getStartDate();
+        LocalDate currentEndDate = findConference.getPeriod().getEndDate();
+        LocalTime currentStartTime = findConference.getPeriod().getStartTime();
+        LocalTime currentEndTime = findConference.getPeriod().getEndTime();
+
+        LocalDate newStartDate = Optional.ofNullable(request.startDate()).orElse(currentStartDate);
+        LocalDate newEndDate = Optional.ofNullable(request.endDate()).orElse(currentEndDate);
+        LocalTime newStartTime = Optional.ofNullable(request.startTime()).orElse(currentStartTime);
+        LocalTime newEndTime = Optional.ofNullable(request.endTime()).orElse(currentEndTime);
+
+        findConference.updatePeriod(TimePeriod.of(newStartDate, newEndDate, newStartTime, newEndTime));
+    }
+
+    private void updateInform(ConferenceUpdateRequest request, Conference findConference) {
         Optional.ofNullable(request.name()).ifPresent(findConference::updateName);
         Optional.ofNullable(request.location()).ifPresent(findConference::updateLocation);
-        Optional.ofNullable(request.organizer()).ifPresent(findConference::updateOrganizer);
-        Optional.ofNullable(request.type()).ifPresent(findConference::updateType);
-
-        LocalDateTime currentStartTime = findConference.getPeriod().getStartDateTime();
-        LocalDateTime currentEndTime = findConference.getPeriod().getEndDateTime();
-        LocalDateTime newStartTime = Optional.ofNullable(request.startDate()).orElse(currentStartTime);
-        LocalDateTime newEndTime = Optional.ofNullable(request.endDate()).orElse(currentEndTime);
-
-        if (!newStartTime.equals(currentStartTime) || !newEndTime.equals(currentEndTime)) {
-            findConference.updatePeriod(TimePeriod.of(newStartTime, newEndTime));
-        }
-
+        Optional.ofNullable(request.host()).ifPresent(findConference::updateOrganizer);
+        Optional.ofNullable(request.conferenceType()).ifPresent(findConference::updateType);
+        Optional.ofNullable(request.place()).ifPresent(findConference::updatePosition);
     }
 }

@@ -1,5 +1,7 @@
 package com.synergy.backend.domain.member.service;
 
+import org.springframework.web.multipart.MultipartFile;
+
 import com.synergy.backend.domain.member.api.dto.request.JobInfoDetailsRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.JobInfoRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.AttendeeFullInfoResponseDto;
@@ -10,7 +12,7 @@ public interface AttendeeService {
 
 	void addJobInfo(String email, JobInfoRequestDto request);
 
-	void addJobInfoDetails(String email, JobInfoDetailsRequestDto request);
+	void addJobInfoDetails(String email, JobInfoDetailsRequestDto request, MultipartFile multipartFile);
 
 	MyInfoResponseDto getMyInformation(String identifier);
 
