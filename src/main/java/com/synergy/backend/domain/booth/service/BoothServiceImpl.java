@@ -11,11 +11,14 @@ import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.qrCode.exception.NotGenerateQRCodeException;
 import com.synergy.backend.domain.qrCode.service.QrService;
+import com.synergy.backend.global.util.file.dto.FileInformationDto;
+import com.synergy.backend.global.util.file.util.FileS3Util;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.UUID;
 
@@ -25,34 +28,35 @@ public class BoothServiceImpl implements BoothService {
 
     private final BoothRepository boothRepository;
     private final ConferenceRepository conferenceRepository;
+    private final FileS3Util fileS3Util;
     private final QrService qrService;
 
     @Transactional
     @Override
-    public BoothResponseDto createBooth(Long conferenceId, BoothRequestDto request) {
+    public BoothResponseDto createBooth(Long conferenceId, BoothRequestDto request, MultipartFile imageFile) throws WriterException {
         Conference conference = ifConferenceExists(conferenceId);
+
         Booth booth = new Booth(
                 request.companyName(),
                 request.companyType(),
                 request.boothLocation(),
                 request.boothNumber(),
                 request.boothDescription(),
-                conference,
-                request.image()
+                conference
         );
 
+        String secretCode = UUID.randomUUID().toString();
+        byte[] qrCode = qrService.generateQRCode(request.companyName(), booth.getId(), secretCode);
+        booth.setSecretCode(secretCode);
+        FileInformationDto qrInfo = fileS3Util.uploadQRCode(qrCode, booth.getCompanyName());
+        booth.setQrKey(qrInfo.fileKey());
+        booth.setQrUrl(qrInfo.accessUrl());
+
+        FileInformationDto imageInfo = fileS3Util.uploadFile(imageFile);
+        booth.setImageKey(imageInfo.fileKey());
+        booth.setImageUrl(imageInfo.accessUrl());
+
         boothRepository.save(booth);
-
-        // QR코드 생성 로직 (주석처리된 상태)
-        // String qrCodeUrl = "https://";
-        // String secretCode = UUID.randomUUID().toString();
-        // try {
-        //     byte[] qrCode = qrService.generateQRCode(qrCodeUrl, booth.getId(), secretCode);
-        //     booth.setQrCode(qrCode);
-        // } catch (WriterException e) {
-        //     throw new NotGenerateQRCodeException();
-        // }
-
         return new BoothResponseDto(booth);
     }
 
@@ -75,11 +79,13 @@ public class BoothServiceImpl implements BoothService {
 
     @Transactional
     @Override
-    public BoothResponseDto updateBooth(Long conferenceId, Long id, BoothRequestDto request) {
+    public BoothResponseDto updateBooth(Long conferenceId, Long id, BoothRequestDto request, MultipartFile imageFile) {
         Booth booth = ifBoothExists(id);
         if (!booth.getConference().getId().equals(conferenceId)) {
-            throw new NotFoundBoothException();
+            throw new NotFoundConference();
         }
+
+        FileInformationDto imageInfo = (imageFile != null) ? fileS3Util.uploadFile(imageFile) : null;
 
         booth.updateInfo(
                 request.companyName() != null ? request.companyName() : booth.getCompanyName(),
@@ -87,7 +93,8 @@ public class BoothServiceImpl implements BoothService {
                 request.boothLocation() != null ? request.boothLocation() : booth.getBoothLocation(),
                 request.boothNumber() != null ? request.boothNumber() : booth.getBoothNumber(),
                 request.boothDescription() != null ? request.boothDescription() : booth.getBoothDescription(),
-                request.image() != null ? request.image() : booth.getImage()
+                imageInfo != null ? imageInfo.fileKey() : booth.getImageKey(),
+                imageInfo != null ? imageInfo.accessUrl() : booth.getImageUrl()
         );
 
         return new BoothResponseDto(booth);

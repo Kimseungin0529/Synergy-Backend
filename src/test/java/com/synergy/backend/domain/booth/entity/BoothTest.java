@@ -18,10 +18,13 @@ public class BoothTest {
         String boothLocation = "위치A";
         Integer boothNumber = 101;
         String boothDescription = "설명A";
-        byte[] image = null;
+        String imageKey = "image-key";
+        String imageUrl = "image-url";
 
         // when
-        Booth booth = new Booth(companyName, companyType, boothLocation, boothNumber, boothDescription, conference, image);
+        Booth booth = new Booth(companyName, companyType, boothLocation, boothNumber, boothDescription, conference);
+        booth.setImageKey(imageKey);
+        booth.setImageUrl(imageUrl);
 
         // then
         assertThat(booth).isNotNull();
@@ -31,6 +34,8 @@ public class BoothTest {
         assertThat(booth.getBoothNumber()).isEqualTo(boothNumber);
         assertThat(booth.getBoothDescription()).isEqualTo(boothDescription);
         assertThat(booth.getConference()).isEqualTo(conference);
+        assertThat(booth.getImageKey()).isEqualTo(imageKey);
+        assertThat(booth.getImageUrl()).isEqualTo(imageUrl);
     }
 
     @DisplayName("부스 정보를 업데이트합니다.")
@@ -38,10 +43,10 @@ public class BoothTest {
     void updateBoothInfo() {
         // given
         Conference conference = mock(Conference.class);
-        Booth booth = new Booth("부스A", "회사A", "위치A", 101, "설명A", conference, null);
+        Booth booth = new Booth("부스A", "회사A", "위치A", 101, "설명A", conference);
 
         // when
-        booth.updateInfo("부스B", "회사B", "위치B", 202, "설명B", null);
+        booth.updateInfo("부스B", "회사B", "위치B", 202, "설명B", "new-image-key", "new-image-url");
 
         // then
         assertThat(booth.getCompanyName()).isEqualTo("부스B");
@@ -49,5 +54,7 @@ public class BoothTest {
         assertThat(booth.getBoothLocation()).isEqualTo("위치B");
         assertThat(booth.getBoothNumber()).isEqualTo(202);
         assertThat(booth.getBoothDescription()).isEqualTo("설명B");
+        assertThat(booth.getImageKey()).isEqualTo("new-image-key");
+        assertThat(booth.getImageUrl()).isEqualTo("new-image-url");
     }
 }

@@ -5,7 +5,6 @@ public record BoothRequestDto(
         String companyType,
         String boothLocation,
         Integer boothNumber,
-        String boothDescription,
-        byte[] image
+        String boothDescription
 ) {
 }

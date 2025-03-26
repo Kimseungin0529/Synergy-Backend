@@ -40,9 +40,6 @@ public class Booth {
 	@Column(nullable = false, length = 150)
 	private String boothDescription;
 
-	@Lob
-	private byte[] image;	// 수정. 바이트는 안됨 정곤님꺼 참고
-
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "conference_id")
 	private Conference conference;
@@ -50,32 +47,45 @@ public class Booth {
 	@ManyToMany(mappedBy = "booths")
 	private Set<Admin> admins = new HashSet<>();
 
-	@Lob
-	private byte[] qrCode;	// 수정. 바이트는 안됨 정곤님꺼 참고
+	@Column(nullable = false, unique = true)
+	private String secretCode;
 
-	public Booth(String companyName, String companyType, String boothLocation, Integer boothNumber,
-				 String boothDescription, Conference conference, byte[] image) {
-		this.companyName = companyName;
-		this.companyType = companyType;
-		this.boothLocation = boothLocation;
-		this.boothNumber = boothNumber;
-		this.boothDescription = boothDescription;
-		this.conference = conference;
-		this.image = image;
-	}
+	@Column(nullable = false)
+	private String qrKey;
+
+	@Column(nullable = false)
+	private String qrUrl;
+
+	@Column(nullable = false)
+	private String imageKey;
+
+	@Column(nullable = false)
+	private String imageUrl;
 
 	public void addAdmin(Admin admin) {
 		this.admins.add(admin);
 		admin.getBooths().add(this);
 	}
 
-	public void updateInfo(String companyName, String companyType, String boothLocation, Integer boothNumber,
-						   String boothDescription, byte[] image) {
+	public Booth(String companyName, String companyType, String boothLocation, Integer boothNumber,
+				 String boothDescription, Conference conference) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
 		this.boothNumber = boothNumber;
 		this.boothDescription = boothDescription;
-		this.image = image;
+		this.conference = conference;
+	}
+
+	public void updateInfo(String companyName, String companyType, String boothLocation, Integer boothNumber,
+						   String boothDescription, String imageKey, String imageUrl) {
+		this.companyName = companyName;
+		this.companyType = companyType;
+		this.boothLocation = boothLocation;
+		this.boothNumber = boothNumber;
+		this.boothDescription = boothDescription;
+		this.imageKey = imageKey;
+		this.imageUrl = imageUrl;
 	}
 }
+
