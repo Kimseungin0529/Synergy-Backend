@@ -229,9 +229,10 @@ VALUES
 
 
 -- 컨퍼런스
-INSERT INTO conference (start_date_time, end_date_time, organizer, name, type, location)
+INSERT INTO conference (start_date, end_date, start_time, end_time, organizer, name, type, location, position)
 VALUES
-    ('2025-09-15 09:00', '2025-09-16 18:00', 'FlowLink', 'F’LINK 2025', 'IT', '그랜드볼룸');
+    ('2025-09-15', '2025-09-16','09:00', '18:00', 'FlowLink', 'F’LINK 2025', 'IT', '그랜드볼룸', '로비 A');
+
 
 -- 부스
 INSERT INTO booth (conference_id, company_name, company_type, booth_location, booth_number, booth_description, image)
