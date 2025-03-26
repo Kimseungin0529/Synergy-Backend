@@ -74,7 +74,7 @@ class ConferenceServiceImplTest {
         String organizer = "김승진";
         LocalDate startDate = LocalDate.of(3024, 6, 15);
         LocalTime startTime = LocalTime.of(13, 0);
-        LocalDate endDate = LocalDate.of(3022, 6, 18);
+        LocalDate endDate = LocalDate.of(3024, 6, 18);
         LocalTime endTime = LocalTime.of(18, 0);
         String location = "뉴욕 뉴져지";
         String position = "중심 로비";
@@ -92,10 +92,10 @@ class ConferenceServiceImplTest {
         Long conferenceId = savedConference.getId();
 
         String updatedName = "카카오 개발자로 살아남기";
-        LocalDate updatedStartDate = LocalDate.of(3024, 6, 15);
-        LocalTime updatedStartTime = LocalTime.of(13, 0);
-        LocalDate updatedEndDate = LocalDate.of(3022, 6, 18);
-        LocalTime updatedEndTime = LocalTime.of(18, 0);
+        LocalDate updatedStartDate = LocalDate.of(3024, 7, 15);
+        LocalTime updatedStartTime = LocalTime.of(12, 0);
+        LocalDate updatedEndDate = LocalDate.of(3024, 7, 18);
+        LocalTime updatedEndTime = LocalTime.of(20, 0);
         String updatedLocation = "서울 여의도 국회 1층";
         String updatedOrganizer = "뽀로로";
         String updatedType = "산업";
@@ -234,7 +234,7 @@ class ConferenceServiceImplTest {
                             //given
                             ConferenceUpdateRequest request = new ConferenceUpdateRequest(
                                     null, null, null, null, null, null,
-                                    null, null,updatedType
+                                    null, null, updatedType
                             );
                             //when
                             ConferenceUpdateResponse result = conferenceService.updateConference(identifier, conferenceId, request);
@@ -258,7 +258,7 @@ class ConferenceServiceImplTest {
                                             updatedEndTime,
                                             updatedLocation,
                                             savedConference.getPosition(),
-                                            savedConference.getType()
+                                            updatedType
                                     );
                         }
                 )
