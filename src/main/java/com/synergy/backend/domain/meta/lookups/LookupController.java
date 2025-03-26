@@ -30,13 +30,13 @@ public class LookupController {
 	public List<LookupResponseDto> getLookupData(@RequestParam LookupType type) {
 		return switch (type) {
 			case INTERESTS -> interestRepository.findAll().stream()
-				.map(interest -> new LookupResponseDto(interest.getCode(), interest.getName()))
+				.map(interest -> new LookupResponseDto(interest.getId(), interest.getCode(), interest.getName()))
 				.toList();
 			case JOB_GROUPS -> jobGroupRepository.findAll().stream()
-				.map(group -> new LookupResponseDto(group.getCode(), group.getName()))
+				.map(group -> new LookupResponseDto(group.getId(), group.getCode(), group.getName()))
 				.toList();
 			case JOB_POSITIONS -> jobPositionRepository.findAll().stream()
-				.map(position -> new LookupResponseDto(position.getCode(), position.getName()))
+				.map(position -> new LookupResponseDto(position.getId(), position.getCode(), position.getName()))
 				.toList();
 		};
 	}
