@@ -56,7 +56,9 @@ public class SessionServiceImpl implements SessionService {
 
         Session session = Session.of(reqDto, secretCode, conference);
         admin.addSession(session);
-        byte[] qrCode = qrService.generateQRCode(reqDto.domainAddress(), session.getId(), secretCode);
+
+        String url = "/session/" + session.getId();
+        byte[] qrCode = qrService.generateQRCode(url, secretCode);
         session.addQRCode(fileS3Util.uploadQRCode(qrCode, session.getTitle()));
         session.addImage(fileS3Util.uploadFile(multipartFile));
 
@@ -86,7 +88,7 @@ public class SessionServiceImpl implements SessionService {
             List<QuestionResDto> questions = getQuestions(conferenceId, sessionId);
             return SessionDetailResDto.from(session, questions);
         } catch (Exception e) {
-            return SessionDetailResDto.from(session, null);
+            return SessionDetailResDto.from(session, List.of());
         }
     }
 
@@ -106,6 +108,8 @@ public class SessionServiceImpl implements SessionService {
         Session session = ifSessionExists(sessionId);
         Admin admin = findIfAdminExists(identifier);
         verifyAuthenticationRole(session, admin);
+
+        session.removeAllAdmins();
 
         sessionRepository.delete(session);
     }
