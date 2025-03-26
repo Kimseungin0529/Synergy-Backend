@@ -1,5 +1,6 @@
 package com.synergy.backend.domain.booth.controller;
 
+import com.google.zxing.WriterException;
 import com.synergy.backend.domain.booth.dto.BoothRequestDto;
 import com.synergy.backend.domain.booth.dto.BoothResponseDto;
 import com.synergy.backend.domain.booth.service.BoothService;
@@ -10,11 +11,13 @@ import com.synergy.backend.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @Tag(name = "Booth Controller", description = "부스 관련 API")
 @RestController
@@ -42,7 +45,7 @@ public class BoothController {
     public ApiResponse<Page<BoothResponseDto>> getAllBooths(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long conferenceId,
-            Pageable pageable
+            @ParameterObject Pageable pageable
     ) {
         return ApiResponse.ok(boothService.getAllBooths(conferenceId, pageable), 200);
     }
@@ -54,9 +57,10 @@ public class BoothController {
     public ApiResponse<BoothResponseDto> createBooth(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long conferenceId,
-            @RequestBody BoothRequestDto request
-    ) {
-        return ApiResponse.ok(boothService.createBooth(conferenceId, request), 201);
+            @RequestPart BoothRequestDto request,
+            @RequestPart MultipartFile imageFile
+    ) throws WriterException {
+        return ApiResponse.ok(boothService.createBooth(conferenceId, request, imageFile), 201);
     }
 
 	@SwaggerSummaryRole({RoleType.ADMIN})
@@ -67,9 +71,10 @@ public class BoothController {
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long conferenceId,
             @PathVariable Long id,
-            @RequestBody BoothRequestDto request
+            @RequestPart BoothRequestDto request,
+            @RequestPart(required = false) MultipartFile imageFile
     ) {
-        return ApiResponse.ok(boothService.updateBooth(conferenceId, id, request), 200);
+        return ApiResponse.ok(boothService.updateBooth(conferenceId, id, request, imageFile), 200);
     }
 
 	@SwaggerSummaryRole({RoleType.ADMIN})

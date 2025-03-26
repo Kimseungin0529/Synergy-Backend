@@ -7,9 +7,10 @@ public record BoothResponseDto(
         String companyName,
         String companyType,
         String boothLocation,
-        Integer boothNumber,
+        String boothNumber,
         String boothDescription,
-        byte[] image
+        String qrUrl,
+        String imageUrl
 ) {
     public BoothResponseDto(Booth booth) {
         this(
@@ -19,7 +20,8 @@ public record BoothResponseDto(
                 booth.getBoothLocation(),
                 booth.getBoothNumber(),
                 booth.getBoothDescription(),
-                booth.getImage()
+                booth.getQrUrl(),
+                booth.getImageUrl()
         );
     }
 }
