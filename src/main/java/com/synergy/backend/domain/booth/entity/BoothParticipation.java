@@ -2,6 +2,7 @@ package com.synergy.backend.domain.booth.entity;
 
 import com.synergy.backend.domain.member.entity.Attendee;
 import jakarta.persistence.*;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -11,7 +12,7 @@ import static lombok.AccessLevel.PROTECTED;
 @Entity
 @Getter
 @NoArgsConstructor(access = PROTECTED)
-public class AttendeeBooth {
+public class BoothParticipation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,8 +27,16 @@ public class AttendeeBooth {
     @JoinColumn(name = "attendee_id", nullable = false)
     private Attendee attendee;
 
-    public AttendeeBooth(Booth booth, Attendee attendee) {
+    @Builder
+    private BoothParticipation(Booth booth, Attendee attendee) {
         this.booth = booth;
         this.attendee = attendee;
+    }
+
+    public static BoothParticipation of(Booth booth, Attendee attendee) {
+        return BoothParticipation.builder()
+                .booth(booth)
+                .attendee(attendee)
+                .build();
     }
 }

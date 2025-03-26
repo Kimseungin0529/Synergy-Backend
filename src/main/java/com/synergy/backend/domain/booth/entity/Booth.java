@@ -25,17 +25,23 @@ public class Booth {
 	@Column(name = "booth_id")
 	private Long id;
 
-	@Column(nullable = false, length = 100)
-	private String name;
+	@Column(nullable = false, length = 10)
+	private String companyName;
 
-	@Column(nullable = false, length = 100)
-	private String company;
+	@Column(nullable = false, length = 20)
+	private String companyType;
 
 	@Column(nullable = false)
-	private String location;
+	private String boothLocation;
 
-	@Column(nullable = false, length = 1000)
-	private String description;
+	@Column(nullable = false)
+	private Integer boothNumber;
+
+	@Column(nullable = false, length = 150)
+	private String boothDescription;
+
+	@Lob
+	private byte[] image;	// 수정. 바이트는 안됨 정곤님꺼 참고
 
 	@ManyToOne(fetch = LAZY)
 	@JoinColumn(name = "conference_id")
@@ -44,15 +50,18 @@ public class Booth {
 	@ManyToMany(mappedBy = "booths")
 	private Set<Admin> admins = new HashSet<>();
 
-    @Lob
-	private byte[] qrCode;
+	@Lob
+	private byte[] qrCode;	// 수정. 바이트는 안됨 정곤님꺼 참고
 
-	public Booth(String name, String company, String location, String description, Conference conference) {
-		this.name = name;
-		this.company = company;
-		this.location = location;
-		this.description = description;
+	public Booth(String companyName, String companyType, String boothLocation, Integer boothNumber,
+				 String boothDescription, Conference conference, byte[] image) {
+		this.companyName = companyName;
+		this.companyType = companyType;
+		this.boothLocation = boothLocation;
+		this.boothNumber = boothNumber;
+		this.boothDescription = boothDescription;
 		this.conference = conference;
+		this.image = image;
 	}
 
 	public void addAdmin(Admin admin) {
@@ -60,10 +69,13 @@ public class Booth {
 		admin.getBooths().add(this);
 	}
 
-	public void updateInfo(String name, String company, String location, String description) {
-		this.name = name;
-		this.company = company;
-		this.location = location;
-		this.description = description;
+	public void updateInfo(String companyName, String companyType, String boothLocation, Integer boothNumber,
+						   String boothDescription, byte[] image) {
+		this.companyName = companyName;
+		this.companyType = companyType;
+		this.boothLocation = boothLocation;
+		this.boothNumber = boothNumber;
+		this.boothDescription = boothDescription;
+		this.image = image;
 	}
 }

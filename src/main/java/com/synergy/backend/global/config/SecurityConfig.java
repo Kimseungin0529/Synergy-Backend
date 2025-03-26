@@ -46,9 +46,8 @@ public class SecurityConfig {
 				.requestMatchers("/swagger-ui/**", "/v3/api-docs/**", "/swagger-ui.html").permitAll()
 
 				// 컨퍼런스 관리자
-				.requestMatchers("/api/v1/conference/**", "/api/v1/admin/**",
-					"/api/v1/dashboard/**")
-				.hasRole("ADMIN")
+				.requestMatchers(HttpMethod.GET, "/api/v1/conference/**").hasAnyRole("ADMIN", "ATTENDEE", "RECRUITER")
+				.requestMatchers("/api/v1/conference/**").hasRole("ADMIN")
 
 				// 참가자
 				.requestMatchers("/api/v1/attendee/onboarding/**", "/api/v1/attendee/my",
@@ -63,6 +62,8 @@ public class SecurityConfig {
 				.requestMatchers(HttpMethod.GET, "/api/v1/conference/**").permitAll()
 				.requestMatchers("/api/v1/auth/**").permitAll()
 				.requestMatchers("/api/v1/attendee/**").authenticated()
+                .requestMatchers("/api/v1/dashboard/**").permitAll()
+                .anyRequest().authenticated()
 			)
 			.addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
