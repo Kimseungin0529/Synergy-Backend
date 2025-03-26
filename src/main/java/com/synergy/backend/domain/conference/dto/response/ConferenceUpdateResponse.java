@@ -4,26 +4,42 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.entity.TimePeriod;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 
 public record ConferenceUpdateResponse(
         String name,
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime startDate,
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
-        LocalDateTime endDate,
-        String location,
         String organizer,
+
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDate startDate,
+
+        @JsonFormat(pattern = "HH:mm")
+        LocalTime startTime,
+
+        @JsonFormat(pattern = "yyyy-MM-dd")
+        LocalDate endDate,
+
+        @JsonFormat(pattern = "HH:mm")
+        LocalTime endTime,
+
+        String location,
+        String position,
         String type
 ) {
     public static ConferenceUpdateResponse from(Conference conference) {
         TimePeriod period = conference.getPeriod();
         return new ConferenceUpdateResponse(conference.getName(),
-                period.getStartDateTime(),
-                period.getEndDateTime(),
-                conference.getLocation(),
                 conference.getOrganizer(),
+                period.getStartDate(),
+                period.getStartTime(),
+                period.getEndDate(),
+                period.getEndTime(),
+                conference.getLocation(),
+                conference.getPosition(),
                 conference.getType());
     }
+
 
 }

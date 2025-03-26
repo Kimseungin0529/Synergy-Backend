@@ -27,7 +27,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "Conference Controller", description = "컨퍼런스 관련 API")
-@RestController
+@RestController @Slf4j
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/conference")
 public class ConferenceController {

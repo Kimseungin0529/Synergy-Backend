@@ -20,20 +20,20 @@ public record ConferenceCreateRequest(
 
         @NotNull(message = "시작 날짜는 필수입니다.")
         @Future(message = "시작 날짜는 미래여야 합니다.")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate startDate,
 
         @NotNull(message = "시작 시간은 필수입니다.")
-        @JsonFormat(pattern = "HH:mm")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
         LocalTime startTime,
 
         @NotNull(message = "종료 날짜는 필수입니다.")
         @Future(message = "종료 날짜는 미래여야 합니다.")
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd'T'HH:mm:ss")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate endDate,
 
         @NotNull(message = "종료 시간은 필수입니다.")
-        @JsonFormat(pattern = "HH:mm")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "HH:mm")
         LocalTime endTime,
 
         @NotBlank(message = "컨퍼런스 장소 정보는 필수입니다. 공백 이하는 불가능합니다.")
