@@ -60,7 +60,9 @@ public class SessionServiceImpl implements SessionService {
         String url = "/session/" + session.getId();
         byte[] qrCode = qrService.generateQRCode(url, secretCode);
         session.addQRCode(fileS3Util.uploadQRCode(qrCode, session.getTitle()));
-        session.addImage(fileS3Util.uploadFile(multipartFile));
+        if(multipartFile != null) {
+            session.addImage(fileS3Util.uploadFile(multipartFile));
+        }
 
         sessionRepository.save(session);
     }
@@ -99,7 +101,10 @@ public class SessionServiceImpl implements SessionService {
         Admin admin = findIfAdminExists(identifier);
         verifyAuthenticationRole(session, admin);
 
-        FileInformationDto fileInfo = fileS3Util.uploadFile(multipartFile);
+        FileInformationDto fileInfo = new FileInformationDto(null, null);
+        if(multipartFile != null) {
+            fileInfo = fileS3Util.uploadFile(multipartFile);
+        }
         session.updateSession(reqDto, fileInfo);
     }
 

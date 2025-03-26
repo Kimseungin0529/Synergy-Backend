@@ -71,10 +71,8 @@ public class Session {
 	@Column(nullable = false)
 	private String qrUrl;
 
-	@Column(nullable = false)
 	private String imageKey;
 
-	@Column(nullable = false)
 	private String imageUrl;
 
 	@OneToMany(mappedBy = "session", fetch = LAZY, cascade = CascadeType.ALL)
