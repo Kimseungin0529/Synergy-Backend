@@ -21,23 +21,23 @@ public class SessionVerifyController {
 
     @PreAuthorize("hasAnyRole('ATTENDEE')")
     @SwaggerSummaryRole({RoleType.ATTENDEE})
-    @PostMapping("/session")
+    @PostMapping("/session/{sessionId}")
     public ApiResponse<SessionResDto> verifyQRCode(@AuthenticationPrincipal CustomUserDetails user,
+                                                   @PathVariable(name = "sessionId") Long sessionId,
                                                    @RequestParam(name = "qrCode") String qrCode){
-        SessionResDto sessionResDto = sessionParticipateService.verifyQRCode(user.getIdentifier(), qrCode);
+        SessionResDto sessionResDto = sessionParticipateService.verifyQRCode(user.getIdentifier(), sessionId, qrCode);
 
         return ApiResponse.ok(sessionResDto, 200);
     }
 
     @PreAuthorize("hasAnyRole('ATTENDEE')")
     @SwaggerSummaryRole({RoleType.ATTENDEE})
-    @PostMapping("/{sessionId}/participation")
+    @PostMapping("/session/{sessionId}/participation")
     public ApiResponse createQuestion(@AuthenticationPrincipal CustomUserDetails user,
-                                      @PathVariable(name = "conferenceId") Long conferenceId,
                                       @PathVariable(name = "sessionId") Long sessionId,
                                       @RequestBody QuestionReqDto reqDto) {
 
-        sessionParticipateService.createQuestion(user.getIdentifier(), conferenceId, sessionId, reqDto);
+        sessionParticipateService.createQuestion(user.getIdentifier(), sessionId, reqDto);
         return ApiResponse.ok("Question created successfully!", 200);
     }
 }
