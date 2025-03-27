@@ -6,22 +6,20 @@ public record BoothResponseDto(
         Long id,
         String companyName,
         String companyType,
-        String boothLocation,
-        String boothNumber,
-        String boothDescription,
-        String qrUrl,
-        String imageUrl
+        String location,
+        String detailLocation,
+        String image
 ) {
-    public BoothResponseDto(Booth booth) {
-        this(
+
+    public static BoothResponseDto of(Booth booth) {
+        return new BoothResponseDto(
                 booth.getId(),
                 booth.getCompanyName(),
-                booth.getCompanyType(),
+                booth.getBoothNumber(),
                 booth.getBoothLocation(),
                 booth.getBoothNumber(),
-                booth.getBoothDescription(),
-                booth.getQrUrl(),
                 booth.getImageUrl()
         );
     }
+
 }

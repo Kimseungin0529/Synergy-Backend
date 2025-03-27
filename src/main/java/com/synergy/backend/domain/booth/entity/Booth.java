@@ -3,12 +3,14 @@ package com.synergy.backend.domain.booth.entity;
 import static jakarta.persistence.FetchType.*;
 import static lombok.AccessLevel.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.member.entity.Admin;
 
+import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -45,6 +47,9 @@ public class Booth {
 	private String boothNumber;
 
 	@Column(nullable = false)
+	private LocalDate progressDate;
+
+	@Column(nullable = false)
 	private String boothDescription;
 
 	@ManyToOne(fetch = LAZY)
@@ -57,16 +62,16 @@ public class Booth {
 	@Column(nullable = false, unique = true)
 	private String secretCode;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private String qrKey;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private String qrUrl;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private String imageKey;
 
-	@Column(nullable = true)
+	@Column(nullable = false)
 	private String imageUrl;
 
 	public void addAdmin(Admin admin) {
@@ -80,20 +85,36 @@ public class Booth {
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
 		this.boothNumber = boothNumber;
+		this.progressDate = progressDate;
 		this.boothDescription = boothDescription;
 		this.secretCode = secretCode;
 		this.conference = conference;
 	}
 
 	public void updateInfo(String companyName, String companyType, String boothLocation, String boothNumber,
-						   String boothDescription, String imageKey, String imageUrl) {
+			   	LocalDate progressDate, String boothDescription, String imageKey, String imageUrl) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
 		this.boothNumber = boothNumber;
+		this.progressDate = progressDate;
 		this.boothDescription = boothDescription;
 		this.imageKey = imageKey;
 		this.imageUrl = imageUrl;
+	}
+
+	public void  updateSecretCode(String code){
+		this.secretCode = code;
+	}
+
+	public void updateQr(FileInformationDto fileInformation) {
+		this.qrKey = fileInformation.fileKey();
+		this.qrUrl = fileInformation.accessUrl();
+	}
+
+	public void updateImage(FileInformationDto fileInformation){
+		this.imageKey = fileInformation.fileKey();
+		this.imageUrl = fileInformation.accessUrl();
 	}
 }
 
