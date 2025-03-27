@@ -37,6 +37,7 @@ public class BoothController {
             @PathVariable Long conferenceId,
             @PathVariable Long id
     ) {
+
         return ApiResponse.ok(boothService.getBoothById(conferenceId, id), 200);
     }
 
@@ -57,11 +58,13 @@ public class BoothController {
     @PostMapping
     public ApiResponse<BoothDetailResponseDto> createBooth(
             @AuthenticationPrincipal CustomUserDetails user,
+            @RequestHeader(value = "Origin") String router,
             @PathVariable Long conferenceId,
-            @RequestPart BoothRequestDto request,
+            @RequestPart BoothRequestDto requestDto,
             @RequestPart MultipartFile imageFile
     ) throws WriterException {
-        return ApiResponse.ok(boothService.createBooth(conferenceId, request, imageFile), 201);
+
+        return ApiResponse.ok(boothService.createBooth(conferenceId, router, requestDto, imageFile), 201);
     }
 
 	@SwaggerSummaryRole({RoleType.ADMIN})

@@ -23,11 +23,12 @@ public class BoothTest {
         String boothNumber = "101C";
         LocalDate progressDate = LocalDate.of(3024, 4, 15 );
         String boothDescription = "설명A";
+        String secretCode = "secretCode";
         String imageKey = "image-key";
         String imageUrl = "image-url";
 
         // when
-        Booth booth = new Booth(companyName, companyType, boothLocation, boothNumber, progressDate, boothDescription, conference);
+        Booth booth = new Booth(companyName, companyType, boothLocation, boothNumber, progressDate, secretCode, boothDescription, conference);
         booth.updateImage(new FileInformationDto(imageKey, imageUrl));
 
         // then
@@ -48,7 +49,7 @@ public class BoothTest {
         // given
         Conference conference = mock(Conference.class);
         LocalDate progressDate = LocalDate.of(3011, 2, 5);
-        Booth booth = new Booth("부스A", "회사A", "위치A", "101C", progressDate, "설명A", conference);
+        Booth booth = new Booth("부스A", "회사A", "위치A", "101C", progressDate, "secret", "설명A", conference);
 
         // when
         booth.updateInfo("부스B", "회사B", "위치B", "202C", null,"설명B", "new-image-key", "new-image-url");

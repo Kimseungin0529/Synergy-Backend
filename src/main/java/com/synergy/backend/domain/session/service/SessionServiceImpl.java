@@ -26,6 +26,7 @@ import com.synergy.backend.global.exception.AuthorizedException;
 import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import com.synergy.backend.global.util.file.util.FileS3Util;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -33,6 +34,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.util.List;
 import java.util.UUID;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SessionServiceImpl implements SessionService {
@@ -47,8 +49,9 @@ public class SessionServiceImpl implements SessionService {
 
     private final QrService qrService;
 
+    @Transactional
     @Override
-    public void createSession(String identifier, Long conferenceId, SessionReqDto reqDto, MultipartFile multipartFile) throws WriterException {
+    public void createSession(String identifier, String router, Long conferenceId, SessionReqDto reqDto, MultipartFile multipartFile) throws WriterException {
         Admin admin = findIfAdminExists(identifier);
         Conference conference = ifConferenceExists(conferenceId);
 
@@ -57,14 +60,16 @@ public class SessionServiceImpl implements SessionService {
         Session session = Session.of(reqDto, secretCode, conference);
         admin.addSession(session);
 
-        String url = "/session/" + session.getId();
+        sessionRepository.save(session);
+
+        String url = router + "session/" + session.getId();
         byte[] qrCode = qrService.generateQRCode(url, secretCode);
+        log.info("sessionId: {}", session.getId());
+        log.info("qrCode: {}", qrCode);
         session.addQRCode(fileS3Util.uploadQRCode(qrCode, session.getTitle()));
         if(multipartFile != null) {
             session.addImage(fileS3Util.uploadFile(multipartFile));
         }
-
-        sessionRepository.save(session);
     }
 
     @Transactional(readOnly = true)

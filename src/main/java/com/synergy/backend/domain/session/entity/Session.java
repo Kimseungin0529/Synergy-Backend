@@ -65,10 +65,10 @@ public class Session {
 	@Column(nullable = false)
 	private String secretCode;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String qrKey;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String qrUrl;
 
 	private String imageKey;
