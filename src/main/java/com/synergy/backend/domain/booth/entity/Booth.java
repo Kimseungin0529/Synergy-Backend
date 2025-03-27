@@ -17,12 +17,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
@@ -81,18 +79,19 @@ public class Booth {
 	}
 
 	public Booth(String companyName, String companyType, String boothLocation, String boothNumber,
-				 LocalDate progressDate, String boothDescription, Conference conference) {
+		LocalDate progressDate, String secretCode, String boothDescription, Conference conference) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
 		this.boothNumber = boothNumber;
 		this.progressDate = progressDate;
 		this.boothDescription = boothDescription;
+		this.secretCode = secretCode;
 		this.conference = conference;
 	}
 
 	public void updateInfo(String companyName, String companyType, String boothLocation, String boothNumber,
-			   	LocalDate progressDate, String boothDescription, String imageKey, String imageUrl) {
+		LocalDate progressDate, String boothDescription, String imageKey, String imageUrl) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
@@ -101,10 +100,6 @@ public class Booth {
 		this.boothDescription = boothDescription;
 		this.imageKey = imageKey;
 		this.imageUrl = imageUrl;
-	}
-
-	public void  updateSecretCode(String code){
-		this.secretCode = code;
 	}
 
 	public void updateQr(FileInformationDto fileInformation) {
@@ -117,4 +112,3 @@ public class Booth {
 		this.imageUrl = fileInformation.accessUrl();
 	}
 }
-
