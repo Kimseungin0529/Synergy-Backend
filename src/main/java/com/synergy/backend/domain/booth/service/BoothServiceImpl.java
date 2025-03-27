@@ -49,16 +49,11 @@ public class BoothServiceImpl implements BoothService {
         String secretCode = UUID.randomUUID().toString();
         String url = "/booth/" + booth.getId();
         byte[] qrCode = qrService.generateQRCode(url, secretCode);
-        //booth.setSecretCode(secretCode);
         booth.updateSecretCode(secretCode);
         FileInformationDto qrInfo = fileS3Util.uploadQRCode(qrCode, booth.getCompanyName());
-        //booth.setQrKey(qrInfo.fileKey());
-        //booth.setQrUrl(qrInfo.accessUrl());
         booth.updateQr(qrInfo);
 
         FileInformationDto imageInfo = fileS3Util.uploadFile(imageFile);
-        //booth.setImageKey(imageInfo.fileKey());
-        //booth.setImageUrl(imageInfo.accessUrl());
         booth.updateImage(imageInfo);
         boothRepository.save(booth);
         return new BoothDetailResponseDto(booth);
