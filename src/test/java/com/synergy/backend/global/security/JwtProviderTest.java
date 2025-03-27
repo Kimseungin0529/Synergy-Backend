@@ -19,6 +19,7 @@ import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.jwt.JwtProperties;
 import com.synergy.backend.global.jwt.JwtProvider;
+import com.synergy.backend.global.token.exception.InvalidAccessTokenException;
 
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -88,13 +89,13 @@ class JwtProviderTest {
 	}
 
 	@Test
-	@DisplayName("잘못된 JWT는 예외를 발생시킨다.")
+	@DisplayName("잘못된 JWT는 InvalidAccessTokenException 예외를 발생시킨다.")
 	void validateToken_InvalidAccessToken_ThrowsException() {
 		// Given
 		String invalidToken = "this.is.a.fake.token";
 
 		// When & Then
-		assertThrows(io.jsonwebtoken.JwtException.class, () -> jwtProvider.validateAccessToken(invalidToken));
+		assertThrows(InvalidAccessTokenException.class, () -> jwtProvider.validateAccessToken(invalidToken));
 	}
 
 	@Test
@@ -119,7 +120,7 @@ class JwtProviderTest {
 	}
 
 	@Test
-	@DisplayName("RefreshToken을 AccessToken으로 사용 시 JwtException 발생")
+	@DisplayName("RefreshToken을 AccessToken으로 사용 시 InvalidAccessTokenException 발생")
 	void validateAccessToken_UsingRefreshAsAccess_ThrowsException() {
 		// Given
 		Attendee attendee = Attendee.of("attendee@example.com", "hashedPassword", "user", "phone");
@@ -136,6 +137,6 @@ class JwtProviderTest {
 			.compact();
 
 		// When & Then
-		assertThrows(io.jsonwebtoken.JwtException.class, () -> jwtProvider.validateAccessToken(refreshToken));
+		assertThrows(InvalidAccessTokenException.class, () -> jwtProvider.validateAccessToken(refreshToken));
 	}
 }
