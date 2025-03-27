@@ -23,11 +23,10 @@ public class BoothDashboardController {
 	private final BoothParticipationService boothParticipationService;
 
 	@SwaggerSummaryRole({RoleType.ADMIN})
-	@GetMapping("/booths/{boothId}/participation/interest")
+	@GetMapping("/booths/participation/interest")
 	public ApiResponse<List<BoothParticipationResponseDto>> getParticipationCountByInterest(
-		@PathVariable Long conferenceId,
-		@PathVariable Long boothId) {
-		List<BoothParticipationResponseDto> result = boothParticipationService.getParticipationCountByInterest(boothId);
+		@PathVariable Long conferenceId) {
+		List<BoothParticipationResponseDto> result = boothParticipationService.getParticipationCountByInterest(conferenceId);
 		return ApiResponse.ok(result, 200);
 	}
 }

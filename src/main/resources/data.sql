@@ -256,6 +256,14 @@ VALUES
     (6, 4);
 
 
+INSERT INTO booth_participation (booth_id, attendee_id) VALUES
+    (1, 1),  -- 김지원
+    (1, 2),  -- 최영호
+    (1, 3),  -- 정서연
+    (1, 4),  -- 박시형
+    (1, 5),  -- 이다영
+    (1, 6);  -- 김다혜
+
 -- 포인트 적립 내역
 INSERT INTO point (attendee_id, created_time, point_type, booth_id, recruiter_id, session_id)
 VALUES

@@ -66,7 +66,7 @@ INSERT INTO recruiter (recruiter_auth_code, company, responsibility, name) VALUE
 INSERT INTO recruiter (recruiter_auth_code, company, responsibility, name) VALUES ( 'RC67890', 'OpenStack Korea', 'HR팀 매니저', '김주은');
 
 -- 참가자 기본 데이터
-INSERT INTO attendee (email, password, name, phone, total_points, membership_level_type, conference_id)
+INSERT INTO attendee (email, password, name, phone, total_points, membership_level_type)
 VALUES
     ('jiwon.kim@example.com', '$2a$10$aO4mzbreIOHJiJDgPaUtG.BS81l7i92I2.D2qkwvM5hvUB8BGBsk2', '김지원', '01012345678', 250, 'BRONZE', 1),
     ('youngho.choi@example.com', '$2a$10$hashedpassword2', '최영호', '01056781234', 1200, 'GOLD', 1),
@@ -239,3 +239,16 @@ VALUES
     (4, 3),
     (5, 4),
     (6, 0);
+
+
+INSERT INTO booth_participation (booth_id, attendee_id) VALUES
+        (1, 1),  -- 김지원
+        (1, 2),  -- 최영호
+        (1, 3),  -- 정서연
+        (1, 4),  -- 박시형
+        (1, 5),  -- 이다영
+        (1, 6);  -- 김다혜
+
+
+
+
