@@ -2,6 +2,7 @@ package com.synergy.backend.domain.booth.controller;
 
 import com.google.zxing.WriterException;
 import com.synergy.backend.domain.booth.dto.BoothRequestDto;
+import com.synergy.backend.domain.booth.dto.BoothDetailResponseDto;
 import com.synergy.backend.domain.booth.dto.BoothResponseDto;
 import com.synergy.backend.domain.booth.service.BoothService;
 import com.synergy.backend.domain.member.entity.RoleType;
@@ -31,7 +32,7 @@ public class BoothController {
 	@PreAuthorize("hasAnyRole('ADMIN', 'ATTENDEE', 'RECRUITER')")
     @Operation(summary = "부스 단건 조회", description = "ID를 통해 특정 부스를 조회합니다.")
     @GetMapping("/{id}")
-    public ApiResponse<BoothResponseDto> getBoothById(
+    public ApiResponse<BoothDetailResponseDto> getBoothById(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long conferenceId,
             @PathVariable Long id
@@ -54,7 +55,7 @@ public class BoothController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "부스 생성", description = "해당 컨퍼런스에 새로운 부스를 생성합니다.")
     @PostMapping
-    public ApiResponse<BoothResponseDto> createBooth(
+    public ApiResponse<BoothDetailResponseDto> createBooth(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long conferenceId,
             @RequestPart BoothRequestDto request,
@@ -67,7 +68,7 @@ public class BoothController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "부스 정보 수정", description = "부스 ID를 기준으로 부스 정보를 수정합니다.")
     @PutMapping("/{id}")
-    public ApiResponse<BoothResponseDto> updateBooth(
+    public ApiResponse<BoothDetailResponseDto> updateBooth(
             @AuthenticationPrincipal CustomUserDetails user,
             @PathVariable Long conferenceId,
             @PathVariable Long id,
