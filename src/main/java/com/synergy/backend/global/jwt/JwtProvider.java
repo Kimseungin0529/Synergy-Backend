@@ -57,6 +57,26 @@ public class JwtProvider {
 		}
 	}
 
+	public boolean validateRefreshToken(String token) {
+		try {
+			Claims claims = Jwts.parserBuilder()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+
+			String type = claims.get("type", String.class);
+			if (!"refresh".equals(type)) {
+				throw new JwtException("RefreshToken이 아님");
+			}
+			return true;
+		} catch (ExpiredJwtException e) {
+			throw e;
+		} catch (JwtException | IllegalArgumentException e) {
+			throw new JwtException("유효하지 않은 RefreshToken", e);
+		}
+	}
+
 	public String getIdentifierFromToken(String token) {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
 	}
