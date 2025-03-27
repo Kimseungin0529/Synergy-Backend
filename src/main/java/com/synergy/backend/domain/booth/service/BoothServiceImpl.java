@@ -2,6 +2,7 @@ package com.synergy.backend.domain.booth.service;
 
 import com.google.zxing.WriterException;
 import com.synergy.backend.domain.booth.dto.BoothRequestDto;
+import com.synergy.backend.domain.booth.dto.BoothDetailResponseDto;
 import com.synergy.backend.domain.booth.dto.BoothResponseDto;
 import com.synergy.backend.domain.booth.entity.Booth;
 import com.synergy.backend.domain.booth.exception.NotFoundBoothException;
@@ -32,7 +33,7 @@ public class BoothServiceImpl implements BoothService {
 
     @Transactional
     @Override
-    public BoothResponseDto createBooth(Long conferenceId, BoothRequestDto request, MultipartFile imageFile) throws WriterException {
+    public BoothDetailResponseDto createBooth(Long conferenceId, BoothRequestDto request, MultipartFile imageFile) throws WriterException {
         Conference conference = ifConferenceExists(conferenceId);
 
         Booth booth = new Booth(
@@ -60,29 +61,29 @@ public class BoothServiceImpl implements BoothService {
         //booth.setImageUrl(imageInfo.accessUrl());
         booth.updateImage(imageInfo);
         boothRepository.save(booth);
-        return new BoothResponseDto(booth);
+        return new BoothDetailResponseDto(booth);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<BoothResponseDto> getAllBooths(Long conferenceId, Pageable pageable) {
         return boothRepository.findAllByConferenceId(conferenceId, pageable)
-                .map(BoothResponseDto::new);
+                .map(BoothResponseDto::of);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public BoothResponseDto getBoothById(Long conferenceId, Long id) {
+    public BoothDetailResponseDto getBoothById(Long conferenceId, Long id) {
         Booth booth = ifBoothExists(id);
         if (!booth.getConference().getId().equals(conferenceId)) {
             throw new NotFoundBoothException();
         }
-        return new BoothResponseDto(booth);
+        return new BoothDetailResponseDto(booth);
     }
 
     @Transactional
     @Override
-    public BoothResponseDto updateBooth(Long conferenceId, Long id, BoothRequestDto request, MultipartFile imageFile) {
+    public BoothDetailResponseDto updateBooth(Long conferenceId, Long id, BoothRequestDto request, MultipartFile imageFile) {
         Booth booth = ifBoothExists(id);
         if (!booth.getConference().getId().equals(conferenceId)) {
             throw new NotFoundConference();
@@ -101,7 +102,7 @@ public class BoothServiceImpl implements BoothService {
                 imageInfo != null ? imageInfo.accessUrl() : booth.getImageUrl()
         );
 
-        return new BoothResponseDto(booth);
+        return new BoothDetailResponseDto(booth);
     }
 
     @Transactional
