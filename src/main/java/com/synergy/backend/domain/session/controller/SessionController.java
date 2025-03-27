@@ -2,17 +2,9 @@ package com.synergy.backend.domain.session.controller;
 
 import java.util.List;
 
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.google.zxing.WriterException;
@@ -43,12 +35,11 @@ public class SessionController {
 	@SwaggerSummaryRole({RoleType.ADMIN})
 	@PostMapping
 	public ApiResponse createSession(@AuthenticationPrincipal CustomUserDetails user,
-		HttpServletRequest request,
+		@RequestHeader(value = "Origin") String router,
 		@PathVariable(name = "conferenceId") Long conferenceId,
 		@RequestPart @Valid SessionReqDto sessionReqDto,
 		@RequestPart MultipartFile multipartFile) throws WriterException {
 
-		String router = request.getHeader("Origin");
 		sessionService.createSession(user.getIdentifier(), router, conferenceId, sessionReqDto, multipartFile);
 
 		return ApiResponse.ok("Session created successfully!", 200);

@@ -11,7 +11,6 @@ import com.synergy.backend.global.common.ApiResponse;
 import com.synergy.backend.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
@@ -59,13 +58,12 @@ public class BoothController {
     @PostMapping
     public ApiResponse<BoothDetailResponseDto> createBooth(
             @AuthenticationPrincipal CustomUserDetails user,
-            HttpServletRequest request,
+            @RequestHeader(value = "Origin") String router,
             @PathVariable Long conferenceId,
             @RequestPart BoothRequestDto requestDto,
             @RequestPart MultipartFile imageFile
     ) throws WriterException {
 
-        String router = request.getHeader("Origin");
         return ApiResponse.ok(boothService.createBooth(conferenceId, router, requestDto, imageFile), 201);
     }
 
