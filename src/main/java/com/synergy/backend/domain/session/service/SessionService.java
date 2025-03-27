@@ -13,7 +13,7 @@ import java.util.List;
 @Service
 public interface SessionService {
 
-    void createSession(String identifier, Long conferenceId, SessionReqDto reqDto, MultipartFile multipartFile) throws WriterException;
+    void createSession(String identifier, String router, Long conferenceId, SessionReqDto reqDto, MultipartFile multipartFile) throws WriterException;
 
     List<SessionResDto> getSessions(String identifier, Long conferenceId);
 
