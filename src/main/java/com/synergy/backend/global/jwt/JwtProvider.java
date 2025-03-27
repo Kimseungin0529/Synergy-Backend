@@ -11,6 +11,7 @@ import org.springframework.stereotype.Component;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.security.CustomUserDetails;
 
+import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -28,16 +29,26 @@ public class JwtProvider {
 	}
 
 	public String generateAccessToken(CustomUserDetails userDetails) {
-		return generateToken(userDetails, jwtProperties.accessTokenExpiration());
+		return generateToken(userDetails, jwtProperties.accessTokenExpiration(), "access");
 	}
 
 	public String generateRefreshToken(CustomUserDetails userDetails) {
-		return generateToken(userDetails, jwtProperties.refreshTokenExpiration());
+		return generateToken(userDetails, jwtProperties.refreshTokenExpiration(), "refresh");
 	}
 
 	public boolean validateToken(String token) {
 		try {
-			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+			Claims claims = Jwts.parserBuilder()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+
+			String type = claims.get("type", String.class);
+			if (!"access".equals(type)) {
+				throw new JwtException("AccessToken이 아님");
+			}
+
 			return true;
 		} catch (JwtException | IllegalArgumentException e) {
 			throw new JwtException("유효하지 않은 JWT", e);
@@ -71,12 +82,13 @@ public class JwtProvider {
 		}
 	}
 
-	private String generateToken(CustomUserDetails userDetails, Duration expiration) {
+	private String generateToken(CustomUserDetails userDetails, Duration expiration, String tokenType) {
 
 		return Jwts.builder()
 			.setSubject(userDetails.getIdentifier())
 			.claim("id", userDetails.getId())
 			.claim("role", userDetails.getRole().getAuthority())
+			.claim("type", tokenType)
 			.setIssuedAt(new Date())
 			.setExpiration(new Date(System.currentTimeMillis() + expiration.toMillis()))
 			.signWith(key, SignatureAlgorithm.HS256)
