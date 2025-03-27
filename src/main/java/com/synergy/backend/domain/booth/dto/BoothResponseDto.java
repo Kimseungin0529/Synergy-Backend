@@ -1,6 +1,9 @@
 package com.synergy.backend.domain.booth.dto;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.synergy.backend.domain.booth.entity.Booth;
+
+import java.time.LocalDate;
 
 public record BoothResponseDto(
         Long id,
@@ -8,6 +11,8 @@ public record BoothResponseDto(
         String companyType,
         String boothLocation,
         String boothNumber,
+        @JsonFormat(pattern = "MM-dd")
+        LocalDate progressDate,
         String boothDescription,
         String qrUrl,
         String imageUrl
@@ -19,6 +24,7 @@ public record BoothResponseDto(
                 booth.getCompanyType(),
                 booth.getBoothLocation(),
                 booth.getBoothNumber(),
+                booth.getProgressDate(),
                 booth.getBoothDescription(),
                 booth.getQrUrl(),
                 booth.getImageUrl()
