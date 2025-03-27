@@ -9,9 +9,9 @@ import java.util.List;
 
 public interface SessionParticipateService {
 
-    void createQuestion(String identifier, Long conferenceId, Long sessionId, QuestionReqDto reqDto);
+    void createQuestion(String identifier, Long sessionId, QuestionReqDto reqDto);
 
-    SessionResDto verifyQRCode(String identifier, String secretCode);
+    SessionResDto verifyQRCode(String identifier, Long sessionId, String secretCode);
 
     List<SessionParticipateRateResDto> getSessionParticipateRate(String identifier, Long conferenceId);
 

@@ -10,18 +10,20 @@ public record SessionDetailResDto(
         Long sessionId,
         String title,
         String speaker,
+        String speakerPosition,
         LocalDateTime startTime,
         LocalDateTime endTime,
         String description,
+        String imageUrl,
         List<QuestionResDto> questionResDto
 ) {
     public static SessionDetailResDto from(Session session, List<QuestionResDto> resDtos) {
-        return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(),
-                session.getStartTime(), session.getEndTime(), session.getDescription(), resDtos);
+        return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(), session.getSpeakerPosition(),
+                session.getStartTime(), session.getEndTime(), session.getDescription(), session.getImageUrl(), resDtos);
     }
 
     public static SessionDetailResDto withQRCodefrom(Session session, List<QuestionResDto> resDtos) {
-        return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(),
-                session.getStartTime(), session.getEndTime(), session.getDescription(), resDtos);
+        return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(), session.getSpeakerPosition(),
+                session.getStartTime(), session.getEndTime(), session.getDescription(), session.getImageUrl(), resDtos);
     }
 }

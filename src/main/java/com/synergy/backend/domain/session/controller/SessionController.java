@@ -10,7 +10,6 @@ import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -77,9 +76,9 @@ public class SessionController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "세션 수정", description = "관리자가 세션 정보를 수정합니다.")
 	@SwaggerSummaryRole({RoleType.ADMIN})
-	@PatchMapping
+	@PatchMapping("/{sessionId}")
 	public ApiResponse updateSession(@AuthenticationPrincipal CustomUserDetails user,
-		@RequestParam Long sessionId,
+		@PathVariable Long sessionId,
 		@RequestPart @Valid SessionReqDto sessionReqDto,
 		@RequestPart MultipartFile multipartFile) {
 		sessionService.updateSession(user.getIdentifier(), sessionId, sessionReqDto, multipartFile);
@@ -90,9 +89,9 @@ public class SessionController {
 	@PreAuthorize("hasRole('ADMIN')")
 	@Operation(summary = "세션 삭제", description = "관리자가 세션을 삭제합니다.")
 	@SwaggerSummaryRole({RoleType.ADMIN})
-	@DeleteMapping
+	@DeleteMapping("/{sessionId}")
 	public ApiResponse deleteSession(@AuthenticationPrincipal CustomUserDetails user,
-		@RequestParam Long sessionId) {
+		@PathVariable Long sessionId) {
 		sessionService.deleteSession(user.getIdentifier(), sessionId);
 
 		return ApiResponse.ok("Session deleted successfully!", 200);

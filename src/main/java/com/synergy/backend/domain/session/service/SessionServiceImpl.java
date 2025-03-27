@@ -56,9 +56,13 @@ public class SessionServiceImpl implements SessionService {
 
         Session session = Session.of(reqDto, secretCode, conference);
         admin.addSession(session);
-        byte[] qrCode = qrService.generateQRCode(reqDto.domainAddress(), session.getId(), secretCode);
+
+        String url = "/session/" + session.getId();
+        byte[] qrCode = qrService.generateQRCode(url, secretCode);
         session.addQRCode(fileS3Util.uploadQRCode(qrCode, session.getTitle()));
-        session.addImage(fileS3Util.uploadFile(multipartFile));
+        if(multipartFile != null) {
+            session.addImage(fileS3Util.uploadFile(multipartFile));
+        }
 
         sessionRepository.save(session);
     }
@@ -75,18 +79,18 @@ public class SessionServiceImpl implements SessionService {
     @Transactional(readOnly = true)
     @Override
     public SessionDetailResDto getSessionInfo(String identifier, RoleType role, Long conferenceId, Long sessionId) {
-        ifConferenceExists(conferenceId);
-        Session session = ifSessionExists(sessionId);
+        Conference conference = ifConferenceExists(conferenceId);
+        Session session = findByConferenceId(sessionId, conference);
 
         try {
             if(role.equals(RoleType.ATTENDEE)) {
                 Attendee attendee = findIfAttendeeExists(identifier);
                 ifAttendeeSessionExists(sessionId, attendee.getId());
             }
-            List<QuestionResDto> questions = getQuestions(conferenceId, sessionId);
+            List<QuestionResDto> questions = getQuestions(conference, sessionId);
             return SessionDetailResDto.from(session, questions);
         } catch (Exception e) {
-            return SessionDetailResDto.from(session, null);
+            return SessionDetailResDto.from(session, List.of());
         }
     }
 
@@ -97,7 +101,10 @@ public class SessionServiceImpl implements SessionService {
         Admin admin = findIfAdminExists(identifier);
         verifyAuthenticationRole(session, admin);
 
-        FileInformationDto fileInfo = fileS3Util.uploadFile(multipartFile);
+        FileInformationDto fileInfo = new FileInformationDto(null, null);
+        if(multipartFile != null) {
+            fileInfo = fileS3Util.uploadFile(multipartFile);
+        }
         session.updateSession(reqDto, fileInfo);
     }
 
@@ -107,10 +114,16 @@ public class SessionServiceImpl implements SessionService {
         Admin admin = findIfAdminExists(identifier);
         verifyAuthenticationRole(session, admin);
 
+        session.removeAllAdmins();
+
         sessionRepository.delete(session);
     }
 
     // --------------------------------- private method ----------------------------------------
+
+    private Session findByConferenceId(Long sessionId, Conference conference) {
+        return sessionRepository.findByIdAndConference(sessionId, conference).orElseThrow(NotFoundSession::new);
+    }
 
     private Admin findIfAdminExists(String identifier) {
         return adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
@@ -120,9 +133,8 @@ public class SessionServiceImpl implements SessionService {
         return attendeeRepository.findByEmail(identifier).orElseThrow(NotFoundUserException::new);
     }
 
-    private List<QuestionResDto> getQuestions(Long conferenceId, Long sessionId) {
-        ifConferenceExists(conferenceId);
-        ifSessionExists(sessionId);
+    private List<QuestionResDto> getQuestions(Conference conference, Long sessionId) {
+        findByConferenceId(sessionId, conference);
 
         return sessionQuestionRepository.findBySessionIdJoinAttendeeSession(sessionId);
     }

@@ -71,10 +71,8 @@ public class Session {
 	@Column(nullable = false)
 	private String qrUrl;
 
-	@Column(nullable = false)
 	private String imageKey;
 
-	@Column(nullable = false)
 	private String imageUrl;
 
 	@OneToMany(mappedBy = "session", fetch = LAZY, cascade = CascadeType.ALL)
@@ -132,5 +130,12 @@ public class Session {
 	public void addAdmin(Admin admin) {
 		this.admins.add(admin);
 		admin.getSessions().add(this);
+	}
+
+	public void removeAllAdmins() {
+		for (Admin admin : this.admins) {
+			admin.getSessions().remove(this); // 양방향 관계 제거
+		}
+		this.admins.clear();
 	}
 }

@@ -43,10 +43,10 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
 
     @Transactional
     @Override
-    public SessionResDto verifyQRCode(String identifier, String secretCode) {
+    public SessionResDto verifyQRCode(String identifier, Long sessionId, String secretCode) {
         Attendee currentMember = findIfAttendeeExists(identifier);
         secretCode = qrService.decodingSecretCode(secretCode);
-        Session session = findBySecretCode(secretCode);
+        Session session = findBySecretCode(sessionId, secretCode);
 
         AttendeeSession attendeeSession = AttendeeSession.of(currentMember, session);
         attendeeSessionRepository.save(attendeeSession);
@@ -55,12 +55,11 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
 
     @Transactional
     @Override
-    public void createQuestion(String identifier, Long conferenceId, Long sessionId, QuestionReqDto reqDto) {
+    public void createQuestion(String identifier, Long sessionId, QuestionReqDto reqDto) {
         Attendee attendee = findIfAttendeeExists(identifier);
-        ifConferenceExists(conferenceId);
         AttendeeSession attendeeSession = ifAttendeeSessionExists(sessionId, attendee.getId());
 
-        SessionQuestion question = SessionQuestion.of(reqDto.content());
+        SessionQuestion question = SessionQuestion.of(reqDto.content(), attendeeSession);
         sessionQuestionRepository.save(question);
 
         attendeeSession.addSessionQuestion(question);
@@ -104,8 +103,8 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
         return attendeeRepository.findByEmail(identifier).orElseThrow(NotFoundUserException::new);
     }
 
-    private Session findBySecretCode(String secretCode) {
-        return sessionRepository.findBySecretCode(secretCode).orElseThrow(NotFoundSession::new);
+    private Session findBySecretCode(Long sessionId, String secretCode) {
+        return sessionRepository.findByIdAndSecretCode(sessionId, secretCode).orElseThrow(NotFoundSession::new);
     }
 
     private AttendeeSession ifAttendeeSessionExists(Long sessionId, Long attendeeId) {
@@ -116,8 +115,4 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
     private Conference ifConferenceExists(Long conferenceId) {
         return conferenceRepository.findById(conferenceId).orElseThrow(NotFoundConference::new);
     }
-
-//    private Session ifSessionExists(Long sessionId) {
-//        return sessionRepository.findById(sessionId).orElseThrow(NotFoundSession::new);
-//    }
 }

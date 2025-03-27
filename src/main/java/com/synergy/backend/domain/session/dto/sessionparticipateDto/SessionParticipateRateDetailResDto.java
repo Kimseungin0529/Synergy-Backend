@@ -10,7 +10,7 @@ public record SessionParticipateRateDetailResDto (
         LocalDate progressDate,
         LocalDateTime startDate,
         LocalDateTime endDate,
-        String fileUrl,
-        List<SessionParticipateTechResDto> tech
+        String qrUrl,
+        List<SessionParticipateTechResDto> dataset
 ) {
 }

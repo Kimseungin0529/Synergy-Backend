@@ -146,7 +146,6 @@ public class AuthServiceImpl implements AuthService {
 		return TokenWithRefreshToken.of(newRefreshToken, TokenResponseDto.of(newAccessToken, userDetails.getUser()));
 	}
 
-	@Transactional(readOnly = true)
 	private Attendee findAttendeeByEmail(String email) {
 		return attendeeRepository.findByEmail(email).orElseThrow(NotFoundUserException::new);
 	}

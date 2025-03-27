@@ -11,7 +11,8 @@ public interface SessionRepository extends JpaRepository<Session, Long>, Session
 
     List<Session> findAllByConferenceOrderByStartTime(Conference conference);
 
-    Optional<Session> findBySecretCode(String secretCode);
+    Optional<Session> findByIdAndSecretCode(Long sessionId, String secretCode);
+    Optional<Session> findByIdAndConference(Long sessionId, Conference conference);
 
     boolean existsByIdAndAdmins_Id(Long sessionId, Long adminId);
 }

@@ -25,9 +25,10 @@ public class SessionQuestion {
         this.attendeeSession = attendeeSession;
     }
 
-    public static SessionQuestion of(String question) {
+    public static SessionQuestion of(String question, AttendeeSession attendeeSession) {
         return SessionQuestion.builder()
                 .question(question)
+                .attendeeSession(attendeeSession)
                 .build();
     }
 }

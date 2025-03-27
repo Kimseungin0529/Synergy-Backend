@@ -30,12 +30,12 @@ public class QrService {
     private static final int WIDTH = 200;
     private static final int HEIGHT = 200;
 
-    public byte[] generateQRCode(String url, Long id, String secretCode) throws WriterException {
+    public byte[] generateQRCode(String url, String secretCode) throws WriterException {
 
         try{
             secretCode = URLEncoder.encode(secretCode, StandardCharsets.UTF_8);
             BitMatrix encode = new MultiFormatWriter()
-                    .encode(convertToQueryString(url, id, secretCode), BarcodeFormat.QR_CODE, WIDTH, HEIGHT);
+                    .encode(convertToQueryString(url, secretCode), BarcodeFormat.QR_CODE, WIDTH, HEIGHT);
             ByteArrayOutputStream out = new ByteArrayOutputStream();
             MatrixToImageWriter.writeToStream(encode, "PNG", out);
 
@@ -53,7 +53,7 @@ public class QrService {
         }
     }
 
-    private String convertToQueryString(String url, Long id, String secretCode) {
-        return url + "/" + id + "?code=" + secretCode;
+    private String convertToQueryString(String url, String secretCode) {
+        return url + "?qrCode=" + secretCode;
     }
 }

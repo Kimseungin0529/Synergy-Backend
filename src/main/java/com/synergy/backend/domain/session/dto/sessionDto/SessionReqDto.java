@@ -27,8 +27,7 @@ public record SessionReqDto(
         @NotNull
         @Size(max = 100)
         String description,
-        Integer maximum,
-        String domainAddress) {
+        Integer maximum) {
 
 
 }
