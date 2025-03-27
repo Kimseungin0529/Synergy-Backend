@@ -12,6 +12,7 @@ import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.security.CustomUserDetails;
 
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
@@ -48,8 +49,9 @@ public class JwtProvider {
 			if (!"access".equals(type)) {
 				throw new JwtException("AccessToken이 아님");
 			}
-
 			return true;
+		} catch (ExpiredJwtException e) {
+			throw e;
 		} catch (JwtException | IllegalArgumentException e) {
 			throw new JwtException("유효하지 않은 JWT", e);
 		}

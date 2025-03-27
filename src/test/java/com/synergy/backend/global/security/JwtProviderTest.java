@@ -4,6 +4,7 @@ import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
 import java.time.Duration;
+import java.util.Date;
 
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -18,6 +19,10 @@ import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.jwt.JwtProperties;
 import com.synergy.backend.global.jwt.JwtProvider;
+
+import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.security.Keys;
 
 @ExtendWith(MockitoExtension.class)
 class JwtProviderTest {
@@ -90,5 +95,47 @@ class JwtProviderTest {
 
 		// When & Then
 		assertThrows(io.jsonwebtoken.JwtException.class, () -> jwtProvider.validateToken(invalidToken));
+	}
+
+	@Test
+	@DisplayName("만료된 JWT는 ExpiredJwtException을 발생시킨다.")
+	void validateToken_ExpiredToken_ThrowsException() {
+		// Given
+		Attendee attendee = Attendee.of("attendee@example.com", "hashedPassword", "user", "phone");
+		CustomUserDetails userDetails = new CustomUserDetails(attendee);
+		String expiredToken = Jwts.builder()
+			.setSubject(userDetails.getIdentifier())
+			.claim("id", userDetails.getId())
+			.claim("role", userDetails.getRole().getAuthority())
+			.claim("type", "access")
+			.setIssuedAt(new Date(System.currentTimeMillis() - 60000))
+			.setExpiration(new Date(System.currentTimeMillis() - 1000)) // already expired
+			.signWith(Keys.hmacShaKeyFor("your-secret-key-which-is-at-least-32-bytes-long!!!".getBytes()),
+				SignatureAlgorithm.HS256)
+			.compact();
+
+		// When & Then
+		assertThrows(io.jsonwebtoken.ExpiredJwtException.class, () -> jwtProvider.validateToken(expiredToken));
+	}
+
+	@Test
+	@DisplayName("RefreshToken을 AccessToken으로 사용 시 JwtException 발생")
+	void validateToken_UsingRefreshAsAccess_ThrowsException() {
+		// Given
+		Attendee attendee = Attendee.of("attendee@example.com", "hashedPassword", "user", "phone");
+		CustomUserDetails userDetails = new CustomUserDetails(attendee);
+		String refreshToken = Jwts.builder()
+			.setSubject(userDetails.getIdentifier())
+			.claim("id", userDetails.getId())
+			.claim("role", userDetails.getRole().getAuthority())
+			.claim("type", "refresh")
+			.setIssuedAt(new Date())
+			.setExpiration(new Date(System.currentTimeMillis() + 100000)) // valid time
+			.signWith(Keys.hmacShaKeyFor("your-secret-key-which-is-at-least-32-bytes-long!!!".getBytes()),
+				SignatureAlgorithm.HS256)
+			.compact();
+
+		// When & Then
+		assertThrows(io.jsonwebtoken.JwtException.class, () -> jwtProvider.validateToken(refreshToken));
 	}
 }
