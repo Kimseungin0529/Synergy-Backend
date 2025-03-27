@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 public interface BoothService {
     BoothDetailResponseDto getBoothById(Long conferenceId, Long id);
     Page<BoothResponseDto> getAllBooths(Long conferenceId, Pageable pageable);
-    BoothDetailResponseDto createBooth(Long conferenceId, BoothRequestDto request, MultipartFile imageFile) throws WriterException;
+    BoothDetailResponseDto createBooth(Long conferenceId, String router, BoothRequestDto request, MultipartFile imageFile) throws WriterException;
     BoothDetailResponseDto updateBooth(Long conferenceId, Long id, BoothRequestDto request, MultipartFile imageFile);
     void deleteBooth(Long conferenceId, Long id);
 }

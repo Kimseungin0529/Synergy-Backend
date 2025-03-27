@@ -21,11 +21,10 @@ import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
+//@Setter
 @NoArgsConstructor(access = PROTECTED)
 public class Booth {
 
@@ -80,7 +79,7 @@ public class Booth {
 	}
 
 	public Booth(String companyName, String companyType, String boothLocation, String boothNumber,
-				 String secretCode, String boothDescription, Conference conference) {
+				 LocalDate progressDate, String secretCode, String boothDescription, Conference conference) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
@@ -101,10 +100,6 @@ public class Booth {
 		this.boothDescription = boothDescription;
 		this.imageKey = imageKey;
 		this.imageUrl = imageUrl;
-	}
-
-	public void  updateSecretCode(String code){
-		this.secretCode = code;
 	}
 
 	public void updateQr(FileInformationDto fileInformation) {
