@@ -20,12 +20,10 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 
 import static java.time.format.DateTimeFormatter.ISO_LOCAL_DATE;
-import static java.time.format.DateTimeFormatter.ISO_LOCAL_TIME;
 import static org.mockito.BDDMockito.*;
 import static org.springframework.http.MediaType.APPLICATION_JSON;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
@@ -89,7 +87,7 @@ class ConferenceControllerTest {
 
         String identifier = "AUTH1";
         given(conferenceService.registerConference(eq(identifier), any(ConferenceCreateRequest.class))).willReturn(response);
-        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
@@ -128,7 +126,7 @@ class ConferenceControllerTest {
 
         );
 
-        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
@@ -164,7 +162,7 @@ class ConferenceControllerTest {
                 "IT"
         );
 
-        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
@@ -199,7 +197,7 @@ class ConferenceControllerTest {
                 "IT"
         );
 
-        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
@@ -235,7 +233,7 @@ class ConferenceControllerTest {
                 "IT"
         );
 
-        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
@@ -270,7 +268,7 @@ class ConferenceControllerTest {
                 "IT"
         );
 
-        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
@@ -306,7 +304,7 @@ class ConferenceControllerTest {
                 "   "
         );
 
-        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
@@ -354,7 +352,7 @@ class ConferenceControllerTest {
         );
         String identifier = "AUTH1";
         given(conferenceService.updateConference(eq(identifier), anyLong(), eq(request))).willReturn(response);
-        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
@@ -400,7 +398,7 @@ class ConferenceControllerTest {
                 "IT"
         );
 
-        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
@@ -438,7 +436,7 @@ class ConferenceControllerTest {
                 "IT"
         );
 
-        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));

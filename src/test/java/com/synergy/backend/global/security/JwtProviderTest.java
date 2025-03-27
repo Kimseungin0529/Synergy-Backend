@@ -89,17 +89,17 @@ class JwtProviderTest {
 
 	@Test
 	@DisplayName("잘못된 JWT는 예외를 발생시킨다.")
-	void validateToken_InvalidToken_ThrowsException() {
+	void validateToken_InvalidAccessToken_ThrowsException() {
 		// Given
 		String invalidToken = "this.is.a.fake.token";
 
 		// When & Then
-		assertThrows(io.jsonwebtoken.JwtException.class, () -> jwtProvider.validateToken(invalidToken));
+		assertThrows(io.jsonwebtoken.JwtException.class, () -> jwtProvider.validateAccessToken(invalidToken));
 	}
 
 	@Test
 	@DisplayName("만료된 JWT는 ExpiredJwtException을 발생시킨다.")
-	void validateToken_ExpiredToken_ThrowsException() {
+	void validateToken_ExpiredAccessToken_ThrowsException() {
 		// Given
 		Attendee attendee = Attendee.of("attendee@example.com", "hashedPassword", "user", "phone");
 		CustomUserDetails userDetails = new CustomUserDetails(attendee);
@@ -115,12 +115,12 @@ class JwtProviderTest {
 			.compact();
 
 		// When & Then
-		assertThrows(io.jsonwebtoken.ExpiredJwtException.class, () -> jwtProvider.validateToken(expiredToken));
+		assertThrows(io.jsonwebtoken.ExpiredJwtException.class, () -> jwtProvider.validateAccessToken(expiredToken));
 	}
 
 	@Test
 	@DisplayName("RefreshToken을 AccessToken으로 사용 시 JwtException 발생")
-	void validateToken_UsingRefreshAsAccess_ThrowsException() {
+	void validateAccessToken_UsingRefreshAsAccess_ThrowsException() {
 		// Given
 		Attendee attendee = Attendee.of("attendee@example.com", "hashedPassword", "user", "phone");
 		CustomUserDetails userDetails = new CustomUserDetails(attendee);
@@ -136,6 +136,6 @@ class JwtProviderTest {
 			.compact();
 
 		// When & Then
-		assertThrows(io.jsonwebtoken.JwtException.class, () -> jwtProvider.validateToken(refreshToken));
+		assertThrows(io.jsonwebtoken.JwtException.class, () -> jwtProvider.validateAccessToken(refreshToken));
 	}
 }

@@ -10,7 +10,10 @@ import org.springframework.stereotype.Component;
 
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.security.CustomUserDetails;
+import com.synergy.backend.global.token.exception.InvalidAccessTokenException;
 import com.synergy.backend.global.token.exception.InvalidRefreshTokenException;
+import com.synergy.backend.global.token.exception.InvalidRoleClaimException;
+import com.synergy.backend.global.token.exception.MissingRoleClaimException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -38,7 +41,7 @@ public class JwtProvider {
 		return generateToken(userDetails, jwtProperties.refreshTokenExpiration(), "refresh");
 	}
 
-	public boolean validateToken(String token) {
+	public boolean validateAccessToken(String token) {
 		try {
 			Claims claims = Jwts.parserBuilder()
 				.setSigningKey(key)
@@ -48,13 +51,13 @@ public class JwtProvider {
 
 			String type = claims.get("type", String.class);
 			if (!"access".equals(type)) {
-				throw new JwtException("AccessToken이 아님");
+				throw new InvalidAccessTokenException();
 			}
 			return true;
 		} catch (ExpiredJwtException e) {
 			throw e;
 		} catch (JwtException | IllegalArgumentException e) {
-			throw new JwtException("유효하지 않은 JWT", e);
+			throw new InvalidAccessTokenException();
 		}
 	}
 
@@ -68,7 +71,7 @@ public class JwtProvider {
 
 			String type = claims.get("type", String.class);
 			if (!"refresh".equals(type)) {
-				throw new JwtException("RefreshToken이 아님");
+				throw new InvalidRefreshTokenException();
 			}
 			return true;
 		} catch (ExpiredJwtException e) {
@@ -91,7 +94,7 @@ public class JwtProvider {
 			.get("role", String.class);
 
 		if (role == null) {
-			throw new JwtException("Role claim is missing in the token");
+			throw new MissingRoleClaimException();
 		}
 
 		if (role.startsWith("ROLE_")) {
@@ -101,7 +104,7 @@ public class JwtProvider {
 		try {
 			return RoleType.valueOf(role);
 		} catch (IllegalArgumentException e) {
-			throw new JwtException("Invalid role in token: " + role);
+			throw new InvalidRoleClaimException();
 		}
 	}
 
