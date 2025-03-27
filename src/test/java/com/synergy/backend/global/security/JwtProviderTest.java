@@ -83,15 +83,12 @@ class JwtProviderTest {
 	}
 
 	@Test
-	@DisplayName("잘못된 JWT는 검증에 실패한다.")
-	void validateToken_InvalidToken_ReturnsFalse() {
+	@DisplayName("잘못된 JWT는 예외를 발생시킨다.")
+	void validateToken_InvalidToken_ThrowsException() {
 		// Given
 		String invalidToken = "this.is.a.fake.token";
 
-		// When
-		boolean isValid = jwtProvider.validateToken(invalidToken);
-
-		// Then
-		assertFalse(isValid);
+		// When & Then
+		assertThrows(io.jsonwebtoken.JwtException.class, () -> jwtProvider.validateToken(invalidToken));
 	}
 }
