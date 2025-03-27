@@ -7,7 +7,7 @@ import java.time.LocalDate;
 public record BoothRequestDto(
         String companyName,
         String companyType,
-        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM-dd")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate progressDate,
         String boothLocation,
         String boothNumber,

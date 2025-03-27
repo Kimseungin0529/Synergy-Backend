@@ -30,6 +30,6 @@ public interface BoothParticipationRepository extends JpaRepository<BoothPartici
 		"JOIN ai.interest i " +
 		"WHERE bp.booth.id = :boothId " +
 		"GROUP BY i.name")*/
-	List<BoothParticipationResponseDto> findParticipationCountByInterest(@Param("boothId") Long boothId);
+	//List<BoothParticipationResponseDto> findParticipationCountByInterest(@Param("boothId") Long boothId);
 
 }

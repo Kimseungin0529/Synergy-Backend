@@ -11,7 +11,7 @@ public record BoothResponseDto(
         String companyType,
         String boothLocation,
         String boothNumber,
-        @JsonFormat(pattern = "MM-dd")
+        @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate progressDate,
         String boothDescription,
         String qrUrl,

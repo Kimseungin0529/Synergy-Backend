@@ -43,6 +43,6 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
     @Transactional(readOnly = true)
     @Override
     public List<BoothParticipationResponseDto> getParticipationCountByInterest(Long boothId) {
-        return boothParticipationRepository.findParticipationCountByInterest(boothId);
+        return null;
     }
 }
