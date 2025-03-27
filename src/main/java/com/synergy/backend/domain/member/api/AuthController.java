@@ -15,8 +15,8 @@ import com.synergy.backend.domain.member.api.dto.request.PasswordResetRequestDto
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.EmailVerificationResponseForTestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
-import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 import com.synergy.backend.domain.member.service.AuthService;
+import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 import com.synergy.backend.global.annotation.DisableSwaggerSecurity;
 import com.synergy.backend.global.common.ApiResponse;
 import com.synergy.backend.global.mail.MailService;
@@ -123,7 +123,8 @@ public class AuthController {
 	@Operation(summary = "이메일 인증 요청", description = "입력한 이메일 주소로 인증번호를 전송합니다.")
 	@DisableSwaggerSecurity
 	@PostMapping("/email/verification/request")
-	public ApiResponse<EmailVerificationResponseForTestDto> emailVerificationRequest(@Valid @RequestBody EmailVerificationRequestDto request) throws
+	public ApiResponse<EmailVerificationResponseForTestDto> emailVerificationRequest(
+		@Valid @RequestBody EmailVerificationRequestDto request) throws
 		MessagingException {
 		String code = mailService.sendVerificationCodeToMail(request.email());
 		return ApiResponse.ok(new EmailVerificationResponseForTestDto(code), 200);
@@ -137,6 +138,8 @@ public class AuthController {
 		return ApiResponse.emptyOk();
 	}
 
+	@Operation(summary = "리프레시 토큰 재발급", description = "토큰을 통해 리프레시토큰을 전송하면 재발급된 리프레시 토큰을 반환합니다.")
+	@DisableSwaggerSecurity
 	@PostMapping("/refresh-token/reissue")
 	public ApiResponse<TokenResponseDto> reissueRefreshToken(
 		@CookieValue(CookieUtils.REFRESH_TOKEN_NAME) String refreshToken,
@@ -147,5 +150,17 @@ public class AuthController {
 		cookieUtils.addRefreshTokenToCookie(response, tokenWithRefreshToken.refreshToken());
 
 		return ApiResponse.ok(tokenWithRefreshToken.tokenResponseDto(), 200);
+	}
+
+	@Operation(summary = "로그아웃", description = "리프레시 토큰을 무효화하고 로그아웃합니다.")
+	@DisableSwaggerSecurity
+	@PostMapping("/logout")
+	public ApiResponse<?> logout(@CookieValue(CookieUtils.REFRESH_TOKEN_NAME) String refreshToken,
+		HttpServletResponse response) {
+		authService.logout(refreshToken);
+
+		cookieUtils.deleteRefreshTokenCookie(response);
+
+		return ApiResponse.emptyOk();
 	}
 }

@@ -81,28 +81,15 @@ public class AuthServiceImpl implements AuthService {
 			throw new UnauthorizedException();
 		}
 
-		String accessToken = jwtProvider.generateAccessToken(new CustomUserDetails(attendee));
-		String refreshToken = jwtProvider.generateRefreshToken(new CustomUserDetails(attendee));
-
-		tokenService.storeRefreshToken(email, refreshToken);
-
-		return TokenWithRefreshToken.of(refreshToken, TokenResponseDto.of(accessToken, attendee));
+		return generateAndStoreTokens(attendee);
 	}
 
 	@Transactional(readOnly = true)
 	@Override
 	public TokenWithRefreshToken loginAsAdminOrRecruiter(String authCode) {
-		User user = adminRepository.findByAdminAuthCode(authCode)
-			.map(User.class::cast)
-			.or(() -> recruiterRepository.findByRecruiterAuthCode(authCode).map(User.class::cast))
-			.orElseThrow(InvalidAuthCodeException::new);
+		User user = findUserByAuthCode(authCode);
 
-		String accessToken = jwtProvider.generateAccessToken(new CustomUserDetails(user));
-
-		String refreshToken = jwtProvider.generateRefreshToken(new CustomUserDetails(user));
-		tokenService.storeRefreshToken(authCode, refreshToken);
-
-		return TokenWithRefreshToken.of(refreshToken, TokenResponseDto.of(accessToken, user));
+		return generateAndStoreTokens(user);
 	}
 
 	@Transactional
@@ -156,8 +143,21 @@ public class AuthServiceImpl implements AuthService {
 		return TokenWithRefreshToken.of(newRefreshToken, TokenResponseDto.of(newAccessToken, userDetails.getUser()));
 	}
 
+	@Override
+	public void logout(String refreshToken) {
+		String identifier = jwtProvider.getIdentifierFromToken(refreshToken);
+		tokenService.deleteRefreshToken(identifier);
+	}
+
 	private Attendee findAttendeeByEmail(String email) {
 		return attendeeRepository.findByEmail(email).orElseThrow(NotFoundUserException::new);
+	}
+
+	private User findUserByAuthCode(String authCode) {
+		return adminRepository.findByAdminAuthCode(authCode)
+			.<User>map(admin -> admin)
+			.or(() -> recruiterRepository.findByRecruiterAuthCode(authCode))
+			.orElseThrow(InvalidAuthCodeException::new);
 	}
 
 	private void validateSignupRequest(SignupAttendeeRequestDto request) {
@@ -167,7 +167,7 @@ public class AuthServiceImpl implements AuthService {
 
 	private Conference validateTicketCodeAndGetConference(String ticketCode) {
 		if (ticketCode == null || ticketCode.isBlank()) {
-			return null;
+			throw new InvalidTicketCodeException();
 		}
 		return conferenceRepository.findByTicketCode(ticketCode)
 			.orElseThrow(InvalidTicketCodeException::new);
@@ -191,5 +191,13 @@ public class AuthServiceImpl implements AuthService {
 
 	private String encodePassword(String rawPassword) {
 		return passwordEncoder.encode(rawPassword);
+	}
+
+	private TokenWithRefreshToken generateAndStoreTokens(User user) {
+		CustomUserDetails userDetails = new CustomUserDetails(user);
+		String accessToken = jwtProvider.generateAccessToken(userDetails);
+		String refreshToken = jwtProvider.generateRefreshToken(userDetails);
+		tokenService.storeRefreshToken(user.getIdentifier(), refreshToken);
+		return TokenWithRefreshToken.of(refreshToken, TokenResponseDto.of(accessToken, user));
 	}
 }
