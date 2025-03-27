@@ -50,6 +50,9 @@ public class Conference {
     @Column(nullable = false, length = MAX_COMMON_LENGTH)
     private String type;
 
+    @Column
+    private String ticketCode;
+
     @OneToMany(mappedBy = "conference", cascade = {CascadeType.PERSIST, REMOVE}, orphanRemoval = true)
     private List<Session> sessions = new ArrayList<>();
 
@@ -113,6 +116,10 @@ public class Conference {
     public void addAdmin(Admin admin) {
         this.admins.add(admin);
         admin.getConferences().add(this);
+    }
+
+    public void addTicketCode(String ticketCode) {
+        this.ticketCode = ticketCode;
     }
 
 }

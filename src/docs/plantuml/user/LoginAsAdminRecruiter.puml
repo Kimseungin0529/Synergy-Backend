@@ -1,0 +1,36 @@
+@startuml
+actor AdminOrRecruiter
+participant "AuthController" as Controller
+participant "AuthServiceImpl" as Service
+participant "AdminRepository"
+participant "RecruiterRepository"
+participant "JwtProvider"
+participant "TokenService"
+
+AdminOrRecruiter -> Controller: POST /login (authCode)
+Controller -> Service: loginAsAdminOrRecruiter(authCode)
+
+activate Service
+Service -> AdminRepository: authCode로 관리자 조회
+alt 관리자 존재
+    AdminRepository --> Service: User 반환
+else 관리자 없음
+    Service -> RecruiterRepository: authCode로 채용담당자 조회
+    RecruiterRepository --> Service: User 반환 or 예외
+end
+
+Service -> JwtProvider: AccessToken 생성
+JwtProvider --> Service
+
+Service -> JwtProvider: RefreshToken 생성
+JwtProvider --> Service
+
+Service -> TokenService: RefreshToken 저장
+note right
+authCode가 사용자 식별자(identifier)로 사용됨
+RefreshToken은 이 키 기준으로 저장됨
+end note
+
+Service --> Controller: AccessToken + RefreshToken 응답
+Controller --> AdminOrRecruiter: RefreshToken 쿠키 포함 응답
+@enduml

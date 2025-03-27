@@ -85,7 +85,7 @@ class ConferenceControllerTest {
                 "A로비",
                 "IT"
         );
-        ConferenceCreateResponse response = new ConferenceCreateResponse(1L);
+        ConferenceCreateResponse response = new ConferenceCreateResponse(1L, "abc123");
 
         String identifier = "AUTH1";
         given(conferenceService.registerConference(eq(identifier), any(ConferenceCreateRequest.class))).willReturn(response);

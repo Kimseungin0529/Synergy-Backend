@@ -13,7 +13,8 @@ public enum ErrorType {
     _INVALID_COMMON(400, "컨퍼런스 유형은 50자를 넘어갈 수 없습니다."),
     _INVALID_ORGANIZER(400, "주최자 명은 10자를 넘어갈 수 없습니다."),
     _INVALID_CONFERENCE_LOCATION(400, "위치 정보는 공백이나 100자를 넘어갈 수 없습니다."),
-    _NOT_FOUND_CONFERENCE(404, "해당 컨퍼런스를 찾을 수 없습니다.")
+    _NOT_FOUND_CONFERENCE(404, "해당 컨퍼런스를 찾을 수 없습니다."),
+    _INVALID_TICKET_CODE(400, "티켓코드가 일치하지 않습니다. 사전에 이메일로 안내받은 티켓코드를 입력해주세요."),
     ;
 
     private final int code;

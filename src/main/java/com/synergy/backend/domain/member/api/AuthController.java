@@ -13,6 +13,7 @@ import com.synergy.backend.domain.member.api.dto.request.LoginAttendeeRequestDto
 import com.synergy.backend.domain.member.api.dto.request.PasswordResetConfirmDto;
 import com.synergy.backend.domain.member.api.dto.request.PasswordResetRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
+import com.synergy.backend.domain.member.api.dto.resposne.EmailVerificationResponseForTestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
 import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 import com.synergy.backend.domain.member.service.AuthService;
@@ -122,10 +123,10 @@ public class AuthController {
 	@Operation(summary = "이메일 인증 요청", description = "입력한 이메일 주소로 인증번호를 전송합니다.")
 	@DisableSwaggerSecurity
 	@PostMapping("/email/verification/request")
-	public ApiResponse<?> emailVerificationRequest(@Valid @RequestBody EmailVerificationRequestDto request) throws
+	public ApiResponse<EmailVerificationResponseForTestDto> emailVerificationRequest(@Valid @RequestBody EmailVerificationRequestDto request) throws
 		MessagingException {
-		mailService.sendVerificationCodeToMail(request.email());
-		return ApiResponse.emptyOk();
+		String code = mailService.sendVerificationCodeToMail(request.email());
+		return ApiResponse.ok(new EmailVerificationResponseForTestDto(code), 200);
 	}
 
 	@Operation(summary = "이메일 인증 확인", description = "인증번호를 입력하여 이메일 인증을 완료합니다.")

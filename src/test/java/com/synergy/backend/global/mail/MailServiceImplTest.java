@@ -144,7 +144,7 @@ class MailServiceImplTest {
 		);
 	}
 
-	@DisplayName("인증 여부 확인 시 true 반환 및 키 삭제")
+	@DisplayName("인증 여부 확인 시 true 반환")
 	@Test
 	void isVerified_shouldReturnTrue_whenVerified() {
 		// given
@@ -159,7 +159,6 @@ class MailServiceImplTest {
 
 		// then
 		assertTrue(result);
-		verify(redisTemplate).delete(key);
 	}
 
 	@DisplayName("인증 여부 확인 시 인증 정보 없으면 EmailNotVerifiedException 예외 발생")

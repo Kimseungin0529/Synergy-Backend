@@ -12,6 +12,7 @@ import com.synergy.backend.domain.job.JobGroupRepository;
 import com.synergy.backend.domain.job.JobPositionRepository;
 import com.synergy.backend.global.annotation.DisableSwaggerSecurity;
 
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,8 @@ public class LookupController {
 
 	@DisableSwaggerSecurity
 	@GetMapping
-	public List<LookupResponseDto> getLookupData(@RequestParam LookupType type) {
+	public List<LookupResponseDto> getLookupData(
+		@RequestParam LookupType type) {
 		return switch (type) {
 			case INTERESTS -> interestRepository.findAll().stream()
 				.map(interest -> new LookupResponseDto(interest.getId(), interest.getCode(), interest.getName()))

@@ -1,3 +1,17 @@
+-- 컨퍼런스
+INSERT INTO conference (start_date, end_date, start_time, end_time, organizer, name, type, location, position, ticket_code)
+VALUES
+    ('2025-09-15', '2025-09-16','09:00', '18:00', 'FlowLink', 'F’LINK 2025', 'IT', '그랜드볼룸', '로비 A', 'abc123');
+
+-- 부스
+INSERT INTO booth (conference_id, company_name, company_type, booth_location, booth_number, booth_description, image_key, image_url, qr_key, qr_url, secret_code)
+VALUES (1, 'CodeSphere', 'YourCompanyType', 'C HALL', '101C', '클라우드서비스: 글로벌 IT 기업 CodeSphere에서 React 기반 프론트엔드 엔지니어와 클라우드 기반 백엔드 엔지니어를 채용합니다. TypeScript, Node.js, Kubernetes 경험자를 환영합니다.', 'default-key', 'https://default-image-url.com/default.jpg', 'default-qr-key', 'https://default-qr-url.com/default-qr.png', 'default-secret-code');
+
+-- 세션
+INSERT INTO session (maximum, progress_date, conference_id, end_time, start_time, speaker_position, speaker, title, description, qr_key, qr_url, image_key, image_url, secret_code)
+VALUES
+    (250, '2025-09-15', 1, '2025-09-15 11:30', '2025-09-15 10:30', 'CTO', '김지혁', '최신 기술 동향', '빠르게 변화하는 IT 산업에서 최신 기술 동향을 파악하는 것은 기업의 경쟁력을 높이고 미래를 준비하는 데 필수적입니다. 기업의 CTO가 AI, 클라우드, Web3 등 주요 기술 트렌드와 산업 변화를 분석하고, 기업이 기술 혁신을 어떻게 주도할 수 있는지에 대한 전략과 인사이트를 제공합니다.', ' ', ' ', ' ', ' ', ' ');
+
 -- id값 테이블은 1부터, enum은 0부터
 ---- 관심 분야
 INSERT INTO interest (name, code) VALUES ('데이터 분석 / AI', 101);
@@ -52,14 +66,14 @@ INSERT INTO recruiter (recruiter_auth_code, company, responsibility, name) VALUE
 INSERT INTO recruiter (recruiter_auth_code, company, responsibility, name) VALUES ( 'RC67890', 'OpenStack Korea', 'HR팀 매니저', '김주은');
 
 -- 참가자 기본 데이터
-INSERT INTO attendee (email, password, name, phone, total_points, membership_level_type)
+INSERT INTO attendee (email, password, name, phone, total_points, membership_level_type, conference_id)
 VALUES
-    ('jiwon.kim@example.com', '$2a$10$aO4mzbreIOHJiJDgPaUtG.BS81l7i92I2.D2qkwvM5hvUB8BGBsk2', '김지원', '01012345678', 250, 'BRONZE'),
-    ('youngho.choi@example.com', '$2a$10$hashedpassword2', '최영호', '01056781234', 1200, 'GOLD'),
-    ('seoyeon.jung@example.com', '$2a$10$hashedpassword3', '정서연', '01055556666', 1200, 'GOLD'),
-    ('sihyung.park@example.com', '$2a$10$hashedpassword4', '박시형', '01077778888', 300, 'SILVER'),
-    ('dayoung.lee@example.com', '$2a$10$hashedpassword5', '이다영', '01099990000', 1500, 'GOLD'),
-    ('dahye.kim@example.com', '$2a$10$hashedpassword6', '김다혜', '01011112222', 50, 'DEFAULT');
+    ('jiwon.kim@example.com', '$2a$10$aO4mzbreIOHJiJDgPaUtG.BS81l7i92I2.D2qkwvM5hvUB8BGBsk2', '김지원', '01012345678', 250, 'BRONZE', 1),
+    ('youngho.choi@example.com', '$2a$10$hashedpassword2', '최영호', '01056781234', 1200, 'GOLD', 1),
+    ('seoyeon.jung@example.com', '$2a$10$hashedpassword3', '정서연', '01055556666', 1200, 'GOLD', 1),
+    ('sihyung.park@example.com', '$2a$10$hashedpassword4', '박시형', '01077778888', 300, 'SILVER', 1),
+    ('dayoung.lee@example.com', '$2a$10$hashedpassword5', '이다영', '01099990000', 1500, 'GOLD', 1),
+    ('dahye.kim@example.com', '$2a$10$hashedpassword6', '김다혜', '01011112222', 50, 'DEFAULT', 1);
 
 -- 김지원 (attendee_id = 1) → 수도권, 부산
 INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (1, 0); -- CAPITAL_AREA
@@ -225,23 +239,3 @@ VALUES
     (4, 3),
     (5, 4),
     (6, 0);
-
-
-
--- 컨퍼런스
-INSERT INTO conference (start_date, end_date, start_time, end_time, organizer, name, type, location, position)
-VALUES
-    ('2025-09-15', '2025-09-16','09:00', '18:00', 'FlowLink', 'F’LINK 2025', 'IT', '그랜드볼룸', '로비 A');
-
-
--- 부스
-INSERT INTO booth (conference_id, company_name, company_type, booth_location, booth_number, booth_description, image_key, image_url, qr_key, qr_url, secret_code)
-VALUES (1, 'CodeSphere', 'YourCompanyType', 'C HALL', '101C', '클라우드서비스: 글로벌 IT 기업 CodeSphere에서 React 기반 프론트엔드 엔지니어와 클라우드 기반 백엔드 엔지니어를 채용합니다. TypeScript, Node.js, Kubernetes 경험자를 환영합니다.', 'default-key', 'https://default-image-url.com/default.jpg', 'default-qr-key', 'https://default-qr-url.com/default-qr.png', 'default-secret-code');
-
--- 세션
-INSERT INTO session (maximum, progress_date, conference_id, end_time, start_time, speaker_position, speaker, title, description, qr_key, qr_url, image_key, image_url, secret_code)
-VALUES
-    (250, '2025-09-15', 1, '2025-09-15 11:30', '2025-09-15 10:30', 'CTO', '김지혁', '최신 기술 동향', '빠르게 변화하는 IT 산업에서 최신 기술 동향을 파악하는 것은 기업의 경쟁력을 높이고 미래를 준비하는 데 필수적입니다. 기업의 CTO가 AI, 클라우드, Web3 등 주요 기술 트렌드와 산업 변화를 분석하고, 기업이 기술 혁신을 어떻게 주도할 수 있는지에 대한 전략과 인사이트를 제공합니다.', ' ', ' ', ' ', ' ', ' ');
-
-
-

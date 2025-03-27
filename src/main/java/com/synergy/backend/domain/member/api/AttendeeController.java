@@ -28,6 +28,7 @@ import com.synergy.backend.global.common.ApiResponse;
 import com.synergy.backend.global.security.CustomUserDetails;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -60,14 +61,19 @@ public class AttendeeController {
 	)
 	@SwaggerSummaryRole({RoleType.ATTENDEE})
 	@PreAuthorize("hasRole('ATTENDEE')")
-	@PatchMapping(path = "/onboarding/job-info-details", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+	@PatchMapping(
+		path = "/onboarding/job-info-details",
+		consumes = {MediaType.MULTIPART_FORM_DATA_VALUE, MediaType.APPLICATION_JSON_VALUE}
+	)
 	public ApiResponse<JobInfoResponseDto> addJobInfoDetails(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@Parameter(description = "상세 직무 요청 JSON 객체")
 		@Valid @RequestPart("request") JobInfoDetailsRequestDto request,
-		@RequestPart(value = "multipartFile") MultipartFile multipartFile) {
+		@Parameter(description = "프로필 이미지 (선택)")
+		@RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
 
 		String identifier = userDetails.getIdentifier();
-		attendeeService.addJobInfoDetails(identifier, request, multipartFile);
+		attendeeService.addJobInfoDetails(identifier, request, profileImage);
 		return ApiResponse.ok(null, 200);
 	}
 

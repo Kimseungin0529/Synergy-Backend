@@ -12,7 +12,7 @@ public interface AttendeeService {
 
 	void addJobInfo(String email, JobInfoRequestDto request);
 
-	void addJobInfoDetails(String email, JobInfoDetailsRequestDto request, MultipartFile multipartFile);
+	void addJobInfoDetails(String email, JobInfoDetailsRequestDto request, MultipartFile profileImage);
 
 	MyInfoResponseDto getMyInformation(String identifier);
 

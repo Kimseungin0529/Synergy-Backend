@@ -283,4 +283,8 @@ public class Attendee extends BaseEntity implements User {
 		this.profileImageKey = fileInformationDto.fileKey();
 		this.profileImageUrl = fileInformationDto.accessUrl();
 	}
+
+	public void assignConference(Conference conference) {
+		this.conference = conference;
+	}
 }

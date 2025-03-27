@@ -1,0 +1,44 @@
+@startuml
+actor User
+participant "AuthController" as Controller
+participant "AuthServiceImpl" as Service
+participant "ConferenceRepository"
+participant "AttendeeRepository"
+participant "PasswordEncoder"
+participant "PointService"
+participant "MailService"
+participant "Redis (인증코드 저장소)"
+
+User -> Controller: POST /signup (SignupAttendeeRequestDto)
+Controller -> Service: registerAttendee(request)
+
+activate Service
+Service -> AttendeeRepository: 이메일 중복 확인
+note right: 이메일 중복 확인
+AttendeeRepository --> Service
+
+Service -> MailService: 이메일 인증 여부 확인
+note right: 이메일 인증 여부 확인
+MailService --> Service
+
+Service -> ConferenceRepository: 티켓 코드로 컨퍼런스 조회
+note right: 티켓 코드로 컨퍼런스 조회
+ConferenceRepository --> Service
+
+Service -> PasswordEncoder: 비밀번호 암호화
+PasswordEncoder --> Service
+
+Service -> AttendeeRepository: 사용자 저장
+note right: 사용자 저장
+AttendeeRepository --> Service
+
+Service -> PointService: 회원가입 포인트 지급
+PointService --> Service
+
+Service -> MailService: 인증코드 삭제
+note right: 인증코드 Redis에서 삭제
+MailService --> Service
+
+Service --> Controller: SignupAttendeeResponseDto
+Controller --> User: 회원가입 완료 응답
+@enduml

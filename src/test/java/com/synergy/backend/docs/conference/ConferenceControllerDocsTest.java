@@ -15,8 +15,7 @@ import org.springframework.restdocs.payload.JsonFieldType;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
 import static org.springframework.restdocs.headers.HeaderDocumentation.headerWithName;
@@ -54,7 +53,7 @@ public class ConferenceControllerDocsTest extends RestDocsSupport {
         );
 
         given(conferenceService.registerConference(any(), any(ConferenceCreateRequest.class)))
-                .willReturn(new ConferenceCreateResponse(1L));
+                .willReturn(new ConferenceCreateResponse(1L, "abc123"));
 
         mockMvc.perform(
                         post("/api/v1/conference")
@@ -86,7 +85,8 @@ public class ConferenceControllerDocsTest extends RestDocsSupport {
                                 fieldWithPath("status").type(JsonFieldType.STRING).description("응답 상태"),
                                 fieldWithPath("code").type(JsonFieldType.NUMBER).description("HTTP 상태 코드"),
                                 fieldWithPath("message").type(JsonFieldType.NULL).description("응답 메시지"),
-                                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 컨퍼런스 ID")
+                                fieldWithPath("data.id").type(JsonFieldType.NUMBER).description("생성된 컨퍼런스 ID"),
+                                fieldWithPath("data.ticketCode").type(JsonFieldType.STRING).description("생성된 컨퍼런스의 티켓코드")
                         )
                 ));
     }

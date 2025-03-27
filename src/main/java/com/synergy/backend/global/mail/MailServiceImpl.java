@@ -2,7 +2,6 @@ package com.synergy.backend.global.mail;
 
 import java.io.UnsupportedEncodingException;
 import java.time.Duration;
-import java.util.Random;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -12,6 +11,7 @@ import com.synergy.backend.global.mail.exception.EmailNotVerifiedException;
 import com.synergy.backend.global.mail.exception.MailSendFailedException;
 import com.synergy.backend.global.mail.exception.VerificationCodeExpiredException;
 import com.synergy.backend.global.mail.exception.VerificationCodeMismatchException;
+import com.synergy.backend.global.util.random.RandomCodeGenerator;
 
 import jakarta.mail.MessagingException;
 import jakarta.mail.internet.InternetAddress;
@@ -32,12 +32,13 @@ public class MailServiceImpl implements MailService {
 	private final MailProperties mailProperties;
 
 	@Override
-	public void sendVerificationCodeToMail(String email) {
-		String code = generateVerificationCode();
+	public String sendVerificationCodeToMail(String email) {
+		String code = RandomCodeGenerator.lowercaseAlphaNumericCode();
 		storeToRedis(getVerifyCodeKey(email), code, VERIFICATION_CODE_TTL_MINUTES);
 
 		String body = buildEmailBody(code);
 		sendHtmlEmail(email, "이메일 인증", body);
+		return code;
 	}
 
 	@Override
@@ -64,9 +65,12 @@ public class MailServiceImpl implements MailService {
 		if (!"true".equals(verified)) {
 			throw new EmailNotVerifiedException();
 		}
-
-		deleteFromRedis(getVerifiedKey(email));
 		return true;
+	}
+
+	@Override
+	public void clearVerification(String email) {
+		deleteFromRedis(getVerifiedKey(email));
 	}
 
 	// --- Redis Helpers ---
@@ -116,16 +120,5 @@ public class MailServiceImpl implements MailService {
 				+ "<p style='margin-top: 24px;'>감사합니다.<br/>F'LINK 드림</p>"
 			, VERIFICATION_CODE_TTL_MINUTES, verificationCode, VERIFICATION_SUCCESS_TTL_MINUTES
 		);
-	}
-
-	private String generateVerificationCode() {
-		String characters = "abcdefghijklmnopqrstuvwxyz0123456789";
-		StringBuilder code = new StringBuilder();
-		Random random = new Random();
-
-		for (int i = 0; i < 6; i++) {
-			code.append(characters.charAt(random.nextInt(characters.length())));
-		}
-		return code.toString();
 	}
 }

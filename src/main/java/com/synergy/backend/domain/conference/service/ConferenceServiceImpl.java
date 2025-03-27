@@ -13,6 +13,8 @@ import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.exception.AccessDeniedException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
+import com.synergy.backend.global.util.random.RandomCodeGenerator;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -35,8 +37,13 @@ public class ConferenceServiceImpl implements ConferenceService {
     public ConferenceCreateResponse registerConference(String identifier, ConferenceCreateRequest request) {
         Admin findAdmin = adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
         TimePeriod timePeriod = TimePeriod.of(request.startDate(), request.endDate(), request.startTime(), request.endTime());
+
+
         Conference conference = Conference.of(request.name(), timePeriod, request.host(), request.location(), request.place(), request.conferenceType());
         Conference savedConference = conferenceRepository.save(conference);
+
+		// 랜덤 티켓 코드 자동 추가
+        savedConference.addTicketCode(RandomCodeGenerator.lowercaseAlphaNumericCode());
 
         findAdmin.addConference(conference);
 

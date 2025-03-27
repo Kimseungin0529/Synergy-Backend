@@ -18,9 +18,10 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.synergy.backend.domain.conference.entity.Conference;
+import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponseDto;
-import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;
@@ -33,6 +34,7 @@ import com.synergy.backend.domain.member.exception.UnauthorizedException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
+import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 import com.synergy.backend.domain.point.service.PointService;
 import com.synergy.backend.global.jwt.JwtProvider;
 import com.synergy.backend.global.mail.MailService;
@@ -61,6 +63,9 @@ class AuthServiceImplTest {
 	private RecruiterRepository recruiterRepository;
 
 	@Mock
+	private ConferenceRepository conferenceRepository;
+
+	@Mock
 	private PasswordEncoder passwordEncoder;
 
 	@Mock
@@ -86,6 +91,7 @@ class AuthServiceImplTest {
 		requestDto = new SignupAttendeeRequestDto(
 			"UserA",
 			"UserA@example.com",
+			"abc123",
 			"securepassword",
 			"01012345678"
 		);
@@ -106,6 +112,7 @@ class AuthServiceImplTest {
 		when(passwordEncoder.encode(requestDto.password())).thenReturn("encodedPassword");
 		when(attendeeRepository.save(any(Attendee.class))).thenReturn(mockAttendee);
 		when(mailService.isVerified(anyString())).thenReturn(true);
+		when(conferenceRepository.findByTicketCode(anyString())).thenReturn(Optional.of(mock(Conference.class)));
 
 		// When
 		SignupAttendeeResponseDto response = authService.registerAttendee(requestDto);
@@ -122,7 +129,6 @@ class AuthServiceImplTest {
 	void registerAttendee_DuplicateEmail_ThrowsException() {
 		// Given
 		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
-		when(mailService.isVerified(anyString())).thenReturn(true);
 
 		// When & Then
 		assertThrows(DuplicateEmailException.class, () -> authService.registerAttendee(requestDto));
@@ -245,6 +251,7 @@ class AuthServiceImplTest {
 		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.empty());
 		when(passwordEncoder.encode(requestDto.password())).thenReturn("encodedPassword");
 		when(mailService.isVerified(anyString())).thenReturn(true);
+		when(conferenceRepository.findByTicketCode(anyString())).thenReturn(Optional.of(mock(Conference.class)));
 		when(attendeeRepository.save(any(Attendee.class)))
 			.thenAnswer(invocation -> {
 				Attendee attendee = invocation.getArgument(0);

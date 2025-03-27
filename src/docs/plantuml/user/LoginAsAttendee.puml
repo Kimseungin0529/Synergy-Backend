@@ -1,0 +1,39 @@
+@startuml
+actor User
+participant "AuthController" as Controller
+participant "AuthServiceImpl" as Service
+participant "AttendeeRepository"
+participant "PasswordEncoder"
+participant "JwtProvider"
+participant "TokenService"
+
+User -> Controller: POST /login (email, password)
+Controller -> Service: 로그인 시도
+
+activate Service
+Service -> AttendeeRepository: 이메일로 사용자 조회
+AttendeeRepository --> Service
+
+Service -> PasswordEncoder: 비밀번호 일치 확인
+PasswordEncoder --> Service
+alt 비밀번호 불일치
+    Service -> Controller: UnauthorizedException 발생
+    deactivate Service
+else 비밀번호 일치
+    Service -> JwtProvider: AccessToken 생성
+    JwtProvider --> Service
+
+    Service -> JwtProvider: RefreshToken 생성
+    JwtProvider --> Service
+
+    Service -> TokenService: RefreshToken 저장
+    note right
+    이메일이 사용자 식별자(identifier)로 사용됨
+    RefreshToken은 이 키 기준으로 저장됨
+    end note
+    TokenService --> Service
+
+    Controller --> User: RefreshToken 쿠키 포함 응답
+    Service --> Controller: 로그인 성공 (Access + Refresh 토큰)
+end
+@enduml

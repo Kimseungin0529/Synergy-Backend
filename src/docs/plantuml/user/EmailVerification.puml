@@ -1,0 +1,43 @@
+@startuml
+actor User
+participant "AuthController" as Controller
+participant "MailServiceImpl" as MailService
+participant "Redis"
+participant "MailSender"
+
+== 인증 코드 전송 ==
+
+User -> Controller: 이메일 인증 요청 (이메일)
+Controller -> MailService: 인증 코드 생성 및 이메일 전송
+
+MailService -> Redis: 인증 코드 저장 (TTL: 5분)
+MailService -> MailSender: HTML 이메일 발송
+MailSender --> MailService
+MailService --> Controller: 인증코드 반환
+
+== 인증 코드 확인 ==
+
+User -> Controller: 인증 코드 입력 (이메일, 코드)
+Controller -> MailService: 인증 코드 확인 요청
+
+MailService -> Redis: 인증 코드 조회
+alt 코드 없음
+    MailService --> Controller: VerificationCodeExpiredException
+else 코드 불일치
+    MailService --> Controller: VerificationCodeMismatchException
+else 코드 일치
+    MailService -> Redis: 인증 완료 상태 저장 (TTL: 10분)
+    MailService -> Redis: 인증 코드 삭제
+    MailService --> Controller: 인증 완료
+end
+
+== 인증 여부 확인 ==
+
+Controller -> MailService: 이메일 인증 여부 확인
+MailService -> Redis: 인증 여부 조회
+alt 인증 안됨
+    MailService --> Controller: EmailNotVerifiedException
+else 인증됨
+    MailService --> Controller: true
+end
+@enduml

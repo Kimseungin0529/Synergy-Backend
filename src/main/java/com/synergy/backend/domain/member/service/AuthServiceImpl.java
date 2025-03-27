@@ -4,10 +4,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synergy.backend.domain.conference.entity.Conference;
+import com.synergy.backend.domain.conference.exception.InvalidTicketCodeException;
+import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
-import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.domain.member.exception.DuplicateEmailException;
@@ -19,6 +21,7 @@ import com.synergy.backend.domain.member.exception.UnauthorizedException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
+import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 import com.synergy.backend.domain.point.service.PointService;
 import com.synergy.backend.global.jwt.JwtProvider;
 import com.synergy.backend.global.mail.MailService;
@@ -39,6 +42,7 @@ public class AuthServiceImpl implements AuthService {
 	private final AttendeeRepository attendeeRepository;
 	private final AdminRepository adminRepository;
 	private final RecruiterRepository recruiterRepository;
+	private final ConferenceRepository conferenceRepository;
 	private final PasswordEncoder passwordEncoder;
 	private final JwtProvider jwtProvider;
 	private final PointService pointService;
@@ -52,13 +56,19 @@ public class AuthServiceImpl implements AuthService {
 
 		validateSignupRequest(request);
 
+		Conference conference = validateTicketCodeAndGetConference(request.ticketCode());
+
 		Attendee attendee = Attendee.of(request.email(), encodePassword(request.password()), request.name(),
 			request.phone());
 
+		if (conference != null) {
+			attendee.assignConference(conference);
+		}
 		attendeeRepository.save(attendee);
 
 		pointService.addSignupPoint(attendee.getId());
 
+		mailService.clearVerification(request.email());
 		return SignupAttendeeResponseDto.from(attendee);
 	}
 
@@ -151,8 +161,16 @@ public class AuthServiceImpl implements AuthService {
 	}
 
 	private void validateSignupRequest(SignupAttendeeRequestDto request) {
-		validateEmailVerification(request.email());
 		validateEmailDuplicate(request.email());
+		validateEmailVerification(request.email());
+	}
+
+	private Conference validateTicketCodeAndGetConference(String ticketCode) {
+		if (ticketCode == null || ticketCode.isBlank()) {
+			return null;
+		}
+		return conferenceRepository.findByTicketCode(ticketCode)
+			.orElseThrow(InvalidTicketCodeException::new);
 	}
 
 	private void validateEmailDuplicate(String email) {

@@ -73,11 +73,11 @@ public class AttendeeServiceImpl implements AttendeeService {
 	/** 직무 상세 정보 추가 */
 	@Transactional
 	@Override
-	public void addJobInfoDetails(String email, JobInfoDetailsRequestDto request, MultipartFile multipartFile) {
+	public void addJobInfoDetails(String email, JobInfoDetailsRequestDto request, MultipartFile profileImage) {
 		Attendee attendee = findAttendeeByEmail(email);
 
-		if (multipartFile != null && !multipartFile.isEmpty()) {
-			attendee.addImage(fileS3Util.uploadFile(multipartFile));
+		if (profileImage != null && !profileImage.isEmpty()) {
+			attendee.addImage(fileS3Util.uploadFile(profileImage));
 		}
 
 		attendee.updateJobInfoDetails(
