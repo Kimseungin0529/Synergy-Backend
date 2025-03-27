@@ -3,12 +3,14 @@ package com.synergy.backend.domain.booth.entity;
 import static jakarta.persistence.FetchType.*;
 import static lombok.AccessLevel.*;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.member.entity.Admin;
 
+import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -24,7 +26,7 @@ import lombok.Setter;
 
 @Entity
 @Getter
-@Setter
+//@Setter
 @NoArgsConstructor(access = PROTECTED)
 public class Booth {
 
@@ -44,6 +46,9 @@ public class Booth {
 
 	@Column(nullable = false)
 	private String boothNumber;
+
+	@Column(nullable = false)
+	private LocalDate progressDate;
 
 	@Column(nullable = false)
 	private String boothDescription;
@@ -76,24 +81,40 @@ public class Booth {
 	}
 
 	public Booth(String companyName, String companyType, String boothLocation, String boothNumber,
-				 String boothDescription, Conference conference) {
+				 LocalDate progressDate, String boothDescription, Conference conference) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
 		this.boothNumber = boothNumber;
+		this.progressDate = progressDate;
 		this.boothDescription = boothDescription;
 		this.conference = conference;
 	}
 
 	public void updateInfo(String companyName, String companyType, String boothLocation, String boothNumber,
-						   String boothDescription, String imageKey, String imageUrl) {
+			   	LocalDate progressDate, String boothDescription, String imageKey, String imageUrl) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
 		this.boothNumber = boothNumber;
+		this.progressDate = progressDate;
 		this.boothDescription = boothDescription;
 		this.imageKey = imageKey;
 		this.imageUrl = imageUrl;
+	}
+
+	public void  updateSecretCode(String code){
+		this.secretCode = code;
+	}
+
+	public void updateQr(FileInformationDto fileInformation) {
+		this.qrKey = fileInformation.fileKey();
+		this.qrUrl = fileInformation.accessUrl();
+	}
+
+	public void updateImage(FileInformationDto fileInformation){
+		this.imageKey = fileInformation.fileKey();
+		this.imageUrl = fileInformation.accessUrl();
 	}
 }
 

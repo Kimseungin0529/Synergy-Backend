@@ -40,6 +40,7 @@ public class BoothServiceImpl implements BoothService {
                 request.companyType(),
                 request.boothLocation(),
                 request.boothNumber(),
+                request.progressDate(),
                 request.boothDescription(),
                 conference
         );
@@ -47,15 +48,17 @@ public class BoothServiceImpl implements BoothService {
         String secretCode = UUID.randomUUID().toString();
         String url = "/booth/" + booth.getId();
         byte[] qrCode = qrService.generateQRCode(url, secretCode);
-        booth.setSecretCode(secretCode);
+        //booth.setSecretCode(secretCode);
+        booth.updateSecretCode(secretCode);
         FileInformationDto qrInfo = fileS3Util.uploadQRCode(qrCode, booth.getCompanyName());
-        booth.setQrKey(qrInfo.fileKey());
-        booth.setQrUrl(qrInfo.accessUrl());
+        //booth.setQrKey(qrInfo.fileKey());
+        //booth.setQrUrl(qrInfo.accessUrl());
+        booth.updateQr(qrInfo);
 
         FileInformationDto imageInfo = fileS3Util.uploadFile(imageFile);
-        booth.setImageKey(imageInfo.fileKey());
-        booth.setImageUrl(imageInfo.accessUrl());
-
+        //booth.setImageKey(imageInfo.fileKey());
+        //booth.setImageUrl(imageInfo.accessUrl());
+        booth.updateImage(imageInfo);
         boothRepository.save(booth);
         return new BoothResponseDto(booth);
     }
@@ -92,6 +95,7 @@ public class BoothServiceImpl implements BoothService {
                 request.companyType() != null ? request.companyType() : booth.getCompanyType(),
                 request.boothLocation() != null ? request.boothLocation() : booth.getBoothLocation(),
                 request.boothNumber() != null ? request.boothNumber() : booth.getBoothNumber(),
+                request.progressDate() != null ? request.progressDate() : booth.getProgressDate(),
                 request.boothDescription() != null ? request.boothDescription() : booth.getBoothDescription(),
                 imageInfo != null ? imageInfo.fileKey() : booth.getImageKey(),
                 imageInfo != null ? imageInfo.accessUrl() : booth.getImageUrl()
