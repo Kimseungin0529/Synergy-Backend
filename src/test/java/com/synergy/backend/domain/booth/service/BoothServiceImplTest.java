@@ -15,7 +15,6 @@ import com.synergy.backend.global.util.file.util.FileS3Util;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.BDDMockito;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -57,12 +56,14 @@ public class BoothServiceImplTest {
     @Test
     void createBooth() throws WriterException {
         // given
+        String router = "booth/" + 1;
         Long conferenceId = 1L;
         LocalDate progressDate = LocalDate.of(3012, 11, 11);
         BoothRequestDto request = new BoothRequestDto("부스A", "회사A", progressDate, "위치A", "101", "설명A");
         Conference conference = mock(Conference.class);
+        String secretCode = "secretCode";
 
-        Booth booth = new Booth(request.companyName(), request.companyType(), request.boothLocation(), request.boothNumber(), request.progressDate(), request.boothDescription(), conference);
+        Booth booth = new Booth(request.companyName(), request.companyType(), request.boothLocation(), request.boothNumber(), request.progressDate(), secretCode, request.boothDescription(), conference);
         Booth spyBooth = spy(booth);
         given(spyBooth.getId()).willReturn(10L);
 
@@ -76,7 +77,7 @@ public class BoothServiceImplTest {
         given(fileS3Util.uploadFile(any())).willReturn(imageDto);
 
         // when
-        BoothDetailResponseDto response = boothService.createBooth(conferenceId, request, mockImageFile);
+        BoothDetailResponseDto response = boothService.createBooth(conferenceId, router, request, mockImageFile);
 
         // then
         assertThat(response).isNotNull();
@@ -110,7 +111,7 @@ public class BoothServiceImplTest {
         Conference conference = mock(Conference.class);
 
         LocalDate progressDate = LocalDate.of(3012, 11, 11);
-        Booth booth = new Booth("부스A", "회사A", "위치A", "101", progressDate, "설명A", conference);
+        Booth booth = new Booth("부스A", "회사A", "위치A", "101", progressDate, "secretCode", "설명A", conference);
 
         when(conference.getId()).thenReturn(conferenceId);
         when(boothRepository.findById(boothId)).thenReturn(Optional.of(booth));
@@ -148,7 +149,7 @@ public class BoothServiceImplTest {
         BoothRequestDto request = new BoothRequestDto("부스B", "회사B", progressDate, "위치B", "202", "설명B");
         Conference conference = mock(Conference.class);
         when(conference.getId()).thenReturn(conferenceId);
-        Booth booth = new Booth("부스A", "회사A", "위치A", "101", progressDate, "설명A", conference);
+        Booth booth = new Booth("부스A", "회사A", "위치A", "101", progressDate, "secretCode", "설명A", conference);
         when(boothRepository.findById(boothId)).thenReturn(Optional.of(booth));
 
         // when
