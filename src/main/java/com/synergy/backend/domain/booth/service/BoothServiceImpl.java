@@ -1,8 +1,8 @@
 package com.synergy.backend.domain.booth.service;
 
 import com.google.zxing.WriterException;
-import com.synergy.backend.domain.booth.dto.BoothRequestDto;
 import com.synergy.backend.domain.booth.dto.BoothDetailResponseDto;
+import com.synergy.backend.domain.booth.dto.BoothRequestDto;
 import com.synergy.backend.domain.booth.dto.BoothResponseDto;
 import com.synergy.backend.domain.booth.entity.Booth;
 import com.synergy.backend.domain.booth.exception.NotFoundBoothException;
@@ -45,17 +45,19 @@ public class BoothServiceImpl implements BoothService {
                 request.boothDescription(),
                 conference
         );
-
+        Booth savedBooth = boothRepository.save(booth);
         String secretCode = UUID.randomUUID().toString();
-        String url = "/booth/" + booth.getId();
+        savedBooth.updateSecretCode(secretCode);
+
+        String url = "/booth/" + savedBooth.getId();
         byte[] qrCode = qrService.generateQRCode(url, secretCode);
-        booth.updateSecretCode(secretCode);
-        FileInformationDto qrInfo = fileS3Util.uploadQRCode(qrCode, booth.getCompanyName());
-        booth.updateQr(qrInfo);
+        FileInformationDto qrInfo = fileS3Util.uploadQRCode(qrCode, savedBooth.getCompanyName());
+        savedBooth.updateQr(qrInfo);
 
         FileInformationDto imageInfo = fileS3Util.uploadFile(imageFile);
         booth.updateImage(imageInfo);
         boothRepository.save(booth);
+
         return new BoothDetailResponseDto(booth);
     }
 
