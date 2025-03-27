@@ -2,6 +2,7 @@ package com.synergy.backend.domain.session.controller;
 
 import java.util.List;
 
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -42,10 +43,13 @@ public class SessionController {
 	@SwaggerSummaryRole({RoleType.ADMIN})
 	@PostMapping
 	public ApiResponse createSession(@AuthenticationPrincipal CustomUserDetails user,
+		HttpServletRequest request,
 		@PathVariable(name = "conferenceId") Long conferenceId,
 		@RequestPart @Valid SessionReqDto sessionReqDto,
 		@RequestPart MultipartFile multipartFile) throws WriterException {
-		sessionService.createSession(user.getIdentifier(), conferenceId, sessionReqDto, multipartFile);
+
+		String router = request.getHeader("Origin");
+		sessionService.createSession(user.getIdentifier(), router, conferenceId, sessionReqDto, multipartFile);
 
 		return ApiResponse.ok("Session created successfully!", 200);
 	}
