@@ -71,7 +71,7 @@ public class BoothServiceImplTest {
 
         given(conferenceRepository.findById(conferenceId)).willReturn(Optional.of(conference));
         given(boothRepository.save(any(Booth.class))).willReturn(spyBooth);
-        given(qrService.generateQRCode(eq("부스A"), any(), anyString())).willReturn(new byte[]{1, 2, 3});
+        given(qrService.generateQRCode(anyString(), anyString())).willReturn(new byte[]{1, 2, 3});
         given(fileS3Util.uploadQRCode(any(), anyString())).willReturn(qrDto);
         given(fileS3Util.uploadFile(any())).willReturn(imageDto);
 
