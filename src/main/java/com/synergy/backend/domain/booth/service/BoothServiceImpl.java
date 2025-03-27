@@ -32,22 +32,23 @@ public class BoothServiceImpl implements BoothService {
 
     @Transactional
     @Override
-    public BoothResponseDto createBooth(Long conferenceId, BoothRequestDto request, MultipartFile imageFile) throws WriterException {
+    public BoothResponseDto createBooth(Long conferenceId, String router, BoothRequestDto request, MultipartFile imageFile) throws WriterException {
         Conference conference = ifConferenceExists(conferenceId);
 
+        String secretCode = UUID.randomUUID().toString();
         Booth booth = new Booth(
                 request.companyName(),
                 request.companyType(),
                 request.boothLocation(),
                 request.boothNumber(),
                 request.boothDescription(),
+                secretCode,
                 conference
         );
 
-        String secretCode = UUID.randomUUID().toString();
-        String url = "/booth/" + booth.getId();
+        boothRepository.save(booth);
+        String url = router+ "booth/" + booth.getId();
         byte[] qrCode = qrService.generateQRCode(url, secretCode);
-        booth.setSecretCode(secretCode);
         FileInformationDto qrInfo = fileS3Util.uploadQRCode(qrCode, booth.getCompanyName());
         booth.setQrKey(qrInfo.fileKey());
         booth.setQrUrl(qrInfo.accessUrl());
@@ -55,8 +56,6 @@ public class BoothServiceImpl implements BoothService {
         FileInformationDto imageInfo = fileS3Util.uploadFile(imageFile);
         booth.setImageKey(imageInfo.fileKey());
         booth.setImageUrl(imageInfo.accessUrl());
-
-        boothRepository.save(booth);
         return new BoothResponseDto(booth);
     }
 

@@ -15,7 +15,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Lob;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
 import lombok.Getter;
@@ -58,16 +57,16 @@ public class Booth {
 	@Column(nullable = false, unique = true)
 	private String secretCode;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String qrKey;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String qrUrl;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String imageKey;
 
-	@Column(nullable = false)
+	@Column(nullable = true)
 	private String imageUrl;
 
 	public void addAdmin(Admin admin) {
@@ -76,12 +75,13 @@ public class Booth {
 	}
 
 	public Booth(String companyName, String companyType, String boothLocation, String boothNumber,
-				 String boothDescription, Conference conference) {
+				 String secretCode, String boothDescription, Conference conference) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
 		this.boothNumber = boothNumber;
 		this.boothDescription = boothDescription;
+		this.secretCode = secretCode;
 		this.conference = conference;
 	}
 
