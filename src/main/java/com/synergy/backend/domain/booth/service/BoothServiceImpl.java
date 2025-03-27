@@ -45,7 +45,8 @@ public class BoothServiceImpl implements BoothService {
         );
 
         String secretCode = UUID.randomUUID().toString();
-        byte[] qrCode = qrService.generateQRCode(request.companyName(), booth.getId(), secretCode);
+        String url = "/booth/" + booth.getId();
+        byte[] qrCode = qrService.generateQRCode(url, secretCode);
         booth.setSecretCode(secretCode);
         FileInformationDto qrInfo = fileS3Util.uploadQRCode(qrCode, booth.getCompanyName());
         booth.setQrKey(qrInfo.fileKey());
