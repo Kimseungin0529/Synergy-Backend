@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.security.CustomUserDetails;
+import com.synergy.backend.global.token.exception.InvalidRefreshTokenException;
 
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
@@ -73,7 +74,7 @@ public class JwtProvider {
 		} catch (ExpiredJwtException e) {
 			throw e;
 		} catch (JwtException | IllegalArgumentException e) {
-			throw new JwtException("유효하지 않은 RefreshToken", e);
+			throw new InvalidRefreshTokenException();
 		}
 	}
 
