@@ -1,0 +1,27 @@
+@startuml
+actor 채용담당자
+participant "RecruiterController" as Controller
+participant "RecruiterAttendeeLikeServiceImpl" as Service
+participant "RecruiterRepository" as RecruiterRepo
+participant "AttendeeRepository" as AttendeeRepo
+participant "RecruiterAttendeeLikeRepository" as LikeRepo
+
+채용담당자 -> Controller : POST /attendees/{attendeeId}/like
+Controller -> Service : likeAttendee(recruiterId, attendeeId)
+
+Service -> RecruiterRepo : findById(recruiterId)
+RecruiterRepo --> Service : Recruiter
+
+Service -> AttendeeRepo : findById(attendeeId)
+AttendeeRepo --> Service : Attendee
+
+Service -> LikeRepo : existsByRecruiterAndAttendee(recruiter, attendee)
+alt 이미 좋아요한 경우
+    Service -> Service : DuplicateLikeException 발생
+else
+    Service -> LikeRepo : save(RecruiterAttendeeLike.of(...))
+end
+
+Service --> Controller : 완료 응답
+Controller --> 채용담당자 : 200 OK
+@enduml

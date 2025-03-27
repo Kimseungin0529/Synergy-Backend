@@ -18,4 +18,6 @@ public interface AuthService {
 	void passwordReset(String email, String newPassword);
 
 	TokenWithRefreshToken reissueRefreshToken(String refreshToken);
+
+	void logout(String refreshToken);
 }

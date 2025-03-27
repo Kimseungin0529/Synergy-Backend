@@ -1,0 +1,25 @@
+@startuml
+actor 관리자
+participant "AdminController" as Controller
+participant "AdminServiceImpl" as Service
+participant "AttendeeRepository" as Repo
+participant "AttendeeLevelRankingResponseDto" as Dto
+
+== 등급별 회원 랭킹 조회 ==
+
+관리자 -> Controller : GET /attendees/level-rankings\n(membershipLevelType = 선택)
+Controller -> Service : 등급별 또는 전체 참가자 랭킹 목록 요청
+
+alt levelType != null
+    Service -> Repo : 선택한 등급의 참가자를 포인트 내림차순으로 조회
+    Repo --> Service : 등급에 해당하는 참가자 목록
+else
+    Service -> Repo : 전체 참가자를 포인트 내림차순으로 조회
+end
+
+Service -> Dto : 참가자 목록을 DTO로 변환
+Dto --> Service : 변환된 DTO 목록 반환
+Service --> Controller : 등급 랭킹 응답 반환
+Controller --> 관리자 : 참가자 등급 랭킹 목록 응답
+
+@enduml

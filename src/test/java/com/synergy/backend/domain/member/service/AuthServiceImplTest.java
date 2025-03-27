@@ -19,6 +19,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import com.synergy.backend.domain.conference.entity.Conference;
+import com.synergy.backend.domain.conference.exception.InvalidTicketCodeException;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponseDto;
@@ -400,5 +401,76 @@ class AuthServiceImplTest {
 		// then
 		assertThatThrownBy(() -> authService.reissueRefreshToken(currentRefreshToken))
 			.isInstanceOf(InvalidRefreshTokenException.class);
+	}
+
+	@DisplayName("로그아웃 시 저장된 리프레시 토큰을 삭제한다.")
+	@Test
+	void logout_success() {
+		// given
+		String refreshToken = "validRefreshToken";
+		String identifier = mockAttendee.getIdentifier();
+
+		when(jwtProvider.getIdentifierFromToken(refreshToken)).thenReturn(identifier);
+
+		// when
+		authService.logout(refreshToken);
+
+		// then
+		verify(tokenService).deleteRefreshToken(identifier);
+	}
+
+	@DisplayName("재설정 요청 시 존재하지 않는 이메일이면 예외 발생")
+	@Test
+	void passwordResetRequest_emailNotFound_ThrowsException() {
+		// given
+		when(mailService.isVerified(requestDto.email())).thenReturn(true);
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.empty());
+
+		// when&then
+		assertThatThrownBy(() -> authService.passwordResetRequest(
+			requestDto.email(), requestDto.name(), requestDto.phone()))
+			.isInstanceOf(InvalidAccountInformationException.class);
+	}
+
+	@DisplayName("비밀번호 재설정 요청 시 이메일 인증이 안 되어 있으면 예외가 발생한다.")
+	@Test
+	void passwordResetRequest_emailNotVerified_ThrowsException() {
+		// given
+		when(mailService.isVerified(requestDto.email())).thenReturn(false);
+
+		// when & then
+		assertThatThrownBy(() -> authService.passwordResetRequest(
+			requestDto.email(), requestDto.name(), requestDto.phone()))
+			.isInstanceOf(EmailNotVerifiedException.class);
+	}
+
+	@DisplayName("티켓 코드가 유효하지 않으면 예외가 발생한다.")
+	@Test
+	void registerAttendee_InvalidTicketCode_ThrowsException() {
+		// given
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.empty());
+		when(mailService.isVerified(requestDto.email())).thenReturn(true);
+		when(conferenceRepository.findByTicketCode(requestDto.ticketCode())).thenReturn(Optional.empty());
+
+		// when & then
+		assertThatThrownBy(() -> authService.registerAttendee(requestDto))
+			.isInstanceOf(InvalidTicketCodeException.class);
+	}
+
+	@DisplayName("리프래시 토큰 재발급 시 사용자 정보가 존재하지 않으면 예외 발생")
+	@Test
+	void reissueRefreshToken_UserNotFound_ThrowsException() {
+		// given
+		String token = "validToken";
+		String identifier = "someone@example.com";
+
+		when(jwtProvider.validateToken(token)).thenReturn(true);
+		when(jwtProvider.getIdentifierFromToken(token)).thenReturn(identifier);
+		when(tokenService.getStoredRefreshToken(identifier)).thenReturn(token);
+		when(userDetailsService.loadUserByUsername(identifier)).thenThrow(new NotFoundUserException());
+
+		// when & then
+		assertThatThrownBy(() -> authService.reissueRefreshToken(token))
+			.isInstanceOf(NotFoundUserException.class);
 	}
 }

@@ -1,0 +1,48 @@
+@startuml
+actor 브라우저
+participant "AttendeeController" as Controller
+participant "AttendeeServiceImpl" as Service
+participant "FileS3Util" as S3
+boundary "Amazon S3"
+participant "AttendeeRepository" as Repo
+participant "JobGroupRepository" as GroupRepo
+participant "JobPositionRepository" as PositionRepo
+participant "Attendee" as Attendee
+
+브라우저 -> Controller : PATCH /onboarding/job-info-details
+note right of 브라우저
+  요청 데이터:
+  multipart/form-data
+  - request: JobInfoDetailsRequestDto (JSON)
+  - profileImage: MultipartFile (이미지 파일)
+end note
+
+Controller -> Service : 참가자의 온보딩 상세 직무정보 등록 요청 처리
+
+Service -> Repo : 이메일로 참가자 조회
+Repo --> Service : 참가자 정보 반환
+
+alt 이미지가 존재할 경우
+    Service -> S3 : 프로필 이미지 업로드 요청
+    S3 -> "Amazon S3" : 이미지 업로드 요청
+    "Amazon S3" --> S3 : 이미지 URL 반환
+    S3 --> Service : 업로드된 이미지 URL 반환
+    Service -> Attendee : 참가자에게 프로필 이미지 URL 설정
+end
+
+Service -> GroupRepo : 직군 코드로 직군 조회
+Service -> PositionRepo : 직무 코드로 직무 조회
+Service -> Service : 코드값들을 Enum/Set<Enum>으로 변환
+
+Service -> Attendee : 참가자의 온보딩 상세 직무정보 설정
+note right of Service
+  전달 데이터:
+  - JobGroup
+  - JobPosition
+  - Enum들 (EducationLevelType, AgeGroup 등)
+  - 보유 기술 스택 (String)
+  - 희망 근무 지역, 직장 선택 요소 등
+end note
+
+return
+@enduml
