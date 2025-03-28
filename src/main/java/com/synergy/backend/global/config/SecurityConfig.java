@@ -84,10 +84,10 @@ public class SecurityConfig {
 		CorsConfiguration configuration = new CorsConfiguration();
 
 		configuration.setAllowedOrigins(Arrays.asList(
-			"https://synergy-front-vert.vercel.app/", // 프론트엔드 도메인 허용
-			"http://localhost:3000/", // 로컬 프론트엔드 허용
-			"http://localhost:8080/", // 로컬 백엔드 테스트 허용
-			"http://localhost:5173/" // 로컬 백엔드 테스트 허용
+			"https://synergy-front-vert.vercel.app", // 프론트엔드 도메인 허용
+			"http://localhost:3000", // 로컬 프론트엔드 허용
+			"http://localhost:8080", // 로컬 백엔드 테스트 허용
+			"http://localhost:5173" // 로컬 백엔드 테스트 허용
 		));
 
 		configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PATCH", "PUT", "DELETE", "OPTIONS"));
