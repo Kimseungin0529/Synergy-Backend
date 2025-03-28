@@ -97,7 +97,7 @@ class RecruiterControllerTest {
 
 		given(recruiterService.getAttendeesBy(any(Pageable.class), eq(recruiterId), eq(requestCondition)))
 			.willReturn(response);
-		given(jwtProvider.validateToken(anyString())).willReturn(true);
+		given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
 		//given(jwtProvider.getEmailOrAuthCodeFromToken(anyString())).willReturn("RC12345");
 		given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.RECRUITER);
 		given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));

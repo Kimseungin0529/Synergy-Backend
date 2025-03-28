@@ -10,12 +10,21 @@ import org.springframework.stereotype.Component;
 
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.security.CustomUserDetails;
+import com.synergy.backend.global.token.exception.ExpiredRefreshTokenException;
+import com.synergy.backend.global.token.exception.InvalidAccessTokenException;
+import com.synergy.backend.global.token.exception.InvalidRefreshTokenException;
+import com.synergy.backend.global.token.exception.InvalidRoleClaimException;
+import com.synergy.backend.global.token.exception.MissingRoleClaimException;
 
+import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class JwtProvider {
 
@@ -28,19 +37,51 @@ public class JwtProvider {
 	}
 
 	public String generateAccessToken(CustomUserDetails userDetails) {
-		return generateToken(userDetails, jwtProperties.accessTokenExpiration());
+		return generateToken(userDetails, jwtProperties.accessTokenExpiration(), "access");
 	}
 
 	public String generateRefreshToken(CustomUserDetails userDetails) {
-		return generateToken(userDetails, jwtProperties.refreshTokenExpiration());
+		return generateToken(userDetails, jwtProperties.refreshTokenExpiration(), "refresh");
 	}
 
-	public boolean validateToken(String token) {
+	public boolean validateAccessToken(String token) {
 		try {
-			Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token);
+			Claims claims = Jwts.parserBuilder()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+
+			String type = claims.get("type", String.class);
+			if (!"access".equals(type)) {
+				throw new InvalidAccessTokenException();
+			}
 			return true;
+		} catch (ExpiredJwtException e) {
+			throw e;
 		} catch (JwtException | IllegalArgumentException e) {
-			return false;
+			throw new InvalidAccessTokenException();
+		}
+	}
+
+	public boolean validateRefreshToken(String token) {
+		try {
+			Claims claims = Jwts.parserBuilder()
+				.setSigningKey(key)
+				.build()
+				.parseClaimsJws(token)
+				.getBody();
+
+			String type = claims.get("type", String.class);
+			if (!"refresh".equals(type)) {
+				throw new InvalidRefreshTokenException();
+			}
+			return true;
+		} catch (ExpiredJwtException e) {
+			throw new ExpiredRefreshTokenException();
+		} catch (JwtException | IllegalArgumentException e) {
+			log.warn("❌ [validateRefreshToken] JwtException caught: {}", e.getClass().getSimpleName());
+			throw new InvalidRefreshTokenException();
 		}
 	}
 
@@ -57,7 +98,7 @@ public class JwtProvider {
 			.get("role", String.class);
 
 		if (role == null) {
-			throw new JwtException("Role claim is missing in the token");
+			throw new MissingRoleClaimException();
 		}
 
 		if (role.startsWith("ROLE_")) {
@@ -67,16 +108,17 @@ public class JwtProvider {
 		try {
 			return RoleType.valueOf(role);
 		} catch (IllegalArgumentException e) {
-			throw new JwtException("Invalid role in token: " + role);
+			throw new InvalidRoleClaimException();
 		}
 	}
 
-	private String generateToken(CustomUserDetails userDetails, Duration expiration) {
+	private String generateToken(CustomUserDetails userDetails, Duration expiration, String tokenType) {
 
 		return Jwts.builder()
 			.setSubject(userDetails.getIdentifier())
 			.claim("id", userDetails.getId())
 			.claim("role", userDetails.getRole().getAuthority())
+			.claim("type", tokenType)
 			.setIssuedAt(new Date())
 			.setExpiration(new Date(System.currentTimeMillis() + expiration.toMillis()))
 			.signWith(key, SignatureAlgorithm.HS256)

@@ -324,7 +324,7 @@ class AuthServiceImplTest {
 		assertThat(mockAttendee.getPassword()).isEqualTo("encodedNewPassword");
 	}
 
-	@DisplayName("사용자 로그인 시 엑세스토큰과 리프래시토큰이 발급된다.")
+	@DisplayName("사용자 로그인 시 엑세스토큰과 리프레시토큰이 발급된다.")
 	@Test
 	void loginAsAttendee_TokenIssued() {
 		// given
@@ -345,7 +345,7 @@ class AuthServiceImplTest {
 		verify(tokenService).storeRefreshToken(requestDto.email(), refreshToken);
 	}
 
-	@DisplayName("유효한 리프래시 토큰으로 액세스 토큰과 새로운 리프래시 토큰을 재발급한다.")
+	@DisplayName("유효한 리프레시 토큰으로 액세스 토큰과 새로운 리프레시 토큰을 재발급한다.")
 	@Test
 	void reissueRefreshToken_success() {
 		// given
@@ -355,7 +355,7 @@ class AuthServiceImplTest {
 		String identifier = mockAttendee.getIdentifier();
 		CustomUserDetails userDetails = new CustomUserDetails(mockAttendee);
 
-		when(jwtProvider.validateToken(currentRefreshToken)).thenReturn(true);
+		when(jwtProvider.validateRefreshToken(currentRefreshToken)).thenReturn(true);
 		when(jwtProvider.getIdentifierFromToken(currentRefreshToken)).thenReturn(identifier);
 		when(tokenService.getStoredRefreshToken(identifier)).thenReturn(currentRefreshToken);
 		when(userDetailsService.loadUserByUsername(identifier)).thenReturn(userDetails);
@@ -375,26 +375,26 @@ class AuthServiceImplTest {
 		verify(tokenService).storeRefreshToken(identifier, newRefreshToken);
 	}
 
-	@DisplayName("리프래시 토큰이 유효하지 않으면 예외를 던진다.")
+	@DisplayName("리프레시 토큰이 유효하지 않으면 예외를 던진다.")
 	@Test
 	void reissueRefreshToken_invalidToken() {
 		// given
 		String invalidToken = "invalidToken";
-		when(jwtProvider.validateToken(invalidToken)).thenReturn(false);
+		when(jwtProvider.validateRefreshToken(invalidToken)).thenReturn(false);
 
 		// then
 		assertThatThrownBy(() -> authService.reissueRefreshToken(invalidToken))
 			.isInstanceOf(InvalidRefreshTokenException.class);
 	}
 
-	@DisplayName("저장된 리프래시 토큰과 다르면 예외를 던진다.")
+	@DisplayName("저장된 리프레시 토큰과 다르면 예외를 던진다.")
 	@Test
 	void reissueRefreshToken_tokenMismatch() {
 		// given
 		String currentRefreshToken = "current";
 		String identifier = "user@example.com";
 
-		when(jwtProvider.validateToken(currentRefreshToken)).thenReturn(true);
+		when(jwtProvider.validateRefreshToken(currentRefreshToken)).thenReturn(true);
 		when(jwtProvider.getIdentifierFromToken(currentRefreshToken)).thenReturn(identifier);
 		when(tokenService.getStoredRefreshToken(identifier)).thenReturn("different");
 
@@ -457,14 +457,14 @@ class AuthServiceImplTest {
 			.isInstanceOf(InvalidTicketCodeException.class);
 	}
 
-	@DisplayName("리프래시 토큰 재발급 시 사용자 정보가 존재하지 않으면 예외 발생")
+	@DisplayName("리프레시 토큰 재발급 시 사용자 정보가 존재하지 않으면 예외 발생")
 	@Test
 	void reissueRefreshToken_UserNotFound_ThrowsException() {
 		// given
 		String token = "validToken";
 		String identifier = "someone@example.com";
 
-		when(jwtProvider.validateToken(token)).thenReturn(true);
+		when(jwtProvider.validateRefreshToken(token)).thenReturn(true);
 		when(jwtProvider.getIdentifierFromToken(token)).thenReturn(identifier);
 		when(tokenService.getStoredRefreshToken(identifier)).thenReturn(token);
 		when(userDetailsService.loadUserByUsername(identifier)).thenThrow(new NotFoundUserException());

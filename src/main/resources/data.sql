@@ -269,4 +269,3 @@ VALUES
     (5, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null),
     (6, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null);
 
-

@@ -1,7 +1,6 @@
 package com.synergy.backend.global.jwt;
 
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.List;
 
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -30,24 +29,25 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 	private final JwtProvider jwtProvider;
 	private final CustomUserDetailsService userDetailsService;
+	private final ObjectMapper objectMapper;
 
-	private final List<String> excludedPaths = Arrays.asList("/api/v1/auth/attendee/signup",
-		"/api/v1/auth/attendee/login");
+	private final List<String> excludedPathPrefixes = List.of("/api/v1/auth");
 
 	@Override
 	protected boolean shouldNotFilter(HttpServletRequest request) throws ServletException {
 		String path = request.getRequestURI();
-		return excludedPaths.stream().anyMatch(path::startsWith);
+		return excludedPathPrefixes.stream().anyMatch(path::startsWith);
 	}
 
+	// Access Token만 필터에서 처리
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
-		throws ServletException, IOException {
+		throws IOException {
 
 		try {
 			String token = resolveToken(request);
 
-			if (token != null && jwtProvider.validateToken(token)) {
+			if (token != null && jwtProvider.validateAccessToken(token)) {
 				String username = jwtProvider.getIdentifierFromToken(token);
 				RoleType role = jwtProvider.getRoleTypeFromToken(token);
 
@@ -63,8 +63,16 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			filterChain.doFilter(request, response);
 		} catch (UnKnownUserTypeException e) {
+			log.warn("Unknown user type", e);
 			handleException(response, HttpServletResponse.SC_FORBIDDEN, "존재하지 않는 사용자입니다.");
+		} catch (io.jsonwebtoken.ExpiredJwtException e) {
+			log.warn("Expired JWT token", e);
+			handleException(response, HttpServletResponse.SC_UNAUTHORIZED, "토큰이 만료되었습니다.");
+		} catch (io.jsonwebtoken.JwtException e) {
+			log.warn("Invalid JWT token", e);
+			handleException(response, HttpServletResponse.SC_UNAUTHORIZED, "유효하지 않은 토큰입니다.");
 		} catch (Exception e) {
+			log.error("Authentication failed", e);
 			handleException(response, HttpServletResponse.SC_UNAUTHORIZED, "인증 실패");
 		}
 	}
@@ -82,9 +90,10 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(
-			new ObjectMapper().writeValueAsString(
+			objectMapper.writeValueAsString(
 				ApiResponse.error(message, status)
 			)
 		);
+		response.flushBuffer();
 	}
 }
