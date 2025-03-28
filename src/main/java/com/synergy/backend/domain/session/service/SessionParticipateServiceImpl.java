@@ -8,6 +8,7 @@ import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
+import com.synergy.backend.domain.point.service.PointService;
 import com.synergy.backend.domain.qrCode.service.QrService;
 import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
 import com.synergy.backend.domain.session.dto.questionDto.QuestionReqDto;
@@ -33,6 +34,9 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
+import static com.synergy.backend.domain.member.entity.QAttendee.attendee;
+import static com.synergy.backend.domain.session.entity.QSession.session;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -45,6 +49,7 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
     private final AttendeeSessionRepository attendeeSessionRepository;
     private final AttendeeRepository attendeeRepository;
     private final AdminRepository adminRepository;
+    private final PointService pointService;
 
     @Transactional
     @Override
@@ -59,6 +64,9 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
                 });
         AttendeeSession attendeeSession = AttendeeSession.of(currentMember, session);
         attendeeSessionRepository.save(attendeeSession);
+
+        pointService.addSessionAttendPoint(currentMember.getId(), session.getId());
+
         return SessionResDto.from(session);
     }
 
@@ -72,6 +80,8 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
         sessionQuestionRepository.save(question);
 
         attendeeSession.addSessionQuestion(question);
+
+        pointService.addSessionQnaPoint(attendee.getId(), sessionId);
     }
 
     @Transactional(readOnly = true)

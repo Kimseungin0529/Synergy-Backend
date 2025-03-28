@@ -10,6 +10,8 @@ import com.synergy.backend.domain.booth.repository.BoothRepository;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
+import com.synergy.backend.domain.point.entity.PointType;
+import com.synergy.backend.domain.point.service.PointService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -23,6 +25,7 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
     private final BoothParticipationRepository boothParticipationRepository;
     private final BoothRepository boothRepository;
     private final AttendeeRepository attendeeRepository;
+    private final PointService pointService;
 
     @Transactional
     @Override
@@ -38,6 +41,8 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
         }
 
         boothParticipationRepository.save(BoothParticipation.of(booth, attendee));
+
+        pointService.addBoothPoint(attendeeId, boothId);
     }
 
     @Transactional(readOnly = true)
