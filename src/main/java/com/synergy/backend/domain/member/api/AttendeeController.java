@@ -110,4 +110,14 @@ public class AttendeeController {
 		return ApiResponse.ok(recruiterAttendeeLikeService.getLikedRecruiters(userDetails.getId()), 200);
 	}
 
+	@Operation(summary = "참가자 프로필 사진 수정", description = "참가자가 프로필 사진을 수정합니다.")
+	@SwaggerSummaryRole({RoleType.ATTENDEE})
+	@PreAuthorize("hasRole('ATTENDEE')")
+	@PatchMapping(path = "/profile-image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	public ApiResponse<?> updateProfileImage(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestPart(value = "profileImage") MultipartFile profileImage) {
+		return ApiResponse.ok(attendeeService.updateProfileImage(userDetails, profileImage), 200);
+	}
+
 }

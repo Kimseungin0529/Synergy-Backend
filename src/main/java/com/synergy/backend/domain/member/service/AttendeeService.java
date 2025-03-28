@@ -6,7 +6,9 @@ import com.synergy.backend.domain.member.api.dto.request.JobInfoDetailsRequestDt
 import com.synergy.backend.domain.member.api.dto.request.JobInfoRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.AttendeeFullInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.MyInfoResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.ProfileImageUpdatedResponseDto;
 import com.synergy.backend.domain.member.entity.RoleType;
+import com.synergy.backend.global.security.CustomUserDetails;
 
 public interface AttendeeService {
 
@@ -17,4 +19,6 @@ public interface AttendeeService {
 	MyInfoResponseDto getMyInformation(String identifier);
 
 	AttendeeFullInfoResponseDto getAttendeeInfoDetail(Long attendeeId, String identifier, RoleType role);
+
+	ProfileImageUpdatedResponseDto updateProfileImage(CustomUserDetails userDetails, MultipartFile profileImage);
 }

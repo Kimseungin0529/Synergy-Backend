@@ -25,6 +25,7 @@ import com.synergy.backend.domain.member.api.dto.request.JobInfoRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.AttendeeFullInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.MyInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.NextPointResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.ProfileImageUpdatedResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.member.entity.details.AgeGroup;
@@ -40,6 +41,9 @@ import com.synergy.backend.domain.member.exception.AccessDeniedException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.vo.NextPointInfo;
+import com.synergy.backend.global.security.CustomUserDetails;
+import com.synergy.backend.global.util.file.dto.FileInformationDto;
+import com.synergy.backend.global.util.file.exception.EmptyImageFileException;
 import com.synergy.backend.global.util.file.util.FileS3Util;
 
 import lombok.RequiredArgsConstructor;
@@ -122,6 +126,19 @@ public class AttendeeServiceImpl implements AttendeeService {
 		Attendee attendee = findAttendeeById(attendeeId);
 
 		return AttendeeFullInfoResponseDto.from(attendee);
+	}
+
+	@Transactional
+	@Override
+	public ProfileImageUpdatedResponseDto updateProfileImage(CustomUserDetails userDetails,
+		MultipartFile profileImage) {
+		if (profileImage == null || profileImage.isEmpty()) {
+			throw new EmptyImageFileException();
+		}
+		Attendee attendee = findAttendeeById(userDetails.getId());
+		FileInformationDto fileInformationDto = fileS3Util.uploadFile(profileImage);
+		attendee.addImage(fileInformationDto);
+		return ProfileImageUpdatedResponseDto.from(fileInformationDto.accessUrl());
 	}
 
 	// 관심사 추가
