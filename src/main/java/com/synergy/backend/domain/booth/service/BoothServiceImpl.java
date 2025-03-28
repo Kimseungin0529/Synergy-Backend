@@ -26,97 +26,97 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class BoothServiceImpl implements BoothService {
 
-	private final BoothRepository boothRepository;
-	private final ConferenceRepository conferenceRepository;
-	private final FileS3Util fileS3Util;
-	private final QrService qrService;
+    private final BoothRepository boothRepository;
+    private final ConferenceRepository conferenceRepository;
+    private final FileS3Util fileS3Util;
+    private final QrService qrService;
 
-	@Transactional
-	@Override
-	public BoothDetailResponseDto createBooth(Long conferenceId, String router, BoothRequestDto request, MultipartFile imageFile) throws WriterException {
-		Conference conference = ifConferenceExists(conferenceId);
+    @Transactional
+    @Override
+    public BoothDetailResponseDto createBooth(Long conferenceId, String router, BoothRequestDto request, MultipartFile imageFile) throws WriterException {
+        Conference conference = ifConferenceExists(conferenceId);
 
-		String secretCode = UUID.randomUUID().toString();
-		Booth booth = new Booth(
-			request.companyName(),
-			request.companyType(),
-			request.boothLocation(),
-			request.boothNumber(),
-			request.progressDate(),
-			request.boothDescription(),
-			secretCode,
-			conference
-		);
+        String secretCode = UUID.randomUUID().toString();
+        Booth booth = new Booth(
+                request.companyName(),
+                request.companyType(),
+                request.boothLocation(),
+                request.boothNumber(),
+                request.progressDate(),
+                request.boothDescription(),
+                secretCode,
+                conference
+        );
 
-		Booth savedBooth = boothRepository.save(booth);
-		String url = router+ "booth/" + savedBooth.getId();
-		byte[] qrCode = qrService.generateQRCode(url, secretCode);
-		FileInformationDto qrInfo = fileS3Util.uploadQRCode(qrCode, savedBooth.getCompanyName());
-		savedBooth.updateQr(qrInfo);
+        Booth savedBooth = boothRepository.save(booth);
+        String url = router+ "booth/" + savedBooth.getId();
+        byte[] qrCode = qrService.generateQRCode(url, secretCode);
+        FileInformationDto qrInfo = fileS3Util.uploadQRCode(qrCode, savedBooth.getCompanyName());
+        savedBooth.updateQr(qrInfo);
 
-		FileInformationDto imageInfo = fileS3Util.uploadFile(imageFile);
-		savedBooth.updateImage(imageInfo);
-		return new BoothDetailResponseDto(savedBooth);
-	}
+        FileInformationDto imageInfo = fileS3Util.uploadFile(imageFile);
+        savedBooth.updateImage(imageInfo);
+        return new BoothDetailResponseDto(savedBooth);
+    }
 
-	@Transactional(readOnly = true)
-	@Override
-	public Page<BoothResponseDto> getAllBooths(Long conferenceId, Pageable pageable) {
-		return boothRepository.findAllByConferenceId(conferenceId, pageable)
-			.map(BoothResponseDto::of);
-	}
+    @Transactional(readOnly = true)
+    @Override
+    public Page<BoothResponseDto> getAllBooths(Long conferenceId, Pageable pageable) {
+        return boothRepository.findAllByConferenceId(conferenceId, pageable)
+                .map(BoothResponseDto::of);
+    }
 
-	@Transactional(readOnly = true)
-	@Override
-	public BoothDetailResponseDto getBoothById(Long conferenceId, Long id) {
-		Booth booth = ifBoothExists(id);
-		if (!booth.getConference().getId().equals(conferenceId)) {
-			throw new NotFoundBoothException();
-		}
-		return new BoothDetailResponseDto(booth);
-	}
+    @Transactional(readOnly = true)
+    @Override
+    public BoothDetailResponseDto getBoothById(Long conferenceId, Long id) {
+        Booth booth = ifBoothExists(id);
+        if (!booth.getConference().getId().equals(conferenceId)) {
+            throw new NotFoundBoothException();
+        }
+        return new BoothDetailResponseDto(booth);
+    }
 
-	@Transactional
-	@Override
-	public BoothDetailResponseDto updateBooth(Long conferenceId, Long id, BoothRequestDto request, MultipartFile imageFile) {
-		Booth booth = ifBoothExists(id);
-		if (!booth.getConference().getId().equals(conferenceId)) {
-			throw new NotFoundConference();
-		}
+    @Transactional
+    @Override
+    public BoothDetailResponseDto updateBooth(Long conferenceId, Long id, BoothRequestDto request, MultipartFile imageFile) {
+        Booth booth = ifBoothExists(id);
+        if (!booth.getConference().getId().equals(conferenceId)) {
+            throw new NotFoundConference();
+        }
 
-		FileInformationDto imageInfo = (imageFile != null) ? fileS3Util.uploadFile(imageFile) : null;
+        FileInformationDto imageInfo = (imageFile != null) ? fileS3Util.uploadFile(imageFile) : null;
 
-		booth.updateInfo(
-			request.companyName() != null ? request.companyName() : booth.getCompanyName(),
-			request.companyType() != null ? request.companyType() : booth.getCompanyType(),
-			request.boothLocation() != null ? request.boothLocation() : booth.getBoothLocation(),
-			request.boothNumber() != null ? request.boothNumber() : booth.getBoothNumber(),
-			request.progressDate() != null ? request.progressDate() : booth.getProgressDate(),
-			request.boothDescription() != null ? request.boothDescription() : booth.getBoothDescription(),
-			imageInfo != null ? imageInfo.fileKey() : booth.getImageKey(),
-			imageInfo != null ? imageInfo.accessUrl() : booth.getImageUrl()
-		);
+        booth.updateInfo(
+                request.companyName() != null ? request.companyName() : booth.getCompanyName(),
+                request.companyType() != null ? request.companyType() : booth.getCompanyType(),
+                request.boothLocation() != null ? request.boothLocation() : booth.getBoothLocation(),
+                request.boothNumber() != null ? request.boothNumber() : booth.getBoothNumber(),
+                request.progressDate() != null ? request.progressDate() : booth.getProgressDate(),
+                request.boothDescription() != null ? request.boothDescription() : booth.getBoothDescription(),
+                imageInfo != null ? imageInfo.fileKey() : booth.getImageKey(),
+                imageInfo != null ? imageInfo.accessUrl() : booth.getImageUrl()
+        );
 
-		return new BoothDetailResponseDto(booth);
-	}
+        return new BoothDetailResponseDto(booth);
+    }
 
-	@Transactional
-	@Override
-	public void deleteBooth(Long conferenceId, Long id) {
-		Booth booth = ifBoothExists(id);
-		if (!booth.getConference().getId().equals(conferenceId)) {
-			throw new NotFoundBoothException();
-		}
-		boothRepository.delete(booth);
-	}
+    @Transactional
+    @Override
+    public void deleteBooth(Long conferenceId, Long id) {
+        Booth booth = ifBoothExists(id);
+        if (!booth.getConference().getId().equals(conferenceId)) {
+            throw new NotFoundBoothException();
+        }
+        boothRepository.delete(booth);
+    }
 
-	private Conference ifConferenceExists(Long conferenceId) {
-		return conferenceRepository.findById(conferenceId)
-			.orElseThrow(NotFoundConference::new);
-	}
+    private Conference ifConferenceExists(Long conferenceId) {
+        return conferenceRepository.findById(conferenceId)
+                .orElseThrow(NotFoundConference::new);
+    }
 
-	private Booth ifBoothExists(Long boothId) {
-		return boothRepository.findById(boothId)
-			.orElseThrow(NotFoundBoothException::new);
-	}
+    private Booth ifBoothExists(Long boothId) {
+        return boothRepository.findById(boothId)
+                .orElseThrow(NotFoundBoothException::new);
+    }
 }

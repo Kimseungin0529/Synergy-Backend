@@ -79,7 +79,7 @@ public class Booth {
 	}
 
 	public Booth(String companyName, String companyType, String boothLocation, String boothNumber,
-		LocalDate progressDate, String secretCode, String boothDescription, Conference conference) {
+				 LocalDate progressDate, String secretCode, String boothDescription, Conference conference) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
@@ -91,7 +91,7 @@ public class Booth {
 	}
 
 	public void updateInfo(String companyName, String companyType, String boothLocation, String boothNumber,
-		LocalDate progressDate, String boothDescription, String imageKey, String imageUrl) {
+			   	LocalDate progressDate, String boothDescription, String imageKey, String imageUrl) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
