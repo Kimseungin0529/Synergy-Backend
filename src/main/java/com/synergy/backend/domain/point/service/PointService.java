@@ -17,8 +17,6 @@ public interface PointService {
 
 	void addSessionQnaPoint(Long attendeeId, Long sessionId);
 
-	void addRecruiterMeetingPoint(Long attendeeId, Long recruiterId);
-
 	void addSignupPoint(Long attendeeId);
 
 	List<PointResponseDto> getPointResponses(Long attendeeId);
