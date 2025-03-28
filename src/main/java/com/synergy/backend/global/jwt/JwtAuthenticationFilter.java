@@ -49,11 +49,13 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 			if (token != null && jwtProvider.validateAccessToken(token)) {
 				String username = jwtProvider.getIdentifierFromToken(token);
-				RoleType role = jwtProvider.getRoleTypeFromToken(token);
+				RoleType roleType = jwtProvider.getRoleTypeFromToken(token);
+				Long userId = jwtProvider.getIdFromToken(token);
 
-				log.info("REQUEST identifier: {}, role: {}", username, role);
+				log.info("REQUEST identifier: {}, role: {}", username, roleType);
 
-				UserDetails userDetails = userDetailsService.loadUserByUsername(username);
+				// UserDetails userDetails = userDetailsService.loadUserByUsernameAndRole(username, roleType);
+				UserDetails userDetails = userDetailsService.loadUserByUserIdAndRole(userId, roleType);
 
 				UsernamePasswordAuthenticationToken authentication =
 					new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());

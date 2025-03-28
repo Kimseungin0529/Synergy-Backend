@@ -89,6 +89,15 @@ public class JwtProvider {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
 	}
 
+	public Long getIdFromToken(String token) {
+		return Jwts.parserBuilder()
+			.setSigningKey(key)
+			.build()
+			.parseClaimsJws(token)
+			.getBody()
+			.get("id", Long.class);
+	}
+
 	public RoleType getRoleTypeFromToken(String token) {
 		String role = Jwts.parserBuilder()
 			.setSigningKey(key)
