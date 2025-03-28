@@ -1,26 +1,15 @@
 package com.synergy.backend.domain.conference.api;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.synergy.backend.domain.conference.dto.requset.ConferenceCreateRequest;
 import com.synergy.backend.domain.conference.dto.requset.ConferenceUpdateRequest;
 import com.synergy.backend.domain.conference.dto.response.ConferenceCreateResponse;
 import com.synergy.backend.domain.conference.dto.response.ConferenceUpdateResponse;
-import com.synergy.backend.domain.conference.service.ConferenceService;
 import com.synergy.backend.domain.member.entity.RoleType;
-import com.synergy.backend.global.jwt.JwtProvider;
-import com.synergy.backend.global.security.CustomUserDetailsService;
 import com.synergy.backend.module.ControllerTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -36,8 +25,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-@WebMvcTest(controllers = ConferenceController.class)
-@ActiveProfiles("test")
 class ConferenceControllerTest extends ControllerTestSupport {
 
 

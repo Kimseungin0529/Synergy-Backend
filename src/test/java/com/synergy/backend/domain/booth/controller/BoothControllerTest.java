@@ -1,26 +1,15 @@
 package com.synergy.backend.domain.booth.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.SerializationFeature;
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.synergy.backend.domain.booth.dto.BoothDetailResponseDto;
 import com.synergy.backend.domain.booth.dto.BoothRequestDto;
-import com.synergy.backend.domain.booth.service.BoothService;
 import com.synergy.backend.domain.member.entity.RoleType;
-import com.synergy.backend.global.jwt.JwtProvider;
-import com.synergy.backend.global.security.CustomUserDetailsService;
 import com.synergy.backend.module.ControllerTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.MediaType;
 import org.springframework.mock.web.MockMultipartFile;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.bean.override.mockito.MockitoBean;
-import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;

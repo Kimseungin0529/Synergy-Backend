@@ -7,6 +7,7 @@ import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
 import com.synergy.backend.global.config.QuerydslConfig;
 
+import com.synergy.backend.module.IntegrationSupportTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -24,10 +25,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-class AttendeeRepositoryTest {
+class AttendeeRepositoryTest extends IntegrationSupportTest {
 
 	@Autowired
 	AttendeeRepository attendeeRepository;

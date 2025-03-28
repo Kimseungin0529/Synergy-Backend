@@ -7,6 +7,9 @@ import com.synergy.backend.domain.booth.controller.BoothController;
 import com.synergy.backend.domain.booth.service.BoothService;
 import com.synergy.backend.domain.conference.api.ConferenceController;
 import com.synergy.backend.domain.conference.service.ConferenceService;
+import com.synergy.backend.domain.member.api.RecruiterController;
+import com.synergy.backend.domain.member.service.RecruiterAttendeeLikeService;
+import com.synergy.backend.domain.member.service.RecruiterService;
 import com.synergy.backend.global.jwt.JwtProvider;
 import com.synergy.backend.global.security.CustomUserDetailsService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,7 +18,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
-@WebMvcTest(controllers = {BoothController.class, ConferenceController.class} /* 추가로 필요한 컨트롤러 클래스 지정 */)
+@WebMvcTest(controllers = {BoothController.class, ConferenceController.class, RecruiterController.class} /* 추가로 필요한 컨트롤러 클래스 지정 */)
 @ActiveProfiles("test")
 public abstract class ControllerTestSupport {
     @Autowired
@@ -25,12 +28,17 @@ public abstract class ControllerTestSupport {
     protected BoothService boothService;
     @MockitoBean
     protected ConferenceService conferenceService;
+    @MockitoBean
+    protected RecruiterService recruiterService;
+    @MockitoBean
+    protected RecruiterAttendeeLikeService recruiterAttendeeLikeService;
 
 
     @MockitoBean
     protected JwtProvider jwtProvider;
     @MockitoBean
     protected CustomUserDetailsService userDetailsService;
+
 
     protected final ObjectMapper objectMapper = new ObjectMapper()
             .registerModule(new JavaTimeModule())

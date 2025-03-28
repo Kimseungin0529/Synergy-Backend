@@ -3,6 +3,7 @@ package com.synergy.backend.domain.conference.repository;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.entity.TimePeriod;
 import com.synergy.backend.global.config.QuerydslConfig;
+import com.synergy.backend.module.IntegrationSupportTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,10 +19,7 @@ import java.time.LocalTime;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-class ConferenceRepositoryTest {
+class ConferenceRepositoryTest extends IntegrationSupportTest {
 
     @Autowired
     ConferenceRepository conferenceRepository;

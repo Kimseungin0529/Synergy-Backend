@@ -4,15 +4,10 @@ import com.synergy.backend.domain.booth.dto.BoothParticipationResponseDto;
 import com.synergy.backend.domain.booth.repository.BoothRepository;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
-import com.synergy.backend.global.config.QuerydslConfig;
+import com.synergy.backend.module.IntegrationSupportTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -20,10 +15,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.tuple;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-class BoothRepositoryImplTest {
+class BoothRepositoryImplTest extends IntegrationSupportTest {
 
     @Autowired
     BoothRepository boothRepository;
