@@ -164,7 +164,7 @@ public class Attendee extends BaseEntity implements User {
 
 	// 참가자-관심분야
 	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<AttendeeInterest> attendeeInterests;
+	private Set<AttendeeInterest> attendeeInterests = new HashSet<>();
 
 	// 컨퍼런스
 	@ManyToOne(fetch = FetchType.LAZY)
