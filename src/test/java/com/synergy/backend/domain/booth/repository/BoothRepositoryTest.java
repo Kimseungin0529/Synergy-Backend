@@ -28,7 +28,7 @@ class BoothRepositoryTest {
     ConferenceRepository conferenceRepository;
 
     /*@DisplayName("부스와 컨퍼런스의 ID를 통해 부스를 조회합니다.")
-    @Test // data-test.sql 에 종속적이고 도메인 구조가 테스트 구조에 적합하지 않음.
+    @Test // data-test.sql 에 종속적이고 도메인 구조가 테스트 구조에 적합하지 않음. data-test.sql 과 강결합하여 테스트하기 어려운 구조라 판단
     void findByIdAndConferenceId() {
         // given
         LocalDate startDate = LocalDate.of(3030, 2, 2);
@@ -54,9 +54,7 @@ class BoothRepositoryTest {
     @DisplayName("부스와 컨퍼런스의 ID를 통해 부스를 조회합니다.")
     @Test
     void findByIdAndConferenceId() {
-        // given
-
-        // when
+        // given & when
         Booth result = boothRepository.findByIdAndConferenceId(1L, 1L)
                 .orElseThrow(() -> new RuntimeException("Booth not found"));
         // then
