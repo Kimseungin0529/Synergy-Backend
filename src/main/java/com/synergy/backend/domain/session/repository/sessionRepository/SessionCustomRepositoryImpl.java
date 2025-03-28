@@ -25,21 +25,24 @@ public class SessionCustomRepositoryImpl implements SessionCustomRepository {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<SessionParticipateRateResDto> getSessionParticipateByConferenceId(Long conferenceId) {
+    public List<SessionParticipateRateResDto> getSessionParticipateByConferenceId(Long conferenceId, LocalDate date) {
         // 해당 컨퍼런스에 해당하는 모든 세션들에 대한 최대 인원 수용과 현재 attendeeSession있는 sessionId의 인원수를 담아 넣어놓는다.
-        LocalDate now = LocalDate.now();
+
 
         return queryFactory
                 .select(Projections.constructor(
                         SessionParticipateRateResDto.class,
                         session.title,
+                        session.progressDate,
                         attendeeSession.count().as("attendeeCount"),
                         session.maximum
                 ))
-                .from(attendeeSession)
-                .join(attendeeSession.session, session)
-                .where(session.conference.id.eq(conferenceId))
-                .where(session.progressDate.eq(now))
+                .from(session)
+                .leftJoin(session.attendeeSessions, attendeeSession)
+                .where(
+                        session.conference.id.eq(conferenceId),
+                        session.progressDate.eq(date)
+                )
                 .groupBy(session.id)
                 .orderBy(session.startTime.asc())
                 .fetch();
