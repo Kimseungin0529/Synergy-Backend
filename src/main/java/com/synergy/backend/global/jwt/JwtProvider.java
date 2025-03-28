@@ -10,6 +10,7 @@ import org.springframework.stereotype.Component;
 
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.security.CustomUserDetails;
+import com.synergy.backend.global.token.exception.ExpiredRefreshTokenException;
 import com.synergy.backend.global.token.exception.InvalidAccessTokenException;
 import com.synergy.backend.global.token.exception.InvalidRefreshTokenException;
 import com.synergy.backend.global.token.exception.InvalidRoleClaimException;
@@ -21,7 +22,9 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Component
 public class JwtProvider {
 
@@ -75,8 +78,9 @@ public class JwtProvider {
 			}
 			return true;
 		} catch (ExpiredJwtException e) {
-			throw e;
+			throw new ExpiredRefreshTokenException();
 		} catch (JwtException | IllegalArgumentException e) {
+			log.warn("❌ [validateRefreshToken] JwtException caught: {}", e.getClass().getSimpleName());
 			throw new InvalidRefreshTokenException();
 		}
 	}

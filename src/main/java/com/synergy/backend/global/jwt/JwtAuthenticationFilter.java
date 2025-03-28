@@ -39,6 +39,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 		return excludedPathPrefixes.stream().anyMatch(path::startsWith);
 	}
 
+	// Access Token만 필터에서 처리
 	@Override
 	protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
 		throws IOException {
