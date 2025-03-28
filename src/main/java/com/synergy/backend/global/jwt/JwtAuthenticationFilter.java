@@ -54,7 +54,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 
 				log.info("REQUEST identifier: {}, role: {}", username, roleType);
 
-				// UserDetails userDetails = userDetailsService.loadUserByUsernameAndRole(username, roleType);
+				// UserDetails userDetails = userDetailsService.loadUserByUsername(username);
 				UserDetails userDetails = userDetailsService.loadUserByUserIdAndRole(userId, roleType);
 
 				UsernamePasswordAuthenticationToken authentication =
