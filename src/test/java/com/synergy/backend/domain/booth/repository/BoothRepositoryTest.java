@@ -1,11 +1,8 @@
 package com.synergy.backend.domain.booth.repository;
 
 import com.synergy.backend.domain.booth.entity.Booth;
-import com.synergy.backend.domain.conference.entity.Conference;
-import com.synergy.backend.domain.conference.entity.TimePeriod;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.global.config.QuerydslConfig;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,10 +10,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 
-import java.time.LocalDate;
-import java.time.LocalTime;
-
-import static org.assertj.core.api.Assertions.*;
+import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
 @ActiveProfiles("test")
