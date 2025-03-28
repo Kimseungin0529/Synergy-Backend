@@ -1,8 +1,6 @@
 package com.synergy.backend.learning;
 
 
-import com.synergy.backend.global.config.MailConfig;
-import com.synergy.backend.global.util.file.util.FileUtil;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
