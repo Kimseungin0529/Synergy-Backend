@@ -8,17 +8,16 @@ import com.synergy.backend.domain.member.api.dto.resposne.AttendeeFullInfoRespon
 import com.synergy.backend.domain.member.api.dto.resposne.MyInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.ProfileImageUpdatedResponseDto;
 import com.synergy.backend.domain.member.entity.RoleType;
-import com.synergy.backend.global.security.CustomUserDetails;
 
 public interface AttendeeService {
 
-	void addJobInfo(String email, JobInfoRequestDto request);
+	void addJobInfo(Long id, JobInfoRequestDto request);
 
-	void addJobInfoDetails(String email, JobInfoDetailsRequestDto request, MultipartFile profileImage);
+	void addJobInfoDetails(Long id, JobInfoDetailsRequestDto request, MultipartFile profileImage);
 
-	MyInfoResponseDto getMyInformation(String identifier);
+	MyInfoResponseDto getMyInformation(Long id);
 
-	AttendeeFullInfoResponseDto getAttendeeInfoDetail(Long attendeeId, String identifier, RoleType role);
+	AttendeeFullInfoResponseDto getAttendeeInfoDetail(Long attendeeId, Long viewerId, RoleType role);
 
-	ProfileImageUpdatedResponseDto updateProfileImage(CustomUserDetails userDetails, MultipartFile profileImage);
+	ProfileImageUpdatedResponseDto updateProfileImage(Long id, MultipartFile profileImage);
 }
