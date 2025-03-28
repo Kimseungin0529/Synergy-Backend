@@ -16,6 +16,7 @@ import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParti
 import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.domain.session.entity.Session;
 import com.synergy.backend.domain.session.entity.SessionQuestion;
+import com.synergy.backend.domain.session.exception.AlreadyAttendedException;
 import com.synergy.backend.domain.session.exception.InvalidTimeException;
 import com.synergy.backend.domain.session.exception.NotAttendedSession;
 import com.synergy.backend.domain.session.exception.NotFoundSession;
@@ -24,11 +25,15 @@ import com.synergy.backend.domain.session.repository.sessionQuestionRepository.S
 import com.synergy.backend.domain.session.repository.sessionRepository.SessionRepository;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class SessionParticipateServiceImpl implements SessionParticipateService {
@@ -48,6 +53,10 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
         secretCode = qrService.decodingSecretCode(secretCode);
         Session session = findBySecretCode(sessionId, secretCode);
 
+        attendeeSessionRepository.findBySessionIdAndAttendeeId(sessionId, currentMember.getId())
+                .ifPresent(attendeeSession -> {
+                    throw new AlreadyAttendedException();
+                });
         AttendeeSession attendeeSession = AttendeeSession.of(currentMember, session);
         attendeeSessionRepository.save(attendeeSession);
         return SessionResDto.from(session);
@@ -72,8 +81,10 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
         findIfConferenceMine(currentMember, conferenceId); // 해당 컨퍼런스의 소유자인지 확인해야돰.
         ifConferenceExists(conferenceId);
 
+        LocalDate now = LocalDate.now(ZoneId.of("Asia/Seoul"));
+        log.info("Today: {}", now);
         List<SessionParticipateRateResDto> sessionParticipate =
-                sessionRepository.getSessionParticipateByConferenceId(conferenceId);
+                sessionRepository.getSessionParticipateByConferenceId(conferenceId, now);
         if(sessionParticipate.isEmpty()) {
             throw new InvalidTimeException();
         }

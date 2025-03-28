@@ -13,7 +13,8 @@ public enum ErrorType {
     NOT_VALID_SESSION_TIME(400, "알맞은 시간 형식이 아닙니다."),
     NOT_ATTENDED_SESSION(401, "세션에 참여한 사용자가 아닙니다."),
 
-    DECODING_ERROR(500, "디코딩 과정에 오류가 생겼습니다.");
+    DECODING_ERROR(500, "디코딩 과정에 오류가 생겼습니다."),
+    ALREADY_ATTENDED(409, "이미 세션에 참여한 사용자입니다.");
 
 
     private final int code;
