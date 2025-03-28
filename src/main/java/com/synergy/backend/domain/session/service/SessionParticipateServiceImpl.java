@@ -16,6 +16,7 @@ import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParti
 import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.domain.session.entity.Session;
 import com.synergy.backend.domain.session.entity.SessionQuestion;
+import com.synergy.backend.domain.session.exception.AlreadyAttendedException;
 import com.synergy.backend.domain.session.exception.InvalidTimeException;
 import com.synergy.backend.domain.session.exception.NotAttendedSession;
 import com.synergy.backend.domain.session.exception.NotFoundSession;
@@ -48,6 +49,10 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
         secretCode = qrService.decodingSecretCode(secretCode);
         Session session = findBySecretCode(sessionId, secretCode);
 
+        attendeeSessionRepository.findBySessionIdAndAttendeeId(sessionId, currentMember.getId())
+                .ifPresent(attendeeSession -> {
+                    throw new AlreadyAttendedException();
+                });
         AttendeeSession attendeeSession = AttendeeSession.of(currentMember, session);
         attendeeSessionRepository.save(attendeeSession);
         return SessionResDto.from(session);
