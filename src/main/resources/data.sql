@@ -4,8 +4,8 @@ VALUES
     ('2025-09-15', '2025-09-16','09:00', '18:00', 'FlowLink', 'F’LINK 2025', 'IT', '그랜드볼룸', '로비 A', 'abc123');
 
 -- 부스
-INSERT INTO booth (conference_id, company_name, company_type, booth_location, booth_number, booth_description, image_key, image_url, qr_key, qr_url, secret_code)
-VALUES (1, 'CodeSphere', 'YourCompanyType', 'C HALL', '101C', '클라우드서비스: 글로벌 IT 기업 CodeSphere에서 React 기반 프론트엔드 엔지니어와 클라우드 기반 백엔드 엔지니어를 채용합니다. TypeScript, Node.js, Kubernetes 경험자를 환영합니다.', 'default-key', 'https://default-image-url.com/default.jpg', 'default-qr-key', 'https://default-qr-url.com/default-qr.png', 'default-secret-code');
+INSERT INTO booth (conference_id, company_name, company_type, booth_location, booth_number, progress_date, booth_description, image_key, image_url, qr_key, qr_url, secret_code)
+VALUES (1, 'CodeSphere', 'YourCompanyType', 'C HALL', '101C', '3021-10-11', '클라우드서비스: 글로벌 IT 기업 CodeSphere에서 React 기반 프론트엔드 엔지니어와 클라우드 기반 백엔드 엔지니어를 채용합니다. TypeScript, Node.js, Kubernetes 경험자를 환영합니다.', 'default-key', 'https://default-image-url.com/default.jpg', 'default-qr-key', 'https://default-qr-url.com/default-qr.png', 'Bdefault-secret-code');
 
 -- 세션
 INSERT INTO session (maximum, progress_date, conference_id, end_time, start_time, speaker_position, speaker, title, description, qr_key, qr_url, image_key, image_url, secret_code)
@@ -243,17 +243,6 @@ VALUES
     (5, 4),
     (6, 0);
 
-
--- 희망 근무 지역
-INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region)
-VALUES
-    (1, 0),
-    (1, 11),
-    (2, 2),
-    (3, 3),
-    (4, 1),
-    (5, 5),
-    (6, 4);
 
 
 INSERT INTO booth_participation (booth_id, attendee_id) VALUES
