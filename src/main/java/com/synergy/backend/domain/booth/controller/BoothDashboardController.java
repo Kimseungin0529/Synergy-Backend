@@ -2,6 +2,7 @@ package com.synergy.backend.domain.booth.controller;
 
 import java.util.List;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,6 +16,7 @@ import com.synergy.backend.global.common.ApiResponse;
 
 import lombok.RequiredArgsConstructor;
 
+@Tag(name = "Booth Dashboard Controller", description = "부스 대시보드 관련 API")
 @RestController
 @RequestMapping("/api/v1/dashboard/conference/{conferenceId}")
 @RequiredArgsConstructor

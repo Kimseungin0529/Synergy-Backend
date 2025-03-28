@@ -7,11 +7,13 @@ import com.synergy.backend.domain.session.service.SessionParticipateService;
 import com.synergy.backend.global.annotation.SwaggerSummaryRole;
 import com.synergy.backend.global.common.ApiResponse;
 import com.synergy.backend.global.security.CustomUserDetails;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Session Verify Controller", description = "세션햣 참여자 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/verify")
