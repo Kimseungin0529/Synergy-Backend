@@ -19,7 +19,6 @@ import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
 
 @WebMvcTest(controllers = {BoothController.class, ConferenceController.class, RecruiterController.class} /* 추가로 필요한 컨트롤러 클래스 지정 */)
-@ActiveProfiles("test")
 public abstract class ControllerTestSupport {
     @Autowired
     protected MockMvc mockMvc;
@@ -30,6 +29,7 @@ public abstract class ControllerTestSupport {
     protected ConferenceService conferenceService;
     @MockitoBean
     protected RecruiterService recruiterService;
+
     @MockitoBean
     protected RecruiterAttendeeLikeService recruiterAttendeeLikeService;
 
