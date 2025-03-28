@@ -9,6 +9,7 @@ import com.synergy.backend.domain.booth.service.BoothService;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.jwt.JwtProvider;
 import com.synergy.backend.global.security.CustomUserDetailsService;
+import com.synergy.backend.module.ControllerTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -34,21 +35,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
-@WebMvcTest(controllers = BoothController.class)
-@ActiveProfiles("test")
-class BoothControllerTest {
-    @Autowired
-    MockMvc mockMvc;
-    @MockitoBean
-    BoothService boothService;
-    @MockitoBean
-    JwtProvider jwtProvider;
-    @MockitoBean
-    CustomUserDetailsService userDetailsService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper()
-            .registerModule(new JavaTimeModule())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
+class BoothControllerTest extends ControllerTestSupport {
 
     @DisplayName("부스를 생성한다.")
     @Test

@@ -11,6 +11,7 @@ import com.synergy.backend.domain.conference.service.ConferenceService;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.jwt.JwtProvider;
 import com.synergy.backend.global.security.CustomUserDetailsService;
+import com.synergy.backend.module.ControllerTestSupport;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,20 +38,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @WebMvcTest(controllers = ConferenceController.class)
 @ActiveProfiles("test")
-class ConferenceControllerTest {
+class ConferenceControllerTest extends ControllerTestSupport {
 
-    @Autowired
-    MockMvc mockMvc;
-    @MockitoBean
-    ConferenceService conferenceService;
-
-    @MockitoBean
-    JwtProvider jwtProvider;
-    @MockitoBean
-    CustomUserDetailsService userDetailsService;
-
-    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule())
-            .disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS);
 
     /**
      * [@MockitoBean 를 서비스 계층 이외에도 사용한 이유]
