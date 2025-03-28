@@ -38,11 +38,13 @@ class ConferenceControllerTest {
 
     @Autowired
     MockMvc mockMvc;
+
     @MockitoBean
     ConferenceService conferenceService;
 
     @MockitoBean
     JwtProvider jwtProvider;
+
     @MockitoBean
     CustomUserDetailsService userDetailsService;
 
@@ -102,7 +104,6 @@ class ConferenceControllerTest {
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data.id").value(1L));
-
 
     }
 
@@ -277,7 +278,6 @@ class ConferenceControllerTest {
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
-                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -307,13 +307,11 @@ class ConferenceControllerTest {
         given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
-        given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
         // when & then
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
-                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())

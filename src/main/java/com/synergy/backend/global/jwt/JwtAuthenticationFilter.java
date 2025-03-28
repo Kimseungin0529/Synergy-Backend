@@ -12,6 +12,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.common.ApiResponse;
+import com.synergy.backend.global.security.CustomUserDetails;
 import com.synergy.backend.global.security.CustomUserDetailsService;
 import com.synergy.backend.global.security.exception.UnKnownUserTypeException;
 
@@ -55,7 +56,7 @@ public class JwtAuthenticationFilter extends OncePerRequestFilter {
 				log.info("REQUEST identifier: {}, role: {}", username, roleType);
 
 				// UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-				UserDetails userDetails = userDetailsService.loadUserByUserIdAndRole(userId, roleType);
+				CustomUserDetails userDetails = userDetailsService.loadUserByUserIdAndRole(userId, roleType);
 
 				UsernamePasswordAuthenticationToken authentication =
 					new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
