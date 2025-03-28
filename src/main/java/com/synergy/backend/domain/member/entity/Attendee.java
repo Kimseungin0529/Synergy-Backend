@@ -206,21 +206,6 @@ public class Attendee extends BaseEntity implements User {
 		return this.email;
 	}
 
-	@Override
-	public String toString() {
-		return "Attendee{" +
-			"id=" + id +
-			", name='" + name + '\'' +
-			", currentJobPosition=" + currentJobPosition.getName() +
-			", isHiringInterested=" + isHiringInterested +
-			", educationLevel=" + educationLevel.getDescription() +
-			", desiredJobPosition=" + desiredJobPosition.getName() +
-			", ageGroup=" + ageGroup.getDescription() +
-			", experienceLevel=" + experienceLevel.getDescription() +
-			", desiredWorkRegion=" + desiredWorkRegion.toString() +
-			'}';
-	}
-
 	public void updateJobInfo(JobPosition jobPosition, JobGroup jobGroup,
 		Boolean isHiringInterested) {
 		this.currentJobPosition = jobPosition;
