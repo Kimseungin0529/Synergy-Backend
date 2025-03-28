@@ -36,7 +36,8 @@ public class RecruiterServiceImpl implements RecruiterService {
 	@Override
 	public AttendeeListResponse getAttendeesBy(Pageable pageable, Long recruiterId, AttendeeFilterRequest requestCondition) {
 		log.info(requestCondition.toString());
-		Page<AttendeeSimpleResponseDto> pageAttendees = attendeeRepository.searchPageAttendeesBy(pageable, recruiterId, requestCondition);
+		Page<AttendeeSimpleResponseDto> pageAttendees = attendeeRepository.
+				searchPageAttendeesBy(pageable, recruiterId, requestCondition);
 
 		return AttendeeListResponse.from(pageAttendees);
 	}

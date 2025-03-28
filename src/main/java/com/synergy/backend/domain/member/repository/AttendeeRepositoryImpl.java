@@ -54,7 +54,7 @@ public class AttendeeRepositoryImpl implements AttendeeRepositoryCustom {
 			.leftJoin(recruiterAttendeeLike)
 			.on(recruiterAttendeeLike.attendee.eq(attendee)
 				.and(recruiterAttendeeLike.recruiter.id.eq(recruiterId))) // 현재 로그인 리크루터의 좋아요 여부
-			.join(attendee.desiredJobPosition, jobPosition)
+			.leftJoin(attendee.desiredJobPosition, jobPosition)
 			.where(
 				jobPositionIn(requestCondition.desiredJobPositions()),
 				educationEq(requestCondition.educationLevel()),
