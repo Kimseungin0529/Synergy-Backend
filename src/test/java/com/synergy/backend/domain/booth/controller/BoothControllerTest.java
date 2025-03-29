@@ -49,7 +49,6 @@ class BoothControllerTest extends ControllerTestSupport {
                 requestDto.boothNumber(),
                 requestDto.progressDate(),
                 requestDto.boothDescription(),
-                "https://qr-url.com/booth123",
                 "https://image-url.com/booth123",
                 Boolean.FALSE
         );
