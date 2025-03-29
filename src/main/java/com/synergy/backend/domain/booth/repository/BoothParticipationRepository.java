@@ -1,6 +1,7 @@
 package com.synergy.backend.domain.booth.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
@@ -17,7 +18,7 @@ public interface BoothParticipationRepository extends JpaRepository<BoothPartici
 
 	List<BoothParticipation> findByBooth(Booth booth);
 
-	boolean existsByBoothIdAndAttendeeId(Long boothId, Long attendeeId);
+	Optional<BoothParticipation> existsByBoothIdAndAttendeeId(Long boothId, Long attendeeId);
 
 	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("DELETE FROM BoothParticipation bp WHERE bp.booth = :booth")

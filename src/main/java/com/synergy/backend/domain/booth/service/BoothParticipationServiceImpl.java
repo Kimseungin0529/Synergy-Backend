@@ -48,16 +48,16 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
         Booth booth = boothRepository.findByIdAndSecretCode(boothId, decodingSecretCode)
                 .orElseThrow(NotFoundBoothException::new);
 
-        if (boothParticipationRepository.existsByBoothIdAndAttendeeId(boothId, attendee.getId())) {
-            throw new DuplicateParticipationException();
-        }
+        boothParticipationRepository.existsByBoothIdAndAttendeeId(boothId, attendee.getId())
+                        .ifPresent(boothParticipation -> {
+                                throw new DuplicateParticipationException();
+                        });
 
         boothParticipationRepository.save(BoothParticipation.of(booth, attendee));
         pointService.addBoothPoint(attendee.getId(), boothId);
 
         return BoothResponseDto.from(booth);
     }
-//        return SessionResDto.from(session);
 
     @Transactional(readOnly = true)
     @Override
