@@ -2,8 +2,11 @@ package com.synergy.backend.domain.booth.controller;
 
 import java.util.List;
 
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipateRateResDto;
 import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationInterestedResponseDto;
+import com.synergy.backend.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,6 +26,15 @@ import lombok.RequiredArgsConstructor;
 public class BoothDashboardController {
 
 	private final BoothParticipationService boothParticipationService;
+
+	@SwaggerSummaryRole({RoleType.ADMIN})
+	@GetMapping("/booths/participation")
+	public ApiResponse<BoothParticipateRateResDto> getBoothParticipateRate(
+			@AuthenticationPrincipal CustomUserDetails currentUser,
+			@PathVariable Long conferenceId) {
+
+		return ApiResponse.ok(boothParticipationService.boothParticipateRate(currentUser.getIdentifier(), conferenceId), 200);
+	}
 
 	@SwaggerSummaryRole({RoleType.ADMIN})
 	@GetMapping("/booths/participation/interest")

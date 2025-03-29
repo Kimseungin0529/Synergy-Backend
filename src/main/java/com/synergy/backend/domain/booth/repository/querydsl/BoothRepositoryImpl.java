@@ -2,10 +2,12 @@ package com.synergy.backend.domain.booth.repository.querydsl;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.synergy.backend.domain.booth.dto.boothParticipateDto.*;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import java.text.DecimalFormat;
 import java.time.LocalDate;
@@ -20,6 +22,7 @@ import static com.synergy.backend.domain.interest.entity.QAttendeeInterest.atten
 import static com.synergy.backend.domain.interest.entity.QInterest.interest;
 import static com.synergy.backend.domain.member.entity.QAttendee.attendee;
 
+@Slf4j
 @RequiredArgsConstructor
 public class BoothRepositoryImpl implements BoothRepositoryCustom {
 
@@ -30,27 +33,30 @@ public class BoothRepositoryImpl implements BoothRepositoryCustom {
     @Override
     public BoothParticipateRateResDto searchBoothRank(Long conferenceId, LocalDate currentDate) {
         Long attendeeCount = attendeeRepository.count();
+        NumberExpression<Long> countExpression = boothParticipation.count();
 
         List<Tuple> tuples = queryFactory
                 .select(
                         booth.id,
-                        boothParticipation.count().as("percent"),
+                        countExpression,
                         booth.companyName
                 )
                 .from(booth)
-                .leftJoin(boothParticipation).on(booth.id.eq(boothParticipation.id))
+                .leftJoin(boothParticipation).on(booth.id.eq(boothParticipation.booth.id))
                 .where(
-                        booth.conference.id.eq(conferenceId)
+                        booth.conference.id.eq(conferenceId),
+                        booth.progressDate.eq(currentDate)
                 )
                 .groupBy(booth.id)
-                .orderBy(boothParticipation.count().desc())
+                .orderBy(countExpression.desc())
                 .limit(3)
                 .fetch();
 
         List<BoothParticipateDetailDto> list = tuples.stream()
                 .map(tuple -> {
                     Long boothId = tuple.get(booth.id);
-                    Long boothCount = tuple.get(boothParticipation.count());
+                    log.info("totalMember: {}, boothMember: {}" ,attendeeCount, tuple.get(countExpression));
+                    Long boothCount = tuple.get(countExpression);
                     double percent = (double) boothCount / attendeeCount;
                     String attendeePercent = decimalFormat.format(percent * 100) + "%";
                     String companyName = tuple.get(booth.companyName);

@@ -9,8 +9,13 @@ import com.synergy.backend.domain.booth.exception.DuplicateParticipationExceptio
 import com.synergy.backend.domain.booth.exception.NotFoundBoothException;
 import com.synergy.backend.domain.booth.repository.BoothParticipationRepository;
 import com.synergy.backend.domain.booth.repository.BoothRepository;
+import com.synergy.backend.domain.conference.entity.Conference;
+import com.synergy.backend.domain.conference.exception.NotFoundConference;
+import com.synergy.backend.domain.conference.repository.ConferenceRepository;
+import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
+import com.synergy.backend.domain.member.repository.AdminRepository;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.point.service.PointService;
 import com.synergy.backend.domain.qrCode.service.QrService;
@@ -19,6 +24,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service @Slf4j
@@ -27,7 +34,9 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
 
     private final BoothParticipationRepository boothParticipationRepository;
     private final BoothRepository boothRepository;
+    private final ConferenceRepository conferenceRepository;
     private final AttendeeRepository attendeeRepository;
+    private final AdminRepository adminRepository;
     private final PointService pointService;
     private final QrService qrService;
 
@@ -56,7 +65,24 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
 
     @Override
     public BoothParticipateRateResDto boothParticipateRate(String identifier, Long conferenceId) {
-        return null;
+        Admin currentMember = findIfAdminExists(identifier);
+        ifConferenceExists(conferenceId);
+        findIfConferenceMine(currentMember, conferenceId);
+        LocalDate now = LocalDate.now(ZoneId.of("Asia/Seoul"));
+
+        return boothRepository.searchBoothRank(conferenceId, now);
+    }
+
+    private void findIfConferenceMine(Admin admin, Long conferenceId) {
+        adminRepository.findByIdAndConferences_Id(admin.getId(), conferenceId);
+    }
+
+    private Conference ifConferenceExists(Long conferenceId) {
+        return conferenceRepository.findById(conferenceId).orElseThrow(NotFoundConference::new);
+    }
+
+    private Admin findIfAdminExists(String identifier) {
+        return adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
     }
 
     @Transactional(readOnly = true)
