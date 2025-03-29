@@ -49,9 +49,7 @@ public class AttendeeController {
 	public ApiResponse<JobInfoResponseDto> addJobInfo(
 		@AuthenticationPrincipal CustomUserDetails userDetails,
 		@Valid @RequestBody JobInfoRequestDto request) {
-
-		String identifier = userDetails.getIdentifier();
-		attendeeService.addJobInfo(identifier, request);
+		attendeeService.addJobInfo(userDetails.getId(), request);
 		return ApiResponse.ok(null, 200);
 	}
 
@@ -72,8 +70,7 @@ public class AttendeeController {
 		@Parameter(description = "프로필 이미지 (선택)")
 		@RequestPart(value = "profileImage", required = false) MultipartFile profileImage) {
 
-		String identifier = userDetails.getIdentifier();
-		attendeeService.addJobInfoDetails(identifier, request, profileImage);
+		attendeeService.addJobInfoDetails(userDetails.getId(), request, profileImage);
 		return ApiResponse.ok(null, 200);
 	}
 
@@ -84,8 +81,7 @@ public class AttendeeController {
 	public ApiResponse<MyInfoResponseDto> getMyInformation(
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		String identifier = userDetails.getIdentifier();
-		return ApiResponse.ok(attendeeService.getMyInformation(identifier), 200);
+		return ApiResponse.ok(attendeeService.getMyInformation(userDetails.getId()), 200);
 	}
 
 	@Operation(summary = "참가자 상세 정보 조회", description = "특정 참가자의 상세 프로필 정보를 조회합니다.")
@@ -96,9 +92,8 @@ public class AttendeeController {
 		@PathVariable Long attendeeId,
 		@AuthenticationPrincipal CustomUserDetails userDetails
 	) {
-		String identifier = userDetails.getIdentifier();
-		RoleType role = userDetails.getRole();
-		return ApiResponse.ok(attendeeService.getAttendeeInfoDetail(attendeeId, identifier, role), 200);
+		return ApiResponse.ok(
+			attendeeService.getAttendeeInfoDetail(attendeeId, userDetails.getId(), userDetails.getRole()), 200);
 	}
 
 	@Operation(summary = "좋아요한 채용담당자 목록 조회", description = "참가자를 좋아요한 채용담당자들의 목록을 조회합니다.")
@@ -108,6 +103,16 @@ public class AttendeeController {
 	public ApiResponse<List<LikedRecruiterResponseDto>> getLikedRecruiters(
 		@AuthenticationPrincipal CustomUserDetails userDetails) {
 		return ApiResponse.ok(recruiterAttendeeLikeService.getLikedRecruiters(userDetails.getId()), 200);
+	}
+
+	@Operation(summary = "참가자 프로필 사진 수정", description = "참가자가 프로필 사진을 수정합니다.")
+	@SwaggerSummaryRole({RoleType.ATTENDEE})
+	@PreAuthorize("hasRole('ATTENDEE')")
+	@PatchMapping(path = "/profile-image", consumes = {MediaType.MULTIPART_FORM_DATA_VALUE})
+	public ApiResponse<?> updateProfileImage(
+		@AuthenticationPrincipal CustomUserDetails userDetails,
+		@RequestPart(value = "profileImage") MultipartFile profileImage) {
+		return ApiResponse.ok(attendeeService.updateProfileImage(userDetails.getId(), profileImage), 200);
 	}
 
 }

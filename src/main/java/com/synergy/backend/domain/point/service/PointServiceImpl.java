@@ -80,12 +80,6 @@ public class PointServiceImpl implements PointService {
 
 	@Transactional
 	@Override
-	public void addRecruiterMeetingPoint(Long attendeeId, Long recruiterId) {
-		addPoint(attendeeId, PointType.RECRUITER_MEETING, recruiterId);
-	}
-
-	@Transactional
-	@Override
 	public void addSignupPoint(Long attendeeId) {
 		addPoint(attendeeId, PointType.SIGN_UP, null);
 	}

@@ -80,13 +80,22 @@ public class JwtProvider {
 		} catch (ExpiredJwtException e) {
 			throw new ExpiredRefreshTokenException();
 		} catch (JwtException | IllegalArgumentException e) {
-			log.warn("❌ [validateRefreshToken] JwtException caught: {}", e.getClass().getSimpleName());
+      log.warn("[validateRefreshToken] JwtException caught: {}", e.getClass().getSimpleName());
 			throw new InvalidRefreshTokenException();
 		}
 	}
 
 	public String getIdentifierFromToken(String token) {
 		return Jwts.parserBuilder().setSigningKey(key).build().parseClaimsJws(token).getBody().getSubject();
+	}
+
+	public Long getIdFromToken(String token) {
+		return Jwts.parserBuilder()
+			.setSigningKey(key)
+			.build()
+			.parseClaimsJws(token)
+			.getBody()
+			.get("id", Long.class);
 	}
 
 	public RoleType getRoleTypeFromToken(String token) {

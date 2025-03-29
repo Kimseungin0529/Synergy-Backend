@@ -19,14 +19,16 @@ VALUES
 
 -- id값 테이블은 1부터, enum은 0부터
 ---- 관심 분야
-INSERT INTO interest (name, code) VALUES ('데이터 분석 / AI', 101);
-INSERT INTO interest (name, code) VALUES ('클라우드 / DevOps', 102);
-INSERT INTO interest (name, code) VALUES ('소프트웨어 개발', 103);
-INSERT INTO interest (name, code) VALUES ('디자인', 104);
-INSERT INTO interest (name, code) VALUES ('정보 보안', 105);
-INSERT INTO interest (name, code) VALUES ('신기술 연구', 106);
-INSERT INTO interest (name, code) VALUES ('커리어 개발', 107);
-INSERT INTO interest (name, code) VALUES ('기획/운영', 108);
+INSERT INTO interest (name, code) VALUES ('데이터 분석', 101);
+INSERT INTO interest (name, code) VALUES ('AI', 102);
+INSERT INTO interest (name, code) VALUES ('클라우드', 103);
+INSERT INTO interest (name, code) VALUES ('DevOps', 104);
+INSERT INTO interest (name, code) VALUES ('소프트웨어 개발', 105);
+INSERT INTO interest (name, code) VALUES ('디자인', 106);
+INSERT INTO interest (name, code) VALUES ('정보 보안', 107);
+INSERT INTO interest (name, code) VALUES ('신기술 연구', 108);
+INSERT INTO interest (name, code) VALUES ('커리어 개발', 109);
+INSERT INTO interest (name, code) VALUES ('기획/운영', 110);
 
 -- 직군 (Job Group)
 INSERT INTO job_group (code, name) VALUES (1, '개발');
