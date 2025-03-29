@@ -43,8 +43,8 @@ public class BoothServiceImpl implements BoothService {
                 request.boothLocation(),
                 request.boothNumber(),
                 request.progressDate(),
-                request.boothDescription(),
                 secretCode,
+                request.boothDescription(),
                 conference
         );
 
@@ -64,7 +64,7 @@ public class BoothServiceImpl implements BoothService {
     @Override
     public Page<BoothResponseDto> getAllBooths(Long conferenceId, Pageable pageable) {
         return boothRepository.findAllByConferenceId(conferenceId, pageable)
-                .map(BoothResponseDto::of);
+                .map(BoothResponseDto::from);
     }
 
     @Transactional(readOnly = true)

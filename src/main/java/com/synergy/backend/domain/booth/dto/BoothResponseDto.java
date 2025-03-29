@@ -11,7 +11,7 @@ public record BoothResponseDto(
         String image
 ) {
 
-    public static BoothResponseDto of(Booth booth) {
+    public static BoothResponseDto from(Booth booth) {
         return new BoothResponseDto(
                 booth.getId(),
                 booth.getCompanyName(),
