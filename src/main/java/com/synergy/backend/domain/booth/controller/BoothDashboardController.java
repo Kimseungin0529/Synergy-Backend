@@ -2,13 +2,13 @@ package com.synergy.backend.domain.booth.controller;
 
 import java.util.List;
 
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationInterestedResponseDto;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationResponseDto;
 import com.synergy.backend.domain.booth.service.BoothParticipationService;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.annotation.SwaggerSummaryRole;
@@ -26,9 +26,9 @@ public class BoothDashboardController {
 
 	@SwaggerSummaryRole({RoleType.ADMIN})
 	@GetMapping("/booths/participation/interest")
-	public ApiResponse<List<BoothParticipationResponseDto>> getParticipationCountByInterest(
+	public ApiResponse<List<BoothParticipationInterestedResponseDto>> getParticipationCountByInterest(
 		@PathVariable Long conferenceId) {
-		List<BoothParticipationResponseDto> result = boothParticipationService.getParticipationCountByInterest(conferenceId);
+		List<BoothParticipationInterestedResponseDto> result = boothParticipationService.getParticipationCountByInterest(conferenceId);
 		return ApiResponse.ok(result, 200);
 	}
 }

@@ -3,7 +3,7 @@ package com.synergy.backend.domain.booth.repository.querydsl;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipateInterestedTechDto;
-import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationInterestedResponseDto;
 import com.synergy.backend.domain.booth.dto.QBoothParticipateInterestedTechDto;
 import com.synergy.backend.domain.booth.dto.QBoothParticipationResponseDto;
 import lombok.RequiredArgsConstructor;
@@ -25,8 +25,8 @@ public class BoothRepositoryImpl implements BoothRepositoryCustom {
     private final JPAQueryFactory queryFactory;
 
     @Override
-    public List<BoothParticipationResponseDto> searchBoothParticipation(Long conferenceId) {
-        List<BoothParticipationResponseDto> booths = queryFactory
+    public List<BoothParticipationInterestedResponseDto> searchBoothParticipation(Long conferenceId) {
+        List<BoothParticipationInterestedResponseDto> booths = queryFactory
                 .select(new QBoothParticipationResponseDto(
                         booth.id,
                         booth.companyName,
@@ -62,7 +62,7 @@ public class BoothRepositoryImpl implements BoothRepositoryCustom {
                 .collect(Collectors.groupingBy(BoothParticipateInterestedTechDto::getBoothId));
 
         // 4. 각 부스 DTO에 해당 tech 리스트 주입
-        for (BoothParticipationResponseDto boothDto : booths) {
+        for (BoothParticipationInterestedResponseDto boothDto : booths) {
             boothDto.addTechs(techsByBooth.getOrDefault(boothDto.getBoothId(), List.of()));
         }
 

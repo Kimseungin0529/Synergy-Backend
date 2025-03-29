@@ -1,7 +1,7 @@
 package com.synergy.backend.domain.booth.service;
 
 import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipateRateResDto;
-import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationInterestedResponseDto;
 import com.synergy.backend.domain.booth.dto.BoothResponseDto;
 import com.synergy.backend.domain.booth.entity.Booth;
 import com.synergy.backend.domain.booth.entity.BoothParticipation;
@@ -61,7 +61,7 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
 
     @Transactional(readOnly = true)
     @Override
-    public List<BoothParticipationResponseDto> getParticipationCountByInterest(Long conferenceId) {
+    public List<BoothParticipationInterestedResponseDto> getParticipationCountByInterest(Long conferenceId) {
         return boothRepository.searchBoothParticipation(conferenceId);
     }
 }

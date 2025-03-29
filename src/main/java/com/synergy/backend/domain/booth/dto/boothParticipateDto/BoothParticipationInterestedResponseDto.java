@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class BoothParticipationResponseDto {
+public class BoothParticipationInterestedResponseDto {
 	private Long boothId;
 	private String companyName;
 	private String companyType;
@@ -20,8 +20,8 @@ public class BoothParticipationResponseDto {
 	private List<BoothParticipateInterestedTechDto> techs;
 
 	@QueryProjection
-	public BoothParticipationResponseDto(Long boothId, String companyName, String companyType, String boothLocation,
-										 String boothNumber, LocalDate progressDate) {
+	public BoothParticipationInterestedResponseDto(Long boothId, String companyName, String companyType, String boothLocation,
+												   String boothNumber, LocalDate progressDate) {
 		this.boothId = boothId;
 		this.companyName = companyName;
 		this.companyType = companyType;
