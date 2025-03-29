@@ -13,15 +13,22 @@ import com.synergy.backend.domain.booth.service.BoothService;
 import com.synergy.backend.domain.conference.api.ConferenceController;
 import com.synergy.backend.domain.conference.service.ConferenceService;
 import com.synergy.backend.domain.member.api.AdminController;
+import com.synergy.backend.domain.member.api.AttendeeController;
 import com.synergy.backend.domain.member.api.RecruiterController;
 import com.synergy.backend.domain.member.service.AdminService;
+import com.synergy.backend.domain.member.service.AttendeeService;
 import com.synergy.backend.domain.member.service.RecruiterAttendeeLikeService;
 import com.synergy.backend.domain.member.service.RecruiterService;
 import com.synergy.backend.global.jwt.JwtProvider;
 import com.synergy.backend.global.security.CustomUserDetailsService;
 
-@WebMvcTest(controllers = {BoothController.class, ConferenceController.class, RecruiterController.class,
-	AdminController.class} /* 추가로 필요한 컨트롤러 클래스 지정 */)
+@WebMvcTest(controllers = {
+	BoothController.class,
+	ConferenceController.class,
+	RecruiterController.class,
+	AdminController.class,
+	AttendeeController.class
+} /* 추가로 필요한 컨트롤러 클래스 지정 */)
 public abstract class ControllerTestSupport {
 	protected final ObjectMapper objectMapper = new ObjectMapper()
 		.registerModule(new JavaTimeModule())
@@ -42,4 +49,6 @@ public abstract class ControllerTestSupport {
 	protected CustomUserDetailsService userDetailsService;
 	@MockitoBean
 	protected AdminService adminService;
+	@MockitoBean
+	protected AttendeeService attendeeService;
 }
