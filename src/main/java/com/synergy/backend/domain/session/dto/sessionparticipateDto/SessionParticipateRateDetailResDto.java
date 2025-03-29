@@ -7,6 +7,7 @@ import java.util.List;
 public record SessionParticipateRateDetailResDto (
         Long sessionId,
         String title,
+        String speaker,
         LocalDate progressDate,
         LocalDateTime startDate,
         LocalDateTime endDate,

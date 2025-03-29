@@ -95,9 +95,9 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
         log.info("Today: {}", now);
         List<SessionParticipateRateResDto> sessionParticipate =
                 sessionRepository.getSessionParticipateByConferenceId(conferenceId, now);
-        if(sessionParticipate.isEmpty()) {
-            throw new InvalidTimeException();
-        }
+//        if(sessionParticipate.isEmpty()) {
+//            throw new InvalidTimeException();
+//        }
 
         return sessionParticipate;
     }

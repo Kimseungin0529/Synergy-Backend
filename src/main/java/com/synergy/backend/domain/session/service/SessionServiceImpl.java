@@ -86,16 +86,18 @@ public class SessionServiceImpl implements SessionService {
     public SessionDetailResDto getSessionInfo(String identifier, RoleType role, Long conferenceId, Long sessionId) {
         Conference conference = ifConferenceExists(conferenceId);
         Session session = findByConferenceId(sessionId, conference);
+        Boolean qualified = Boolean.FALSE;
 
         try {
             if(role.equals(RoleType.ATTENDEE)) {
                 Attendee attendee = findIfAttendeeExists(identifier);
                 ifAttendeeSessionExists(sessionId, attendee.getId());
+                qualified = Boolean.TRUE;
             }
             List<QuestionResDto> questions = getQuestions(conference, sessionId);
-            return SessionDetailResDto.from(session, questions);
+            return SessionDetailResDto.from(session, questions, qualified);
         } catch (Exception e) {
-            return SessionDetailResDto.from(session, List.of());
+            return SessionDetailResDto.from(session, List.of(), qualified);
         }
     }
 
