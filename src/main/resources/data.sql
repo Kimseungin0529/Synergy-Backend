@@ -6,8 +6,8 @@ VALUES
 -- 부스
 INSERT INTO booth (conference_id, company_name, company_type, booth_location, booth_number, progress_date, booth_description, image_key, image_url, qr_key, qr_url, secret_code)
 VALUES (1, 'CodeSphere', 'YourCompanyType', 'C HALL', '101C', '3021-10-11', '클라우드서비스: 글로벌 IT 기업 CodeSphere에서 React 기반 프론트엔드 엔지니어와 클라우드 기반 백엔드 엔지니어를 채용합니다. TypeScript, Node.js, Kubernetes 경험자를 환영합니다.', 'default-key', 'https://default-image-url.com/default.jpg', 'default-qr-key', 'https://default-qr-url.com/default-qr.png', 'Bdefault-secret-code'),
-       (1, 'DevNest', 'IT', 'A ZONE', '201A', '3021-10-11', 'DevNest는 다양한 SaaS 솔루션을 개발하는 스타트업으로, 백엔드(Java, Spring) 및 클라우드 인프라 엔지니어를 채용 중입니다. 열정적인 동료들과 함께 일할 개발자를 기다립니다.', 'devnest-key', 'https://default-image-url.com/devnest.jpg', 'devnest-qr-key', 'https://default-qr-url.com/devnest.png', 'Bdevnest-secret-code'),
-       (1, 'NextBridge', 'AI', 'B ZONE', '302B', '3021-10-11', 'NextBridge는 AI 기반 교육 플랫폼을 개발 중이며, 머신러닝 엔지니어와 프론트엔드(React) 개발자를 채용하고 있습니다. 기술로 세상을 연결하는 기업입니다.', 'nextbridge-key', 'https://default-image-url.com/nextbridge.jpg', 'nextbridge-qr-key', 'https://default-qr-url.com/nextbridge.png', 'Bnextbridge-secret-code');
+       (1, 'DevNest', 'IT', 'A ZONE', '201A', '2025-03-30', 'DevNest는 다양한 SaaS 솔루션을 개발하는 스타트업으로, 백엔드(Java, Spring) 및 클라우드 인프라 엔지니어를 채용 중입니다. 열정적인 동료들과 함께 일할 개발자를 기다립니다.', 'devnest-key', 'https://default-image-url.com/devnest.jpg', 'devnest-qr-key', 'https://default-qr-url.com/devnest.png', 'Bdevnest-secret-code'),
+       (1, 'NextBridge', 'AI', 'B ZONE', '302B', '2025-03-30', 'NextBridge는 AI 기반 교육 플랫폼을 개발 중이며, 머신러닝 엔지니어와 프론트엔드(React) 개발자를 채용하고 있습니다. 기술로 세상을 연결하는 기업입니다.', 'nextbridge-key', 'https://default-image-url.com/nextbridge.jpg', 'nextbridge-qr-key', 'https://default-qr-url.com/nextbridge.png', 'Bnextbridge-secret-code');
 
 -- 세션
 INSERT INTO session (maximum, progress_date, conference_id, end_time, start_time, speaker_position, speaker, title, description, qr_key, qr_url, image_key, image_url, secret_code)

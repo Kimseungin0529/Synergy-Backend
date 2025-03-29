@@ -1,13 +1,14 @@
 package com.synergy.backend.domain.booth.repository.querydsl;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipateInterestedTechDto;
-import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationInterestedResponseDto;
-import com.synergy.backend.domain.booth.dto.QBoothParticipateInterestedTechDto;
-import com.synergy.backend.domain.booth.dto.QBoothParticipationResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.*;
+import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import lombok.RequiredArgsConstructor;
 
+import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -23,11 +24,47 @@ import static com.synergy.backend.domain.member.entity.QAttendee.attendee;
 public class BoothRepositoryImpl implements BoothRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final AttendeeRepository attendeeRepository;
+    private final DecimalFormat decimalFormat = new DecimalFormat("#.##");
+
+    @Override
+    public BoothParticipateRateResDto searchBoothRank(Long conferenceId, LocalDate currentDate) {
+        Long attendeeCount = attendeeRepository.count();
+
+        List<Tuple> tuples = queryFactory
+                .select(
+                        booth.id,
+                        boothParticipation.count().as("percent"),
+                        booth.companyName
+                )
+                .from(booth)
+                .leftJoin(boothParticipation).on(booth.id.eq(boothParticipation.id))
+                .where(
+                        booth.conference.id.eq(conferenceId)
+                )
+                .groupBy(booth.id)
+                .orderBy(boothParticipation.count().desc())
+                .limit(3)
+                .fetch();
+
+        List<BoothParticipateDetailDto> list = tuples.stream()
+                .map(tuple -> {
+                    Long boothId = tuple.get(booth.id);
+                    Long boothCount = tuple.get(boothParticipation.count());
+                    double percent = (double) boothCount / attendeeCount;
+                    String attendeePercent = decimalFormat.format(percent * 100) + "%";
+                    String companyName = tuple.get(booth.companyName);
+
+                    return new BoothParticipateDetailDto(boothId, attendeePercent, companyName);
+                }).toList();
+
+        return new BoothParticipateRateResDto(currentDate, list);
+    }
 
     @Override
     public List<BoothParticipationInterestedResponseDto> searchBoothParticipation(Long conferenceId) {
         List<BoothParticipationInterestedResponseDto> booths = queryFactory
-                .select(new QBoothParticipationResponseDto(
+                .select(new QBoothParticipationInterestedResponseDto(
                         booth.id,
                         booth.companyName,
                         booth.companyType,
