@@ -66,7 +66,7 @@ class BoothControllerTest extends ControllerTestSupport {
         given(boothService.createBooth(eq(conferenceId), eq(router), any(BoothRequestDto.class), any(MultipartFile.class)))
                 .willReturn(responseDto);
 
-        given(jwtProvider.validateToken(anyString())).willReturn(true);
+        given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
         given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));

@@ -34,11 +34,12 @@ class BoothRepositoryImplTest extends IntegrationSupportTest {
 
         // then
         assertThat(result)
-                .hasSize(2)
+                .hasSize(3)
                 .extracting("companyName", "companyType", "boothLocation", "boothNumber", "progressDate")
                 .containsExactlyInAnyOrder(
                         tuple("CodeSphere", "YourCompanyType", "C HALL", "101C", LocalDate.of(3021, 10, 11)),
-                        tuple("SkrrrCode", "BusinessCompanyType", "B HALL", "103B", LocalDate.of(3021, 10, 11))
+                        tuple("DevNest", "IT", "A ZONE", "201A", LocalDate.of(3021, 10, 11)),
+                        tuple("NextBridge", "AI", "B ZONE", "302B", LocalDate.of(3021, 10, 11))
                 );
 
 

@@ -277,7 +277,6 @@ class ConferenceControllerTest {
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
-                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -313,7 +312,6 @@ class ConferenceControllerTest {
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
-                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -430,7 +428,7 @@ class ConferenceControllerTest {
                 LocalDate.of(3024, 6, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(2024, 6, 18),
-                LocalTime.of(18, 0),
+                LocalTime.of( 18, 0),
                 "Seoul, South Korea",
                 "로비",
                 "IT"
