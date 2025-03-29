@@ -19,6 +19,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.time.LocalDate;
@@ -64,14 +65,13 @@ public class BoothServiceImplTest {
         String secretCode = "secretCode";
 
         Booth booth = new Booth(request.companyName(), request.companyType(), request.boothLocation(), request.boothNumber(), request.progressDate(), secretCode, request.boothDescription(), conference);
-        Booth spyBooth = spy(booth);
-        given(spyBooth.getId()).willReturn(10L);
+        ReflectionTestUtils.setField(booth, "id", 10L);
 
         FileInformationDto qrDto = new FileInformationDto("qr-key", "qr-url");
         FileInformationDto imageDto = new FileInformationDto("image-key", "image-url");
 
         given(conferenceRepository.findById(conferenceId)).willReturn(Optional.of(conference));
-        given(boothRepository.save(any(Booth.class))).willReturn(spyBooth);
+        given(boothRepository.save(any(Booth.class))).willReturn(booth);
         given(qrService.generateQRCode(anyString(), anyString())).willReturn(new byte[]{1, 2, 3});
         given(fileS3Util.uploadQRCode(any(), anyString())).willReturn(qrDto);
         given(fileS3Util.uploadFile(any())).willReturn(imageDto);

@@ -62,7 +62,7 @@ public class SessionServiceImpl implements SessionService {
 
         sessionRepository.save(session);
 
-        String url = router + "session/" + session.getId();
+        String url = router + "/session/" + session.getId();
         byte[] qrCode = qrService.generateQRCode(url, secretCode);
         log.info("sessionId: {}", session.getId());
         log.info("qrCode: {}", qrCode);

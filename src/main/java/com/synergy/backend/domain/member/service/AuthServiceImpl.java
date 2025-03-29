@@ -122,7 +122,7 @@ public class AuthServiceImpl implements AuthService {
 	@Override
 	public TokenWithRefreshToken reissueRefreshToken(String currentRefreshToken) {
 
-		if (!jwtProvider.validateToken(currentRefreshToken)) {
+		if (!jwtProvider.validateRefreshToken(currentRefreshToken)) {
 			throw new InvalidRefreshTokenException();
 		}
 

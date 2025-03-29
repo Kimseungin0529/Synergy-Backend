@@ -112,4 +112,3 @@ public class Booth {
 		this.imageUrl = fileInformation.accessUrl();
 	}
 }
-
