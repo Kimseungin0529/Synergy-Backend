@@ -23,7 +23,7 @@ public record SignupAttendeeRequestDto(
 
 	@NotBlank(message = "비밀번호는 필수 입력 값입니다.")
 	@Size(min = 8, max = 20, message = "비밀번호는 8~20자 이내여야 합니다.")
-	@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d)[A-Za-z\\d]{8,20}$",
+	@Pattern(regexp = "^(?=.*[A-Za-z])(?=.*\\d).{8,20}$",
 		message = "비밀번호는 영문자와 숫자를 포함해야 합니다.")
 	@Schema(description = "비밀번호 (영문자 + 숫자 포함 8~20 글자)", example = "abc12345")
 	String password,
