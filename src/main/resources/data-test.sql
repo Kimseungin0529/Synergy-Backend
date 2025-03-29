@@ -242,7 +242,7 @@ VALUES
     (5, 4),
     (6, 0);
 
-
+-- 부스 참가자 정보
 INSERT INTO booth_participation (booth_id, attendee_id) VALUES
         (1, 1),  -- 김지원
         (1, 2),  -- 최영호
