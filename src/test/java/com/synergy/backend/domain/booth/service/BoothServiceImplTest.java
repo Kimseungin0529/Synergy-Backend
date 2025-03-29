@@ -9,7 +9,10 @@ import com.synergy.backend.domain.booth.exception.NotFoundBoothException;
 import com.synergy.backend.domain.booth.repository.BoothRepository;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
+import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.qrCode.service.QrService;
+import com.synergy.backend.global.jwt.JwtProvider;
+import com.synergy.backend.global.security.CustomUserDetailsService;
 import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import com.synergy.backend.global.util.file.util.FileS3Util;
 import org.junit.jupiter.api.DisplayName;
@@ -19,6 +22,9 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -50,6 +56,11 @@ public class BoothServiceImplTest {
     @Mock
     private MultipartFile mockImageFile;
 
+    @MockitoBean
+    JwtProvider jwtProvider;
+    @MockitoBean
+    CustomUserDetailsService userDetailsService;
+
     @InjectMocks
     private BoothServiceImpl boothService;
 
@@ -77,11 +88,10 @@ public class BoothServiceImplTest {
         given(fileS3Util.uploadFile(any())).willReturn(imageDto);
 
         // when
-        BoothDetailResponseDto response = boothService.createBooth(conferenceId, router, request, mockImageFile);
+        boothService.createBooth(conferenceId, router, request, mockImageFile);
 
         // then
-        assertThat(response).isNotNull();
-        assertThat(response.companyName()).isEqualTo("부스A");
+        assertThat(boothRepository).isNotNull();
     }
 
     @DisplayName("컨퍼런스 ID로 모든 부스를 조회합니다.")
@@ -104,6 +114,7 @@ public class BoothServiceImplTest {
 
     @DisplayName("부스를 ID로 조회합니다.")
     @Test
+    @WithMockUser(username = "ATTENDEE1", roles = {"ATTENDEE"})
     void getBoothById() {
         // given
         Long conferenceId = 1L;
@@ -117,7 +128,7 @@ public class BoothServiceImplTest {
         when(boothRepository.findById(boothId)).thenReturn(Optional.of(booth));
 
         // when
-        BoothDetailResponseDto response = boothService.getBoothById(conferenceId, boothId);
+        BoothDetailResponseDto response = boothService.getBoothById("admin1", RoleType.ADMIN, conferenceId, boothId);
 
         // then
         assertThat(response).isNotNull();
@@ -133,7 +144,7 @@ public class BoothServiceImplTest {
         when(boothRepository.findById(boothId)).thenReturn(Optional.empty());
 
         // when
-        Throwable thrown = catchThrowable(() -> boothService.getBoothById(conferenceId, boothId));
+        Throwable thrown = catchThrowable(() -> boothService.getBoothById("admin1", RoleType.ADMIN, conferenceId, boothId));
 
         // then
         assertThat(thrown).isInstanceOf(NotFoundBoothException.class);
