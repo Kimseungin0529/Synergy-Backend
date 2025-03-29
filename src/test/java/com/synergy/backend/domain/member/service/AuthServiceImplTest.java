@@ -473,4 +473,38 @@ class AuthServiceImplTest {
 		assertThatThrownBy(() -> authService.reissueRefreshToken(token))
 			.isInstanceOf(NotFoundUserException.class);
 	}
+
+	@DisplayName("티켓 코드가 null 또는 공백이면 예외가 발생한다.")
+	@Test
+	void registerAttendee_BlankOrNullTicketCode_ThrowsException() {
+		// case 1: null
+		SignupAttendeeRequestDto nullTicketCodeRequest = new SignupAttendeeRequestDto(
+			"UserA",
+			"UserA@example.com",
+			null, // 티켓코드 null
+			"securepassword",
+			"01012345678"
+		);
+
+		when(attendeeRepository.findByEmail(nullTicketCodeRequest.email())).thenReturn(Optional.empty());
+		when(mailService.isVerified(nullTicketCodeRequest.email())).thenReturn(true);
+
+		assertThatThrownBy(() -> authService.registerAttendee(nullTicketCodeRequest))
+			.isInstanceOf(InvalidTicketCodeException.class);
+
+		// case 2: blank
+		SignupAttendeeRequestDto blankTicketCodeRequest = new SignupAttendeeRequestDto(
+			"UserA",
+			"UserA@example.com",
+			"   ", // 공백
+			"securepassword",
+			"01012345678"
+		);
+
+		when(attendeeRepository.findByEmail(blankTicketCodeRequest.email())).thenReturn(Optional.empty());
+		when(mailService.isVerified(blankTicketCodeRequest.email())).thenReturn(true);
+
+		assertThatThrownBy(() -> authService.registerAttendee(blankTicketCodeRequest))
+			.isInstanceOf(InvalidTicketCodeException.class);
+	}
 }

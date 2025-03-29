@@ -1,15 +1,23 @@
 package com.synergy.backend.domain.conference.api;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.synergy.backend.domain.conference.dto.requset.ConferenceCreateRequest;
 import com.synergy.backend.domain.conference.dto.requset.ConferenceUpdateRequest;
 import com.synergy.backend.domain.conference.dto.response.ConferenceCreateResponse;
 import com.synergy.backend.domain.conference.dto.response.ConferenceUpdateResponse;
+import com.synergy.backend.domain.conference.service.ConferenceService;
 import com.synergy.backend.domain.member.entity.RoleType;
-import com.synergy.backend.module.ControllerTestSupport;
+import com.synergy.backend.global.security.CustomUserDetailsService;
+import com.synergy.backend.global.jwt.JwtProvider;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
+import org.springframework.test.context.bean.override.mockito.MockitoBean;
+import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -25,8 +33,20 @@ import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
-class ConferenceControllerTest extends ControllerTestSupport {
+@WebMvcTest(controllers = ConferenceController.class)
+class ConferenceControllerTest {
 
+    @Autowired
+    MockMvc mockMvc;
+    @MockitoBean
+    ConferenceService conferenceService;
+
+    @MockitoBean
+    JwtProvider jwtProvider;
+    @MockitoBean
+    CustomUserDetailsService userDetailsService;
+
+    private final ObjectMapper objectMapper = new ObjectMapper().registerModule(new JavaTimeModule());
 
     /**
      * [@MockitoBean 를 서비스 계층 이외에도 사용한 이유]
@@ -257,7 +277,6 @@ class ConferenceControllerTest extends ControllerTestSupport {
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
-                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -293,7 +312,6 @@ class ConferenceControllerTest extends ControllerTestSupport {
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
-                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -410,7 +428,7 @@ class ConferenceControllerTest extends ControllerTestSupport {
                 LocalDate.of(3024, 6, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(2024, 6, 18),
-                LocalTime.of(18, 0),
+                LocalTime.of( 18, 0),
                 "Seoul, South Korea",
                 "로비",
                 "IT"

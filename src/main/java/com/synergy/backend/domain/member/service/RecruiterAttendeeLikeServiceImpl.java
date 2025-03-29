@@ -11,6 +11,7 @@ import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.entity.RecruiterAttendeeLike;
 import com.synergy.backend.domain.member.exception.DuplicateLikeException;
+import com.synergy.backend.domain.member.exception.NotFoundLikeException;
 import com.synergy.backend.domain.member.exception.NotFoundRecruiterException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
@@ -33,7 +34,7 @@ public class RecruiterAttendeeLikeServiceImpl implements RecruiterAttendeeLikeSe
 		Recruiter recruiter = findRecruiterById(recruiterId);
 		Attendee attendee = findAttendeeById(attendeeId);
 
-		if (recruiterAttendeeLikeRepository.existsByRecruiterAndAttendee(recruiter, attendee)) {
+		if (recruiterAttendeeLikeRepository.existsLike(recruiterId, attendeeId)) {
 			throw new DuplicateLikeException();
 		}
 
@@ -43,10 +44,12 @@ public class RecruiterAttendeeLikeServiceImpl implements RecruiterAttendeeLikeSe
 	@Transactional
 	@Override
 	public void unlikeAttendee(Long recruiterId, Long attendeeId) {
-		Recruiter recruiter = findRecruiterById(recruiterId);
-		Attendee attendee = findAttendeeById(attendeeId);
+		boolean exists = recruiterAttendeeLikeRepository.existsLike(recruiterId, attendeeId);
+		if (!exists) {
+			throw new NotFoundLikeException();
+		}
 
-		recruiterAttendeeLikeRepository.deleteByRecruiterAndAttendee(recruiter, attendee);
+		recruiterAttendeeLikeRepository.deleteByRecruiterIdAndAttendeeId(recruiterId, attendeeId);
 	}
 
 	@Transactional(readOnly = true)

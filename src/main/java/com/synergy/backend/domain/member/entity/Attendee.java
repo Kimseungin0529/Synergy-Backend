@@ -164,7 +164,7 @@ public class Attendee extends BaseEntity implements User {
 
 	// 참가자-관심분야
 	@OneToMany(mappedBy = "attendee", cascade = CascadeType.ALL, orphanRemoval = true)
-	private Set<AttendeeInterest> attendeeInterests;
+	private Set<AttendeeInterest> attendeeInterests = new HashSet<>();
 
 	// 컨퍼런스
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -204,21 +204,6 @@ public class Attendee extends BaseEntity implements User {
 	@Override
 	public String getIdentifier() {
 		return this.email;
-	}
-
-	@Override
-	public String toString() {
-		return "Attendee{" +
-			"id=" + id +
-			", name='" + name + '\'' +
-			", currentJobPosition=" + currentJobPosition.getName() +
-			", isHiringInterested=" + isHiringInterested +
-			", educationLevel=" + educationLevel.getDescription() +
-			", desiredJobPosition=" + desiredJobPosition.getName() +
-			", ageGroup=" + ageGroup.getDescription() +
-			", experienceLevel=" + experienceLevel.getDescription() +
-			", desiredWorkRegion=" + desiredWorkRegion.toString() +
-			'}';
 	}
 
 	public void updateJobInfo(JobPosition jobPosition, JobGroup jobGroup,

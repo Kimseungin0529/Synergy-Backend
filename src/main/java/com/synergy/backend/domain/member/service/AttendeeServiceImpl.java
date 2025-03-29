@@ -25,6 +25,7 @@ import com.synergy.backend.domain.member.api.dto.request.JobInfoRequestDto;
 import com.synergy.backend.domain.member.api.dto.resposne.AttendeeFullInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.MyInfoResponseDto;
 import com.synergy.backend.domain.member.api.dto.resposne.NextPointResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.ProfileImageUpdatedResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.member.entity.details.AgeGroup;
@@ -40,6 +41,8 @@ import com.synergy.backend.domain.member.exception.AccessDeniedException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.vo.NextPointInfo;
+import com.synergy.backend.global.util.file.dto.FileInformationDto;
+import com.synergy.backend.global.util.file.exception.EmptyImageFileException;
 import com.synergy.backend.global.util.file.util.FileS3Util;
 
 import lombok.RequiredArgsConstructor;
@@ -58,8 +61,8 @@ public class AttendeeServiceImpl implements AttendeeService {
 	/** 직무 정보 추가 */
 	@Transactional
 	@Override
-	public void addJobInfo(String email, JobInfoRequestDto request) {
-		Attendee attendee = findAttendeeByEmail(email);
+	public void addJobInfo(Long id, JobInfoRequestDto request) {
+		Attendee attendee = findAttendeeById(id);
 
 		addInterests(attendee, request.interestCodes());
 
@@ -73,8 +76,8 @@ public class AttendeeServiceImpl implements AttendeeService {
 	/** 직무 상세 정보 추가 */
 	@Transactional
 	@Override
-	public void addJobInfoDetails(String email, JobInfoDetailsRequestDto request, MultipartFile profileImage) {
-		Attendee attendee = findAttendeeByEmail(email);
+	public void addJobInfoDetails(Long id, JobInfoDetailsRequestDto request, MultipartFile profileImage) {
+		Attendee attendee = findAttendeeById(id);
 
 		if (profileImage != null && !profileImage.isEmpty()) {
 			attendee.addImage(fileS3Util.uploadFile(profileImage));
@@ -99,8 +102,8 @@ public class AttendeeServiceImpl implements AttendeeService {
 	/** 내 정보 */
 	@Transactional(readOnly = true)
 	@Override
-	public MyInfoResponseDto getMyInformation(String identifier) {
-		Attendee attendee = findAttendeeByEmail(identifier);
+	public MyInfoResponseDto getMyInformation(Long id) {
+		Attendee attendee = findAttendeeById(id);
 		NextPointInfo info = MembershipLevelType.getNextLevelInfo(attendee.getTotalPoints());
 
 		return MyInfoResponseDto.from(attendee, NextPointResponseDto.from(info));
@@ -109,12 +112,10 @@ public class AttendeeServiceImpl implements AttendeeService {
 	/** 참가자 상세 정보 */
 	@Transactional(readOnly = true)
 	@Override
-	public AttendeeFullInfoResponseDto getAttendeeInfoDetail(Long attendeeId, String identifier, RoleType role) {
+	public AttendeeFullInfoResponseDto getAttendeeInfoDetail(Long attendeeId, Long viewerId, RoleType role) {
 
 		if (role == RoleType.ATTENDEE) {
-			Attendee loginUser = findAttendeeByEmail(identifier);
-
-			if (!loginUser.getId().equals(attendeeId)) {
+			if (!viewerId.equals(attendeeId)) {
 				throw new AccessDeniedException();
 			}
 		}
@@ -124,26 +125,38 @@ public class AttendeeServiceImpl implements AttendeeService {
 		return AttendeeFullInfoResponseDto.from(attendee);
 	}
 
+	@Transactional
+	@Override
+	public ProfileImageUpdatedResponseDto updateProfileImage(Long attendeeId,
+		MultipartFile profileImage) {
+		if (profileImage == null || profileImage.isEmpty()) {
+			throw new EmptyImageFileException();
+		}
+		Attendee attendee = findAttendeeById(attendeeId);
+		FileInformationDto fileInformationDto = fileS3Util.uploadFile(profileImage);
+		attendee.addImage(fileInformationDto);
+		return ProfileImageUpdatedResponseDto.from(fileInformationDto.accessUrl());
+	}
+
 	// 관심사 추가
-	private Set<Interest> addInterests(Attendee attendee, Set<Integer> interestCodes) {
-		// 요청된 숫자 코드에 해당하는 Interest 엔티티 조회
-		Set<Interest> interestsToAdd = getValidInterests(interestCodes);
-
-		// 현재 등록된 관심사 가져오기
-		Set<Interest> currentInterests = getCurrentInterests(attendee);
-
-		// 현재 등록된 관심사를 제외한 새로운 관심사 필터링
-		Set<Interest> newInterests = interestsToAdd.stream()
-			.filter(interest -> !currentInterests.contains(interest))
-			.collect(Collectors.toSet());
-
-		// 새로운 관심사가 있다면 저장
-		if (!newInterests.isEmpty()) {
-			saveNewMemberInterests(attendee, newInterests);
+	private void addInterests(Attendee attendee, Set<Integer> interestCodes) {
+		if (interestCodes.size() > 3) {
+			throw new IllegalArgumentException("관심사는 최대 3개까지 선택할 수 있습니다.");
 		}
 
-		// 최종 등록된 관심사 반환
-		return getCurrentInterests(attendee);
+		Set<Interest> newInterests = getValidInterests(interestCodes);
+		Set<Interest> currentInterests = getCurrentInterests(attendee);
+
+		// 관심사 동일하면 변경하지 않음
+		if (currentInterests.equals(newInterests)) {
+			return;
+		}
+
+		// 변경이 필요한 경우에만 삭제 후 추가
+		attendeeInterestRepository.deleteAll(attendee.getAttendeeInterests());
+		attendee.getAttendeeInterests().clear();
+
+		saveNewMemberInterests(attendee, newInterests);
 	}
 
 	// 관심사 코드 검증
@@ -194,11 +207,6 @@ public class AttendeeServiceImpl implements AttendeeService {
 
 	private Attendee findAttendeeById(Long attendeeId) {
 		return attendeeRepository.findById(attendeeId)
-			.orElseThrow(NotFoundUserException::new);
-	}
-
-	private Attendee findAttendeeByEmail(String email) {
-		return attendeeRepository.findByEmail(email)
 			.orElseThrow(NotFoundUserException::new);
 	}
 

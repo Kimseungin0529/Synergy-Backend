@@ -1,22 +1,25 @@
 package com.synergy.backend.domain.member.repository;
 
 import java.util.List;
-import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 
-import com.synergy.backend.domain.member.entity.Attendee;
-import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.entity.RecruiterAttendeeLike;
 
 public interface RecruiterAttendeeLikeRepository extends JpaRepository<RecruiterAttendeeLike, Long> {
-	Optional<RecruiterAttendeeLike> findByRecruiterAndAttendee(Recruiter recruiter, Attendee attendee);
 
-	boolean existsByRecruiterAndAttendee(Recruiter recruiter, Attendee attendee);
+	@Query("select count(ral) > 0 from RecruiterAttendeeLike ral where ral.recruiter.id = :recruiterId and ral.attendee.id = :attendeeId")
+	boolean existsLike(@Param("recruiterId") Long recruiterId, @Param("attendeeId") Long attendeeId);
 
-	void deleteByRecruiterAndAttendee(Recruiter recruiter, Attendee attendee);
+	@Modifying
+	@Query("delete from RecruiterAttendeeLike ral where ral.recruiter.id = :recruiterId and ral.attendee.id = :attendeeId")
+	void deleteByRecruiterIdAndAttendeeId(@Param("recruiterId") Long recruiterId, @Param("attendeeId") Long attendeeId);
 
 	List<RecruiterAttendeeLike> findAllByRecruiterId(Long recruiterId);
 
 	List<RecruiterAttendeeLike> findAllByAttendeeId(Long attendeeId);
+
 }
