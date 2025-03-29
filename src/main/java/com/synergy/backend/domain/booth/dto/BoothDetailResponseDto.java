@@ -14,7 +14,6 @@ public record BoothDetailResponseDto(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate progressDate,
         String boothDescription,
-        String qrUrl,
         String imageUrl,
         Boolean isQRVerify
 ) {
@@ -27,7 +26,6 @@ public record BoothDetailResponseDto(
                 booth.getBoothNumber(),
                 booth.getProgressDate(),
                 booth.getBoothDescription(),
-                booth.getQrUrl(),
                 booth.getImageUrl(),
                 isQRVerify
         );
