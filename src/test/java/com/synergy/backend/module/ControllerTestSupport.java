@@ -19,6 +19,8 @@ import com.synergy.backend.domain.member.service.AdminService;
 import com.synergy.backend.domain.member.service.AttendeeService;
 import com.synergy.backend.domain.member.service.RecruiterAttendeeLikeService;
 import com.synergy.backend.domain.member.service.RecruiterService;
+import com.synergy.backend.domain.point.api.PointController;
+import com.synergy.backend.domain.point.service.PointService;
 import com.synergy.backend.global.jwt.JwtProvider;
 import com.synergy.backend.global.security.CustomUserDetailsService;
 
@@ -27,7 +29,8 @@ import com.synergy.backend.global.security.CustomUserDetailsService;
 	ConferenceController.class,
 	RecruiterController.class,
 	AdminController.class,
-	AttendeeController.class
+	AttendeeController.class,
+	PointController.class
 } /* 추가로 필요한 컨트롤러 클래스 지정 */)
 public abstract class ControllerTestSupport {
 	protected final ObjectMapper objectMapper = new ObjectMapper()
@@ -51,4 +54,6 @@ public abstract class ControllerTestSupport {
 	protected AdminService adminService;
 	@MockitoBean
 	protected AttendeeService attendeeService;
+	@MockitoBean
+	protected PointService pointService;
 }
