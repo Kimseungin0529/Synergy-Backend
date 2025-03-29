@@ -48,6 +48,8 @@ public class BoothServiceImpl implements BoothService {
                 conference
         );
 
+        boothRepository.save(booth);
+
         String url = router + "/booth/" + booth.getId();
         byte[] qrCode = qrService.generateQRCode(url, secretCode);
         FileInformationDto qrInfo = fileS3Util.uploadQRCode(qrCode, booth.getCompanyName());
@@ -55,7 +57,6 @@ public class BoothServiceImpl implements BoothService {
 
         FileInformationDto imageInfo = fileS3Util.uploadFile(imageFile);
         booth.updateImage(imageInfo);
-        boothRepository.save(booth);
 
         return new BoothDetailResponseDto(booth);
     }
