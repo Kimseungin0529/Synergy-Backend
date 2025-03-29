@@ -5,9 +5,11 @@ import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.annotation.SwaggerSummaryRole;
 import com.synergy.backend.global.common.ApiResponse;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
+@Tag(name = "Booth Verify Controller", description = "부스 참여자 관련 API")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/v1/verify")
@@ -15,7 +17,10 @@ public class BoothVerifyController {
 
     private final BoothParticipationService boothParticipationService;
 
-    @Operation(summary = "부스 참여", description = "부스 ID를 기준으로 해당 부스에 참여합니다.")
+    @Operation(
+            summary = "부스 참여",
+            description = "부스 ID를 기준으로 해당 부스에 참여합니다."
+    )
     @SwaggerSummaryRole({RoleType.ATTENDEE})
     @PostMapping("/{boothId}/participate/{attendeeId}")
     public ApiResponse<String> participateInBooth(
