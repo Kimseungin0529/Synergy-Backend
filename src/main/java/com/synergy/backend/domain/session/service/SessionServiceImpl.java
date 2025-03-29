@@ -93,9 +93,9 @@ public class SessionServiceImpl implements SessionService {
                 ifAttendeeSessionExists(sessionId, attendee.getId());
             }
             List<QuestionResDto> questions = getQuestions(conference, sessionId);
-            return SessionDetailResDto.from(session, questions);
+            return SessionDetailResDto.from(session, questions, Boolean.TRUE);
         } catch (Exception e) {
-            return SessionDetailResDto.from(session, List.of());
+            return SessionDetailResDto.from(session, List.of(), Boolean.FALSE);
         }
     }
 
