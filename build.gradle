@@ -3,6 +3,7 @@ plugins {
     id 'org.springframework.boot' version '3.4.3'
     id 'io.spring.dependency-management' version '1.1.7'
     id "org.asciidoctor.jvm.convert" version "3.3.2"
+    id 'jacoco'
 }
 
 group = 'com.synergy'
@@ -70,6 +71,8 @@ dependencies {
 
 tasks.named('test') {
     useJUnitPlatform()
+    outputs.dir snippetsDir
+    finalizedBy jacocoTestReport // ✅ 테스트 후 리포트 생성
 }
 
 // querydsl 추가 시작
@@ -92,9 +95,6 @@ ext { // 전역 변수
     snippetsDir = file('build/generated-snippets')
 }
 
-test {
-    outputs.dir snippetsDir
-}
 
 asciidoctor {
     inputs.dir snippetsDir
@@ -123,3 +123,31 @@ tasks.register('copyDocument', Copy) {
 build {
     dependsOn copyDocument
 }
+
+// Jacoco 기본 설정
+jacoco {
+    toolVersion = "0.8.10" // 최신 버전 확인 필요
+}
+
+jacocoTestReport {
+    dependsOn test
+    reports {
+        xml.required.set(true)
+        html.required.set(true)
+        csv.required.set(false)
+        html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
+    }
+}
+
+jacocoTestCoverageVerification {
+    violationRules {
+        rule {
+            limit {
+                minimum = 0.30
+            }
+        }
+    }
+}
+check.dependsOn jacocoTestCoverageVerification
+
+

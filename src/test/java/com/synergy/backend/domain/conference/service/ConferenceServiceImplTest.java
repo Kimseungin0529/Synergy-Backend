@@ -9,6 +9,7 @@ import com.synergy.backend.domain.conference.entity.TimePeriod;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.repository.AdminRepository;
+import com.synergy.backend.module.IntegrationSupportTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.DynamicTest;
 import org.junit.jupiter.api.Test;
@@ -27,10 +28,7 @@ import java.util.List;
 import static org.assertj.core.api.Assertions.assertThat;
 
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
-class ConferenceServiceImplTest {
+class ConferenceServiceImplTest extends IntegrationSupportTest {
     @Autowired
     ConferenceService conferenceService;
     @Autowired
