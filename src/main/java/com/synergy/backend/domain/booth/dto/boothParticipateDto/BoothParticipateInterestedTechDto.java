@@ -6,13 +6,13 @@ import lombok.Getter;
 @Getter
 public class BoothParticipateInterestedTechDto {
     private Long boothId;
-    private String interestedTech;
-    private long count;
+    private String tech;
+    private long attendeeCount;
 
     @QueryProjection
     public BoothParticipateInterestedTechDto(Long boothId, long count, String interestedTech) {
         this.boothId = boothId;
-        this.count = count;
-        this.interestedTech = interestedTech;
+        this.attendeeCount = count;
+        this.tech = interestedTech;
     }
 }

@@ -17,7 +17,7 @@ public class BoothParticipationInterestedResponseDto {
 	private String boothNumber;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd")
 	private LocalDate progressDate;
-	private List<BoothParticipateInterestedTechDto> techs;
+	private List<BoothParticipateInterestedTechDto> dataset;
 
 	@QueryProjection
 	public BoothParticipationInterestedResponseDto(Long boothId, String companyName, String companyType, String boothLocation,
@@ -28,10 +28,10 @@ public class BoothParticipationInterestedResponseDto {
 		this.boothLocation = boothLocation;
 		this.boothNumber = boothNumber;
 		this.progressDate = progressDate;
-		this.techs = new ArrayList<>();
+		this.dataset = new ArrayList<>();
 	}
 
 	public void addTechs(List<BoothParticipateInterestedTechDto> techs) {
-		this.techs = techs;
+		this.dataset = techs;
 	}
 }
