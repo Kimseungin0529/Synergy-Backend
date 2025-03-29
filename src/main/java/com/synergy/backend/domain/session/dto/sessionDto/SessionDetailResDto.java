@@ -15,15 +15,12 @@ public record SessionDetailResDto(
         LocalDateTime endTime,
         String description,
         String imageUrl,
-        List<QuestionResDto> questionResDto
+        List<QuestionResDto> questionResDto,
+        Boolean isQRVerify
 ) {
-    public static SessionDetailResDto from(Session session, List<QuestionResDto> resDtos) {
+    public static SessionDetailResDto from(Session session, List<QuestionResDto> resDtos, Boolean isQRVerify) {
         return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(), session.getSpeakerPosition(),
-                session.getStartTime(), session.getEndTime(), session.getDescription(), session.getImageUrl(), resDtos);
+                session.getStartTime(), session.getEndTime(), session.getDescription(), session.getImageUrl(), resDtos, isQRVerify);
     }
 
-    public static SessionDetailResDto withQRCodefrom(Session session, List<QuestionResDto> resDtos) {
-        return new SessionDetailResDto(session.getId(), session.getTitle(), session.getSpeaker(), session.getSpeakerPosition(),
-                session.getStartTime(), session.getEndTime(), session.getDescription(), session.getImageUrl(), resDtos);
-    }
 }

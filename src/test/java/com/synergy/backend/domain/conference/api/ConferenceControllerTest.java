@@ -38,13 +38,11 @@ class ConferenceControllerTest {
 
     @Autowired
     MockMvc mockMvc;
-
     @MockitoBean
     ConferenceService conferenceService;
 
     @MockitoBean
     JwtProvider jwtProvider;
-
     @MockitoBean
     CustomUserDetailsService userDetailsService;
 
@@ -80,7 +78,7 @@ class ConferenceControllerTest {
                 LocalDate.of(3025, 6, 15),
                 LocalTime.of(10, 0),
                 LocalDate.of(3025, 6, 15),
-                LocalTime.of( 10, 0),
+                LocalTime.of(10, 0),
                 "Seoul, South Korea",
                 "A로비",
                 "IT"
@@ -105,6 +103,7 @@ class ConferenceControllerTest {
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.data.id").value(1L));
 
+
     }
 
 
@@ -119,7 +118,7 @@ class ConferenceControllerTest {
                 LocalDate.of(3025, 6, 15),
                 LocalTime.of(10, 0),
                 LocalDate.of(3025, 6, 15),
-                LocalTime.of( 18, 0),
+                LocalTime.of(18, 0),
                 "Seoul, South Korea",
                 "A로비",
                 "IT"
@@ -157,7 +156,7 @@ class ConferenceControllerTest {
                 LocalDate.of(2024, 6, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(3025, 6, 18),
-                LocalTime.of( 18, 0),
+                LocalTime.of(18, 0),
                 "Seoul, South Korea",
                 "A로비",
                 "IT"
@@ -192,7 +191,7 @@ class ConferenceControllerTest {
                 LocalDate.of(3024, 6, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(2025, 3, 18),
-                LocalTime.of( 18, 0),
+                LocalTime.of(18, 0),
                 "Seoul, South Korea",
                 "로비 BB",
                 "IT"
@@ -228,7 +227,7 @@ class ConferenceControllerTest {
                 LocalDate.of(3024, 6, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(3022, 6, 18),
-                LocalTime.of( 18, 0),
+                LocalTime.of(18, 0),
                 "  ",
                 "로비 A",
                 "IT"
@@ -263,7 +262,7 @@ class ConferenceControllerTest {
                 LocalDate.of(3024, 6, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(3022, 6, 18),
-                LocalTime.of( 18, 0),
+                LocalTime.of(18, 0),
                 "Seoul, South Korea",
                 "로비",
                 "IT"
@@ -278,6 +277,7 @@ class ConferenceControllerTest {
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
+                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -298,7 +298,7 @@ class ConferenceControllerTest {
                 LocalDate.of(3024, 6, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(3022, 6, 18),
-                LocalTime.of( 18, 0),
+                LocalTime.of(18, 0),
                 "Seoul, South Korea",
                 "로비",
                 "   "
@@ -307,11 +307,13 @@ class ConferenceControllerTest {
         given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
         given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
+        given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
         // when & then
         mockMvc.perform(post("/api/v1/conference")
                         .with(csrf())
                         .content(objectMapper.writeValueAsString(request))
+                        .header("Authorization", "Bearer AAAAA.BBBBBBB.CCCCCC")
                         .contentType(APPLICATION_JSON)
                 )
                 .andDo(print())
@@ -332,7 +334,7 @@ class ConferenceControllerTest {
                 LocalDate.of(3024, 6, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(3022, 6, 18),
-                LocalTime.of( 18, 0),
+                LocalTime.of(18, 0),
                 "Seoul, South Korea",
                 "로비",
                 "IT"
@@ -343,7 +345,7 @@ class ConferenceControllerTest {
                 LocalDate.of(3024, 6, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(3022, 6, 18),
-                LocalTime.of( 18, 0),
+                LocalTime.of(18, 0),
                 "Seoul, South Korea",
                 "로비",
                 "IT"
@@ -390,7 +392,7 @@ class ConferenceControllerTest {
                 LocalDate.of(2024, 6, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(3022, 6, 18),
-                LocalTime.of( 18, 0),
+                LocalTime.of(18, 0),
                 "Seoul, South Korea",
                 "로비",
                 "IT"
@@ -428,7 +430,7 @@ class ConferenceControllerTest {
                 LocalDate.of(3024, 6, 15),
                 LocalTime.of(13, 0),
                 LocalDate.of(2024, 6, 18),
-                LocalTime.of( 18, 0),
+                LocalTime.of(18, 0),
                 "Seoul, South Korea",
                 "로비",
                 "IT"
