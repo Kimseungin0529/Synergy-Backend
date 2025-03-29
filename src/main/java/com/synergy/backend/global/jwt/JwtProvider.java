@@ -80,7 +80,7 @@ public class JwtProvider {
 		} catch (ExpiredJwtException e) {
 			throw new ExpiredRefreshTokenException();
 		} catch (JwtException | IllegalArgumentException e) {
-			log.warn("[validateRefreshToken] JwtException caught: {}", e.getClass().getSimpleName());
+      log.warn("[validateRefreshToken] JwtException caught: {}", e.getClass().getSimpleName());
 			throw new InvalidRefreshTokenException();
 		}
 	}
@@ -122,6 +122,7 @@ public class JwtProvider {
 	}
 
 	private String generateToken(CustomUserDetails userDetails, Duration expiration, String tokenType) {
+
 		return Jwts.builder()
 			.setSubject(userDetails.getIdentifier())
 			.claim("id", userDetails.getId())
