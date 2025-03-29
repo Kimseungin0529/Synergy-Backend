@@ -1,6 +1,6 @@
 package com.synergy.backend.domain.booth.repository.querydsl;
 
-import com.synergy.backend.domain.booth.dto.BoothParticipationResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationResponseDto;
 
 import java.util.List;
 

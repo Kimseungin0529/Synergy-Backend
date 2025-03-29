@@ -1,4 +1,4 @@
-package com.synergy.backend.domain.booth.dto;
+package com.synergy.backend.domain.booth.dto.boothParticipateDto;
 
 import com.querydsl.core.annotations.QueryProjection;
 import lombok.Getter;

@@ -1,6 +1,7 @@
 package com.synergy.backend.domain.booth.service;
 
-import com.synergy.backend.domain.booth.dto.BoothParticipationResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipateRateResDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationResponseDto;
 import com.synergy.backend.domain.booth.dto.BoothResponseDto;
 import com.synergy.backend.domain.booth.entity.Booth;
 import com.synergy.backend.domain.booth.entity.BoothParticipation;
@@ -11,14 +12,8 @@ import com.synergy.backend.domain.booth.repository.BoothRepository;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
-import com.synergy.backend.domain.point.entity.PointType;
 import com.synergy.backend.domain.point.service.PointService;
 import com.synergy.backend.domain.qrCode.service.QrService;
-import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
-import com.synergy.backend.domain.session.entity.AttendeeSession;
-import com.synergy.backend.domain.session.entity.Session;
-import com.synergy.backend.domain.session.exception.AlreadyAttendedException;
-import com.synergy.backend.domain.session.exception.NotFoundSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -57,6 +52,11 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
         pointService.addBoothPoint(attendee.getId(), boothId);
 
         return BoothResponseDto.from(booth);
+    }
+
+    @Override
+    public BoothParticipateRateResDto boothParticipateRate(String identifier, Long conferenceId) {
+        return null;
     }
 
     @Transactional(readOnly = true)

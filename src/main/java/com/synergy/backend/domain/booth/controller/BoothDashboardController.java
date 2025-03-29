@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.synergy.backend.domain.booth.dto.BoothParticipationResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationResponseDto;
 import com.synergy.backend.domain.booth.service.BoothParticipationService;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.global.annotation.SwaggerSummaryRole;

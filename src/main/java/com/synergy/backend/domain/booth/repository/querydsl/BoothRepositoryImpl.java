@@ -2,8 +2,8 @@ package com.synergy.backend.domain.booth.repository.querydsl;
 
 import com.querydsl.core.types.dsl.BooleanExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.synergy.backend.domain.booth.dto.BoothParticipateInterestedTechDto;
-import com.synergy.backend.domain.booth.dto.BoothParticipationResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipateInterestedTechDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationResponseDto;
 import com.synergy.backend.domain.booth.dto.QBoothParticipateInterestedTechDto;
 import com.synergy.backend.domain.booth.dto.QBoothParticipationResponseDto;
 import lombok.RequiredArgsConstructor;
