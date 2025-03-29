@@ -38,7 +38,7 @@ public class BoothController {
             @PathVariable Long id
     ) {
 
-        return ApiResponse.ok(boothService.getBoothById(conferenceId, id), 200);
+        return ApiResponse.ok(boothService.getBoothById(user.getIdentifier(), user.getRole(), conferenceId, id), 200);
     }
 
 	@SwaggerSummaryRole({RoleType.ADMIN, RoleType.RECRUITER, RoleType.ATTENDEE})@PreAuthorize("hasAnyRole('ADMIN', 'ATTENDEE', 'RECRUITER')")
@@ -56,7 +56,7 @@ public class BoothController {
     @PreAuthorize("hasRole('ADMIN')")
     @Operation(summary = "부스 생성", description = "해당 컨퍼런스에 새로운 부스를 생성합니다.")
     @PostMapping
-    public ApiResponse<BoothDetailResponseDto> createBooth(
+    public ApiResponse createBooth(
             @AuthenticationPrincipal CustomUserDetails user,
             @RequestHeader(value = "Origin") String router,
             @PathVariable Long conferenceId,
@@ -64,7 +64,9 @@ public class BoothController {
             @RequestPart MultipartFile imageFile
     ) throws WriterException {
 
-        return ApiResponse.ok(boothService.createBooth(conferenceId, router, requestDto, imageFile), 201);
+        boothService.createBooth(conferenceId, router, requestDto, imageFile);
+
+        return ApiResponse.ok("Booth created Successfully!", 201);
     }
 
 	@SwaggerSummaryRole({RoleType.ADMIN})
