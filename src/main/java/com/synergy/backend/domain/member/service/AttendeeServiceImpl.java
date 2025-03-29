@@ -79,8 +79,17 @@ public class AttendeeServiceImpl implements AttendeeService {
 	public void addJobInfoDetails(Long id, JobInfoDetailsRequestDto request, MultipartFile profileImage) {
 		Attendee attendee = findAttendeeById(id);
 
+		FileInformationDto uploadedImage = null;
 		if (profileImage != null && !profileImage.isEmpty()) {
-			attendee.addImage(fileS3Util.uploadFile(profileImage));
+			try {
+				uploadedImage = fileS3Util.uploadFile(profileImage);
+			} catch (Exception e) {
+				throw new EmptyImageFileException();
+			}
+		}
+
+		if (uploadedImage != null) {
+			attendee.addImage(uploadedImage);
 		}
 
 		attendee.updateJobInfoDetails(
