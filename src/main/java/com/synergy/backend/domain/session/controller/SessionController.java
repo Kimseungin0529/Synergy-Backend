@@ -50,7 +50,7 @@ public class SessionController {
 	@SwaggerSummaryRole({RoleType.ADMIN, RoleType.RECRUITER, RoleType.ATTENDEE})
 	@GetMapping
 	public ApiResponse getSessions(@AuthenticationPrincipal CustomUserDetails user,
-		@PathVariable(name = "conferenceId") Long conferenceId,) {
+		@PathVariable(name = "conferenceId") Long conferenceId) {
 		List<SessionResDto> result = sessionService.getSessions(user.getIdentifier(), conferenceId);
 
 		return ApiResponse.ok(result, 200);

@@ -16,7 +16,7 @@ public class BoothParticipationInterestedResponseDto {
 	private String boothLocation;
 	private String boothNumber;
 	private String boothDescription;
-	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd")
+	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
 	private LocalDate progressDate;
 	private String qrCode;
 	private List<BoothParticipateInterestedTechDto> dataset;
