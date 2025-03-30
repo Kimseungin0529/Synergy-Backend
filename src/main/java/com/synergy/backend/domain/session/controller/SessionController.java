@@ -38,7 +38,7 @@ public class SessionController {
 		@RequestHeader(value = "Origin") String router,
 		@PathVariable(name = "conferenceId") Long conferenceId,
 		@RequestPart @Valid SessionReqDto sessionReqDto,
-		@RequestPart MultipartFile multipartFile) throws WriterException {
+		@RequestPart(required = false) MultipartFile multipartFile) throws WriterException {
 
 		sessionService.createSession(user.getIdentifier(), router, conferenceId, sessionReqDto, multipartFile);
 
@@ -50,7 +50,7 @@ public class SessionController {
 	@SwaggerSummaryRole({RoleType.ADMIN, RoleType.RECRUITER, RoleType.ATTENDEE})
 	@GetMapping
 	public ApiResponse getSessions(@AuthenticationPrincipal CustomUserDetails user,
-		@PathVariable(name = "conferenceId") Long conferenceId) {
+		@PathVariable(name = "conferenceId") Long conferenceId,) {
 		List<SessionResDto> result = sessionService.getSessions(user.getIdentifier(), conferenceId);
 
 		return ApiResponse.ok(result, 200);
@@ -76,7 +76,7 @@ public class SessionController {
 	public ApiResponse updateSession(@AuthenticationPrincipal CustomUserDetails user,
 		@PathVariable Long sessionId,
 		@RequestPart @Valid SessionReqDto sessionReqDto,
-		@RequestPart MultipartFile multipartFile) {
+	 	@RequestPart(required = false) MultipartFile multipartFile) {
 		sessionService.updateSession(user.getIdentifier(), sessionId, sessionReqDto, multipartFile);
 
 		return ApiResponse.ok("Session updated successfully!", 200);

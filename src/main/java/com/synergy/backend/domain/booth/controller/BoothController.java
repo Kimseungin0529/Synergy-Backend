@@ -61,7 +61,7 @@ public class BoothController {
             @RequestHeader(value = "Origin") String router,
             @PathVariable Long conferenceId,
             @RequestPart BoothRequestDto requestDto,
-            @RequestPart MultipartFile imageFile
+            @RequestPart(required = false) MultipartFile imageFile
     ) throws WriterException {
 
         boothService.createBooth(conferenceId, router, requestDto, imageFile);
