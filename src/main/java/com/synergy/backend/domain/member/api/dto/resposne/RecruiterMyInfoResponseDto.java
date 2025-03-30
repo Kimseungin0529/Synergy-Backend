@@ -16,4 +16,10 @@ public record RecruiterMyInfoResponseDto(
 			recruiter.getResponsibility()
 		);
 	}
+
+	public static RecruiterMyInfoResponseDto from(String companyPhotoUrl, String recruiterName, String company,
+		String responsibility) {
+		return new RecruiterMyInfoResponseDto(
+			companyPhotoUrl, recruiterName, company, responsibility);
+	}
 }
