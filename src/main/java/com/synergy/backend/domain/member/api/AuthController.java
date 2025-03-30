@@ -45,8 +45,13 @@ public class AuthController {
 	@Operation(summary = "참가자 회원가입", description = "이메일 인증을 완료한 참가자가 회원가입을 합니다.")
 	@DisableSwaggerSecurity
 	@PostMapping("/attendee/signup")
-	public ApiResponse<?> registerAttendee(@Valid @RequestBody SignupAttendeeRequestDto request) {
-		return ApiResponse.ok(authService.registerAttendee(request), 201);
+	public ApiResponse<?> registerAttendee(@Valid @RequestBody SignupAttendeeRequestDto request,
+		HttpServletResponse response) {
+		TokenWithRefreshToken tokenWithRefreshToken = authService.registerAttendee(request);
+
+		cookieUtils.addRefreshTokenToCookie(response, tokenWithRefreshToken.refreshToken());
+
+		return ApiResponse.ok(tokenWithRefreshToken.tokenResponseDto(), 201);
 	}
 
 	@Operation(summary = "참가자 로그인", description = "참가자가 이메일과 비밀번호로 로그인하여 액세스/리프레시 토큰을 발급받습니다.")
@@ -137,7 +142,8 @@ public class AuthController {
 		mailService.mailVerificationConfirm(request.email(), request.code());
 		switch (request.purpose()) {
 			case UNLOCK_ACCOUNT -> authService.unlockAccountIfLocked(request.email());
-			case SIGNUP, PASSWORD_RESET -> {}
+			case SIGNUP, PASSWORD_RESET -> {
+			}
 		}
 
 		return ApiResponse.emptyOk();

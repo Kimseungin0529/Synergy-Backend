@@ -1,15 +1,11 @@
 package com.synergy.backend.domain.member.service;
 
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
-import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
 import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 
-import jakarta.validation.Valid;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
-
 public interface AuthService {
-	SignupAttendeeResponseDto registerAttendee(@Valid SignupAttendeeRequestDto request);
+	TokenWithRefreshToken registerAttendee(SignupAttendeeRequestDto request);
 
 	TokenWithRefreshToken loginAsAttendee(String email, String password);
 
@@ -23,5 +19,5 @@ public interface AuthService {
 
 	void logout(String refreshToken);
 
-	void unlockAccountIfLocked(@NotBlank(message = "이메일은 필수입니다.") @Email String email);
+	void unlockAccountIfLocked(String email);
 }

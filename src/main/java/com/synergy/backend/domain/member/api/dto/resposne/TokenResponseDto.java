@@ -9,7 +9,7 @@ public record TokenResponseDto(
 	RoleType role,
 	Long id) {
 
-	public static TokenResponseDto of(String token, User user) {
+	public static TokenResponseDto from(String token, User user) {
 		return new TokenResponseDto(
 			token,
 			user.getIdentifier(),

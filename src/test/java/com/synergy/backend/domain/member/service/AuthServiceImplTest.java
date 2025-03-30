@@ -23,7 +23,7 @@ import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.exception.InvalidTicketCodeException;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
-import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponseDto;
+import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;
@@ -125,12 +125,13 @@ class AuthServiceImplTest {
 		when(conferenceRepository.findByTicketCode(anyString())).thenReturn(Optional.of(mock(Conference.class)));
 
 		// When
-		SignupAttendeeResponseDto response = authService.registerAttendee(requestDto);
+		TokenWithRefreshToken tokenWithRefreshToken = authService.registerAttendee(requestDto);
+		TokenResponseDto response = tokenWithRefreshToken.tokenResponseDto();
 
 		// Then
 		assertNotNull(response);
-		assertEquals(requestDto.email(), response.email());
-		assertEquals(requestDto.name(), response.name());
+		assertEquals(requestDto.email(), response.identifier());
+		assertEquals(ATTENDEE, response.role());
 		verify(attendeeRepository).save(any(Attendee.class));
 	}
 
@@ -160,7 +161,8 @@ class AuthServiceImplTest {
 		});
 
 		// When
-		SignupAttendeeResponseDto response = authService.registerAttendee(requestDto);
+		TokenWithRefreshToken tokenWithRefreshToken = authService.registerAttendee(requestDto);
+		TokenResponseDto response = tokenWithRefreshToken.tokenResponseDto();
 
 		// Then
 		assertThat(response).isNotNull();
@@ -379,10 +381,11 @@ class AuthServiceImplTest {
 			});
 
 		// when
-		SignupAttendeeResponseDto response = authService.registerAttendee(requestDto);
+		TokenWithRefreshToken tokenWithRefreshToken = authService.registerAttendee(requestDto);
+		TokenResponseDto response = tokenWithRefreshToken.tokenResponseDto();
 
 		// then
-		assertThat(response.email()).isEqualTo("UserA@example.com");
+		assertThat(response.identifier()).isEqualTo("UserA@example.com");
 		ArgumentCaptor<Long> captor = ArgumentCaptor.forClass(Long.class);
 		verify(pointService).addSignupPoint(captor.capture());
 		assertThat(captor.getValue()).isEqualTo(1L);
