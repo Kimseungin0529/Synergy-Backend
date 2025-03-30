@@ -61,16 +61,16 @@ public class Booth {
 	@Column(nullable = false, unique = true)
 	private String secretCode;
 
-	@Column(nullable = false)
+	@Column
 	private String qrKey;
 
-	@Column(nullable = false)
+	@Column
 	private String qrUrl;
 
-	@Column(nullable = false)
+	@Column
 	private String imageKey;
 
-	@Column(nullable = false)
+	@Column
 	private String imageUrl;
 
 	public void addAdmin(Admin admin) {
