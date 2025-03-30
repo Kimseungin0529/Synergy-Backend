@@ -12,4 +12,5 @@ public interface SessionCustomRepository {
 
     List<SessionParticipateRateDetailResDto> getSessionParticipateDetailByConferenceId(Long conferenceId);
 
+    Long getSessionAttendeeCount(Long conferenceId);
 }

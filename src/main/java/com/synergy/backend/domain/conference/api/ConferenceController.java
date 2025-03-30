@@ -1,13 +1,9 @@
 package com.synergy.backend.domain.conference.api;
 
+import com.synergy.backend.domain.conference.dto.response.ConferenceAttendeeInfoResDto;
 import org.springframework.http.HttpStatus;
-import org.springframework.web.bind.annotation.PatchMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseStatus;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import com.synergy.backend.domain.conference.dto.requset.ConferenceCreateRequest;
 import com.synergy.backend.domain.conference.dto.requset.ConferenceUpdateRequest;
@@ -48,5 +44,16 @@ public class ConferenceController {
 	public ApiResponse<ConferenceUpdateResponse> updateConference(@CurrentUser String identifier,
 		@PathVariable(name = "id") Long id, @RequestBody @Valid ConferenceUpdateRequest request) {
 		return ApiResponse.ok(conferenceService.updateConference(identifier, id, request), 200);
+	}
+
+	@GetMapping("/{id}")
+	@Operation(summary = "컨퍼런스 대시보드 참여자 세부 조회", description = "세션/부스/컨퍼런스 참여자들을 조회합니다.")
+	@SwaggerSummaryRole({RoleType.ADMIN})
+	@PreAuthorize("hasRole('ADMIN')")
+	public ApiResponse<ConferenceAttendeeInfoResDto> getAttendeeInfo(
+			@CurrentUser String identifier,
+			@PathVariable(name = "id") Long id){
+
+		return ApiResponse.ok(conferenceService.findConferenceAttendeeInfo(identifier, id), 200);
 	}
 }

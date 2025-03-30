@@ -11,4 +11,6 @@ public interface BoothRepositoryCustom {
     BoothParticipateRateResDto searchBoothRank(Long conferenceId, LocalDate currentDate);
 
     List<BoothParticipationInterestedResponseDto> searchBoothParticipation(Long conferenceId);
+
+    Long getBoothAttendeeCount(Long conferenceId);
 }
