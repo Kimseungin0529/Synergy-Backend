@@ -10,4 +10,5 @@ public interface AttendeeSessionRepository extends JpaRepository<AttendeeSession
 
 
     Optional<AttendeeSession> findBySessionIdAndAttendeeId(Long sessionId, Long attendeeId);
+
 }

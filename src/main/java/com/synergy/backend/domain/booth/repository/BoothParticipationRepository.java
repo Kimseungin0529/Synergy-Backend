@@ -17,7 +17,7 @@ public interface BoothParticipationRepository extends JpaRepository<BoothPartici
 
 	List<BoothParticipation> findByBooth(Booth booth);
 
-	Optional<BoothParticipation> existsByBoothIdAndAttendeeId(Long boothId, Long attendeeId);
+	Optional<BoothParticipation> findByBoothIdAndAttendeeId(Long boothId, Long attendeeId);
 
 	@Modifying(clearAutomatically = true, flushAutomatically = true)
 	@Query("DELETE FROM BoothParticipation bp WHERE bp.booth = :booth")

@@ -2,6 +2,7 @@ package com.synergy.backend.domain.booth.repository.querydsl;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.synergy.backend.domain.booth.dto.boothParticipateDto.*;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
@@ -107,6 +108,21 @@ public class BoothRepositoryImpl implements BoothRepositoryCustom {
         }
 
         return booths;
+    }
+
+    @Override
+    public Long getBoothAttendeeCount(Long conferenceId) {
+
+        JPAQuery<Long> booths = queryFactory
+                .select(booth.id)
+                .from(booth)
+                .where(booth.conference.id.eq(conferenceId));
+
+        return queryFactory
+                .select(boothParticipation.count())
+                .from(boothParticipation)
+                .where(boothParticipation.booth.id.in(booths))
+                .fetchOne();
     }
 
     private BooleanExpression eqConference(Long conferenceId) {

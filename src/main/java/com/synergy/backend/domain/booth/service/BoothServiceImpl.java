@@ -88,7 +88,7 @@ public class BoothServiceImpl implements BoothService {
         try {
             if(role.equals(RoleType.ATTENDEE)) {
                 Attendee attendee = findIfAttendeeExists(identifier);
-                boothParticipationRepository.existsByBoothIdAndAttendeeId(booth.getId(), attendee.getId())
+                boothParticipationRepository.findByBoothIdAndAttendeeId(booth.getId(), attendee.getId())
                         .orElseThrow(NotFoundBoothException::new);
                 isQRVerify = Boolean.TRUE;
             }

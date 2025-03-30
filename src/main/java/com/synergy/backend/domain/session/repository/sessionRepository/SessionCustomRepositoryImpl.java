@@ -2,6 +2,7 @@ package com.synergy.backend.domain.session.repository.sessionRepository;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.Projections;
+import com.querydsl.jpa.impl.JPAQuery;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParticipateRateDetailResDto;
 import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParticipateRateResDto;
@@ -78,6 +79,21 @@ public class SessionCustomRepositoryImpl implements SessionCustomRepository {
                             sessionId, title, speaker, progressDate, startTime, endTime, fileUrl, techDetails);
                 })
                 .toList();
+    }
+
+    @Override
+    public Long getSessionAttendeeCount(Long conferenceId) {
+
+        JPAQuery<Long> sessions = queryFactory
+                .select(session.id)
+                .from(session)
+                .where(session.conference.id.eq(conferenceId));
+
+        return queryFactory
+                .select(attendeeSession.count())
+                .from(attendeeSession)
+                .where(attendeeSession.session.id.in(sessions))
+                .fetchOne();
     }
 
     // 특정 세션에 대한 분야별 참여 인원들을 담음.

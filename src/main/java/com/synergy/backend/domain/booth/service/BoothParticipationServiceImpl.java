@@ -52,7 +52,7 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
         Booth booth = boothRepository.findByIdAndSecretCode(boothId, decodingSecretCode)
                 .orElseThrow(NotFoundBoothException::new);
 
-        boothParticipationRepository.existsByBoothIdAndAttendeeId(boothId, attendee.getId())
+        boothParticipationRepository.findByBoothIdAndAttendeeId(boothId, attendee.getId())
                         .ifPresent(boothParticipation -> {
                                 throw new DuplicateParticipationException();
                         });

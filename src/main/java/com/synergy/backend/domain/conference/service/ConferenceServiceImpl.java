@@ -1,8 +1,10 @@
 package com.synergy.backend.domain.conference.service;
 
 
+import com.synergy.backend.domain.booth.repository.BoothRepository;
 import com.synergy.backend.domain.conference.dto.requset.ConferenceCreateRequest;
 import com.synergy.backend.domain.conference.dto.requset.ConferenceUpdateRequest;
+import com.synergy.backend.domain.conference.dto.response.ConferenceAttendeeInfoResDto;
 import com.synergy.backend.domain.conference.dto.response.ConferenceCreateResponse;
 import com.synergy.backend.domain.conference.dto.response.ConferenceUpdateResponse;
 import com.synergy.backend.domain.conference.entity.Conference;
@@ -13,6 +15,8 @@ import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.exception.AccessDeniedException;
 import com.synergy.backend.domain.member.exception.NotFoundUserException;
 import com.synergy.backend.domain.member.repository.AdminRepository;
+import com.synergy.backend.domain.member.repository.AttendeeRepository;
+import com.synergy.backend.domain.session.repository.sessionRepository.SessionRepository;
 import com.synergy.backend.global.util.random.RandomCodeGenerator;
 
 import lombok.RequiredArgsConstructor;
@@ -31,6 +35,10 @@ import java.util.Optional;
 public class ConferenceServiceImpl implements ConferenceService {
     private final ConferenceRepository conferenceRepository;
     private final AdminRepository adminRepository;
+
+    private final BoothRepository boothRepository;
+    private final SessionRepository sessionRepository;
+    private final AttendeeRepository attendeeRepository;
 
     @Transactional
     @Override
@@ -68,6 +76,28 @@ public class ConferenceServiceImpl implements ConferenceService {
     @Override
     public ConferenceDetailResponse findConference(Long conferenceId) {
         return null;
+    }
+
+    @Override
+    public ConferenceAttendeeInfoResDto findConferenceAttendeeInfo(String identifier, Long conferenceId) {
+        Admin admin = findIfAdminExists(identifier);
+        findIfConferenceMine(admin, conferenceId); // 컨퍼런스 소유 여부 확인
+
+        Long sessionAttendee = sessionRepository.getSessionAttendeeCount(conferenceId);
+        Long boothAttendee = boothRepository.getBoothAttendeeCount(conferenceId);
+        Long conferenceAttendee = attendeeRepository.countAttendeeByConferenceId(conferenceId);
+        Long serviceAttendee = attendeeRepository.count();
+
+
+        return ConferenceAttendeeInfoResDto.from(sessionAttendee, boothAttendee, conferenceAttendee, serviceAttendee);
+    }
+
+    private Admin findIfAdminExists(String identifier) {
+        return adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
+    }
+
+    private void findIfConferenceMine(Admin admin, Long conferenceId) {
+        adminRepository.findByIdAndConferences_Id(admin.getId(), conferenceId);
     }
 
     private void applyUpdatesToConference(ConferenceUpdateRequest request, Conference findConference) {

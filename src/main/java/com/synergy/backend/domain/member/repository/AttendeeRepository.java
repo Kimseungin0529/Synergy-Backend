@@ -22,4 +22,6 @@ public interface AttendeeRepository extends JpaRepository<Attendee, Long>, Atten
 	@Query("select a from Attendee a join fetch a.currentJobPosition " +
 			"join fetch a.currentJobGroup where a.id = :id")
     Optional<Attendee> findAttendeeBy(@Param("id") Long attendeeId);
+
+	Long countAttendeeByConferenceId(Long conferenceId);
 }
