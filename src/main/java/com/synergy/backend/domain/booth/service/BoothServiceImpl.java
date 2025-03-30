@@ -62,8 +62,10 @@ public class BoothServiceImpl implements BoothService {
         FileInformationDto qrInfo = fileS3Util.uploadQRCode(qrCode, booth.getCompanyName());
         booth.updateQr(qrInfo);
 
-        FileInformationDto imageInfo = fileS3Util.uploadFile(imageFile);
-        booth.updateImage(imageInfo);
+        if(imageFile != null) {
+            FileInformationDto imageInfo = fileS3Util.uploadFile(imageFile);
+            booth.updateImage(imageInfo);
+        }
     }
 
     @Transactional(readOnly = true)
