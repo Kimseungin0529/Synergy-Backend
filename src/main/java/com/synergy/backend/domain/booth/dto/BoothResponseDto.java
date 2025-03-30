@@ -15,7 +15,7 @@ public record BoothResponseDto(
         return new BoothResponseDto(
                 booth.getId(),
                 booth.getCompanyName(),
-                booth.getBoothNumber(),
+                booth.getCompanyType(),
                 booth.getBoothLocation(),
                 booth.getBoothNumber(),
                 booth.getImageUrl()

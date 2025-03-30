@@ -17,17 +17,19 @@ public class BoothParticipationInterestedResponseDto {
 	private String boothNumber;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd")
 	private LocalDate progressDate;
+	private String qrCode;
 	private List<BoothParticipateInterestedTechDto> dataset;
 
 	@QueryProjection
 	public BoothParticipationInterestedResponseDto(Long boothId, String companyName, String companyType, String boothLocation,
-												   String boothNumber, LocalDate progressDate) {
+												   String boothNumber, LocalDate progressDate, String qrCode) {
 		this.boothId = boothId;
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
 		this.boothNumber = boothNumber;
 		this.progressDate = progressDate;
+		this.qrCode = qrCode;
 		this.dataset = new ArrayList<>();
 	}
 

@@ -2,7 +2,6 @@ package com.synergy.backend.domain.booth.repository.querydsl;
 
 import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
-import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
 import com.synergy.backend.domain.booth.dto.boothParticipateDto.*;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
@@ -32,13 +31,12 @@ public class BoothRepositoryImpl implements BoothRepositoryCustom {
 
     @Override
     public BoothParticipateRateResDto searchBoothRank(Long conferenceId, LocalDate currentDate) {
-        Long attendeeCount = attendeeRepository.count();
-        NumberExpression<Long> countExpression = boothParticipation.count();
+        Long totalCount = attendeeRepository.count();
 
         List<Tuple> tuples = queryFactory
                 .select(
                         booth.id,
-                        countExpression,
+                        boothParticipation.count(),
                         booth.companyName
                 )
                 .from(booth)
@@ -48,20 +46,17 @@ public class BoothRepositoryImpl implements BoothRepositoryCustom {
                         booth.progressDate.eq(currentDate)
                 )
                 .groupBy(booth.id)
-                .orderBy(countExpression.desc())
+                .orderBy(boothParticipation.count().desc())
                 .limit(3)
                 .fetch();
 
         List<BoothParticipateDetailDto> list = tuples.stream()
                 .map(tuple -> {
                     Long boothId = tuple.get(booth.id);
-                    log.info("totalMember: {}, boothMember: {}" ,attendeeCount, tuple.get(countExpression));
-                    Long boothCount = tuple.get(countExpression);
-                    double percent = (double) boothCount / attendeeCount;
-                    String attendeePercent = decimalFormat.format(percent * 100) + "%";
+                    Long attendeeCount = tuple.get(boothParticipation.count());
                     String companyName = tuple.get(booth.companyName);
 
-                    return new BoothParticipateDetailDto(boothId, attendeePercent, companyName);
+                    return new BoothParticipateDetailDto(boothId, totalCount, attendeeCount, companyName);
                 }).toList();
 
         return new BoothParticipateRateResDto(currentDate, list);
@@ -76,7 +71,8 @@ public class BoothRepositoryImpl implements BoothRepositoryCustom {
                         booth.companyType,
                         booth.boothLocation,
                         booth.boothNumber,
-                        booth.progressDate
+                        booth.progressDate,
+                        booth.qrUrl
                 ))
                 .from(booth)
                 .join(booth.conference, conference)

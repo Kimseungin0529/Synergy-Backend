@@ -73,6 +73,12 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
         return boothRepository.searchBoothRank(conferenceId, now);
     }
 
+    @Transactional(readOnly = true)
+    @Override
+    public List<BoothParticipationInterestedResponseDto> getParticipationCountByInterest(Long conferenceId) {
+        return boothRepository.searchBoothParticipation(conferenceId);
+    }
+
     private void findIfConferenceMine(Admin admin, Long conferenceId) {
         adminRepository.findByIdAndConferences_Id(admin.getId(), conferenceId);
     }
@@ -83,11 +89,5 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
 
     private Admin findIfAdminExists(String identifier) {
         return adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
-    }
-
-    @Transactional(readOnly = true)
-    @Override
-    public List<BoothParticipationInterestedResponseDto> getParticipationCountByInterest(Long conferenceId) {
-        return boothRepository.searchBoothParticipation(conferenceId);
     }
 }
