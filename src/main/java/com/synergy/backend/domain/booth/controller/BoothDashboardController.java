@@ -6,6 +6,7 @@ import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipate
 import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationInterestedResponseDto;
 import com.synergy.backend.global.security.CustomUserDetails;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,7 @@ public class BoothDashboardController {
 	private final BoothParticipationService boothParticipationService;
 
 	@SwaggerSummaryRole({RoleType.ADMIN})
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/booths/participation")
 	public ApiResponse<BoothParticipateRateResDto> getBoothParticipateRate(
 			@AuthenticationPrincipal CustomUserDetails currentUser,
@@ -37,6 +39,7 @@ public class BoothDashboardController {
 	}
 
 	@SwaggerSummaryRole({RoleType.ADMIN})
+	@PreAuthorize("hasRole('ADMIN')")
 	@GetMapping("/booths/participation/interest")
 	public ApiResponse<List<BoothParticipationInterestedResponseDto>> getParticipationCountByInterest(
 		@PathVariable Long conferenceId) {
