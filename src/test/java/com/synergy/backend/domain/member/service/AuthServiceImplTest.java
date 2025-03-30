@@ -18,6 +18,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.util.ReflectionTestUtils;
 
+import com.synergy.backend.domain.auth.LoginFailedRepository;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.exception.InvalidTicketCodeException;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
@@ -26,6 +27,7 @@ import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponse
 import com.synergy.backend.domain.member.entity.Admin;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;
+import com.synergy.backend.domain.member.exception.AccountLockedException;
 import com.synergy.backend.domain.member.exception.DuplicateEmailException;
 import com.synergy.backend.domain.member.exception.InvalidAccountInformationException;
 import com.synergy.backend.domain.member.exception.InvalidAuthCodeException;
@@ -67,6 +69,9 @@ class AuthServiceImplTest {
 	private ConferenceRepository conferenceRepository;
 
 	@Mock
+	private LoginFailedRepository loginFailedRepository;
+
+	@Mock
 	private PasswordEncoder passwordEncoder;
 
 	@Mock
@@ -83,6 +88,9 @@ class AuthServiceImplTest {
 
 	@Mock
 	private CustomUserDetailsService userDetailsService;
+
+	@Mock
+	private AccountLockService accountLockService;
 
 	private SignupAttendeeRequestDto requestDto;
 	private Attendee mockAttendee;
@@ -103,6 +111,7 @@ class AuthServiceImplTest {
 			requestDto.name(),
 			requestDto.phone()
 		);
+		ReflectionTestUtils.setField(mockAttendee, "isLocked", false);
 	}
 
 	@DisplayName("참가자가 회원가입을 하면 새로운 회원이 정상적으로 저장된다.")
@@ -133,6 +142,31 @@ class AuthServiceImplTest {
 
 		// When & Then
 		assertThrows(DuplicateEmailException.class, () -> authService.registerAttendee(requestDto));
+	}
+
+	@DisplayName("회원가입 시 티켓 코드가 유효하면 참가자에 컨퍼런스가 할당된다.")
+	@Test
+	void registerAttendee_AssignsConference_WhenTicketCodeIsValid() {
+		// Given
+		Conference mockConference = mock(Conference.class);
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.empty());
+		when(passwordEncoder.encode(requestDto.password())).thenReturn("encodedPassword");
+		when(mailService.isVerified(requestDto.email())).thenReturn(true);
+		when(conferenceRepository.findByTicketCode(requestDto.ticketCode())).thenReturn(Optional.of(mockConference));
+		when(attendeeRepository.save(any(Attendee.class))).thenAnswer(invocation -> {
+			Attendee attendee = invocation.getArgument(0);
+			ReflectionTestUtils.setField(attendee, "id", 1L);
+			return attendee;
+		});
+
+		// When
+		SignupAttendeeResponseDto response = authService.registerAttendee(requestDto);
+
+		// Then
+		assertThat(response).isNotNull();
+		ArgumentCaptor<Attendee> captor = ArgumentCaptor.forClass(Attendee.class);
+		verify(attendeeRepository).save(captor.capture());
+		assertThat(captor.getValue().getConference()).isEqualTo(mockConference);
 	}
 
 	@DisplayName("참가자 로그인 시 이메일과 비밀번호가 일치하면 JWT 토큰이 정상적으로 생성된다.")
@@ -174,6 +208,90 @@ class AuthServiceImplTest {
 		// When & Then
 		assertThrows(UnauthorizedException.class,
 			() -> authService.loginAsAttendee(requestDto.email(), requestDto.password()));
+	}
+
+	@DisplayName("로그인 시도 5회를 초과하면 계정이 잠기고 AccountLockedException이 발생한다.")
+	@Test
+	void loginAsAttendee_ExceedsMaxAttempts_ThrowsAccountLockedException() {
+		// given
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
+		when(passwordEncoder.matches(requestDto.password(), mockAttendee.getPassword())).thenReturn(false);
+		when(loginFailedRepository.getValues(requestDto.email())).thenReturn(null, 1, 2, 3, 4); // 시도 1~5회
+		when(loginFailedRepository.increment(requestDto.email())).thenReturn(1, 2, 3, 4, 5);
+		// 첫 4번 시도는 UnauthorizedException 발생
+		for (int i = 0; i < 4; i++) {
+			assertThatThrownBy(() -> authService.loginAsAttendee(requestDto.email(), requestDto.password()))
+				.isInstanceOf(UnauthorizedException.class);
+		}        // 5번째 시도는 AccountLockedException 발생
+		assertThatThrownBy(() -> authService.loginAsAttendee(requestDto.email(), requestDto.password()))
+			.isInstanceOf(AccountLockedException.class);
+
+		// verify that lockUserAccount is called after 5th failure
+		verify(accountLockService).lockUserAccount(mockAttendee);
+		verify(loginFailedRepository).delete(requestDto.email());
+	}
+
+	@DisplayName("계정이 잠긴 참가자가 로그인하면 AccountLockedException이 발생한다.")
+	@Test
+	void loginAsAttendee_AccountLocked_ThrowsException() {
+		// given
+		mockAttendee.lockAccount(); // 계정 잠금
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
+		when(loginFailedRepository.exists(requestDto.email())).thenReturn(true); // Redis TTL이 남아있는 상태
+
+		// when & then
+		assertThatThrownBy(() -> authService.loginAsAttendee(requestDto.email(), requestDto.password()))
+			.isInstanceOf(AccountLockedException.class);
+	}
+
+	@DisplayName("TTL이 만료되어 로그인 실패 기록이 없으면 계정이 자동으로 잠금 해제된다.")
+	@Test
+	void loginAsAttendee_ExpiredTTL_UnlocksAccount() {
+		// given
+		mockAttendee.lockAccount(); // DB상으로는 잠김 상태
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
+		when(loginFailedRepository.exists(requestDto.email())).thenReturn(false); // Redis 키 만료
+		when(passwordEncoder.matches(requestDto.password(), mockAttendee.getPassword())).thenReturn(true);
+		when(jwtProvider.generateAccessToken(any())).thenReturn("token");
+
+		// when
+		TokenWithRefreshToken response = authService.loginAsAttendee(requestDto.email(), requestDto.password());
+
+		// then
+		assertFalse(mockAttendee.isLocked()); // 잠금 해제되었는지 확인
+		verify(attendeeRepository).save(mockAttendee); // DB 저장 확인
+		assertThat(response.tokenResponseDto().accessToken()).isEqualTo("token");
+	}
+
+	@DisplayName("잠긴 계정에 대해 unlockAccountIfLocked 호출 시 잠금이 해제되고 저장된다.")
+	@Test
+	void unlockAccountIfLocked_shouldUnlockAndDeleteLoginFailures() {
+		// given
+		mockAttendee.lockAccount(); // 잠긴 상태
+		when(attendeeRepository.findByEmail(mockAttendee.getEmail())).thenReturn(Optional.of(mockAttendee));
+
+		// when
+		authService.unlockAccountIfLocked(mockAttendee.getEmail());
+
+		// then
+		assertFalse(mockAttendee.isLocked(), "계정 잠금이 해제되어야 함");
+		verify(attendeeRepository).save(mockAttendee);
+		verify(loginFailedRepository).delete(mockAttendee.getEmail());
+	}
+
+	@DisplayName("잠기지 않은 계정에 대해 unlockAccountIfLocked 호출 시 아무 일도 일어나지 않는다.")
+	@Test
+	void unlockAccountIfLocked_notLockedAccount_doesNothing() {
+		// given
+		when(attendeeRepository.findByEmail(mockAttendee.getEmail()))
+			.thenReturn(Optional.of(mockAttendee)); // 잠기지 않은 상태
+
+		// when
+		authService.unlockAccountIfLocked(mockAttendee.getEmail());
+
+		// then
+		verify(attendeeRepository, never()).save(any());
+		verify(loginFailedRepository, never()).delete(any());
 	}
 
 	@DisplayName("관리자가 올바른 인증 코드로 로그인하면 JWT 토큰이 발급된다.")
@@ -281,6 +399,19 @@ class AuthServiceImplTest {
 			.isInstanceOf(EmailNotVerifiedException.class);
 	}
 
+	@DisplayName("비밀번호 재설정 요청 시 이름과 전화번호가 일치하면 예외가 발생하지 않는다.")
+	@Test
+	void passwordResetRequest_Success() {
+		// Given
+		when(mailService.isVerified(requestDto.email())).thenReturn(true);
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
+
+		// When & Then
+		assertThatCode(() -> authService.passwordResetRequest(
+			requestDto.email(), requestDto.name(), requestDto.phone()))
+			.doesNotThrowAnyException();
+	}
+
 	@DisplayName("비밀번호 재설정 요청 시 이름 또는 전화번호가 일치하지 않으면 예외가 발생한다.")
 	@Test
 	void passwordResetRequest_InvalidAccountInformation_ThrowsException() {
@@ -294,6 +425,28 @@ class AuthServiceImplTest {
 
 		// When & Then
 		assertThatThrownBy(() -> authService.passwordResetRequest(requestDto.email(), wrongName, wrongPhone))
+			.isInstanceOf(InvalidAccountInformationException.class);
+	}
+
+	@DisplayName("비밀번호 재설정 요청 시 이름만 다르면 예외가 발생한다.")
+	@Test
+	void passwordResetRequest_InvalidName_ThrowsException() {
+		when(mailService.isVerified(requestDto.email())).thenReturn(true);
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
+
+		assertThatThrownBy(() -> authService.passwordResetRequest(
+			requestDto.email(), "WrongName", requestDto.phone()))
+			.isInstanceOf(InvalidAccountInformationException.class);
+	}
+
+	@DisplayName("비밀번호 재설정 요청 시 전화번호만 다르면 예외가 발생한다.")
+	@Test
+	void passwordResetRequest_InvalidPhone_ThrowsException() {
+		when(mailService.isVerified(requestDto.email())).thenReturn(true);
+		when(attendeeRepository.findByEmail(requestDto.email())).thenReturn(Optional.of(mockAttendee));
+
+		assertThatThrownBy(() -> authService.passwordResetRequest(
+			requestDto.email(), requestDto.name(), "00000000000"))
 			.isInstanceOf(InvalidAccountInformationException.class);
 	}
 

@@ -28,6 +28,18 @@ jobs:
       - name: Grant Execute Permission For Gradlew
         run: chmod +x gradlew
 
+      - name: Run Tests with Coverage
+        run: ./gradlew test jacocoTestReport
+        env:
+          JWT_SECRET: ${{ secrets.JWT_SECRET }}
+          ACCESS_KEY: ${{ secrets.ACCESS_KEY }}
+          SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          REGION: ${{ secrets.REGION }}
+          BUCKET_NAME: ${{ secrets.BUCKET_NAME }}
+          DB_URL: ${{ secrets.DB_URL }}
+          DB_USERNAME: ${{ secrets.DB_USERNAME }}
+          DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
       - name: Build With Gradle
         run: ./gradlew bootJar
         env:
@@ -39,6 +51,13 @@ jobs:
           DB_URL: ${{ secrets.DB_URL }}
           DB_USERNAME: ${{ secrets.DB_USERNAME }}
           DB_PASSWORD: ${{ secrets.DB_PASSWORD }}
+
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v4
+        continue-on-error: true
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          files: '**/build/jacoco/test/jacocoTestReport.xml'
 
       # gradle caching - 빌드 시간 향상
       - name: Gradle Caching

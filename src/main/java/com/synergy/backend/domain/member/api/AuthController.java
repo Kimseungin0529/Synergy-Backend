@@ -135,6 +135,11 @@ public class AuthController {
 	@PostMapping("/email/verification/confirm")
 	public ApiResponse<?> emailVerificationConfirm(@Valid @RequestBody EmailVerificationConfirmDto request) {
 		mailService.mailVerificationConfirm(request.email(), request.code());
+		switch (request.purpose()) {
+			case UNLOCK_ACCOUNT -> authService.unlockAccountIfLocked(request.email());
+			case SIGNUP, PASSWORD_RESET -> {}
+		}
+
 		return ApiResponse.emptyOk();
 	}
 

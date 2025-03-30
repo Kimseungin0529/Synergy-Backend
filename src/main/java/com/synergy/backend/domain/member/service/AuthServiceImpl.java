@@ -1,9 +1,12 @@
 package com.synergy.backend.domain.member.service;
 
+import static com.synergy.backend.domain.auth.LoginFailedRepository.*;
+
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.synergy.backend.domain.auth.LoginFailedRepository;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.exception.InvalidTicketCodeException;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
@@ -12,6 +15,7 @@ import com.synergy.backend.domain.member.api.dto.resposne.SignupAttendeeResponse
 import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.User;
+import com.synergy.backend.domain.member.exception.AccountLockedException;
 import com.synergy.backend.domain.member.exception.DuplicateEmailException;
 import com.synergy.backend.domain.member.exception.InvalidAccountInformationException;
 import com.synergy.backend.domain.member.exception.InvalidAuthCodeException;
@@ -49,6 +53,8 @@ public class AuthServiceImpl implements AuthService {
 	private final MailService mailService;
 	private final TokenService tokenService;
 	private final CustomUserDetailsService userDetailsService;
+	private final LoginFailedRepository loginFailedRepository;
+	private final AccountLockService accountLockService;
 
 	@Transactional
 	@Override
@@ -61,9 +67,8 @@ public class AuthServiceImpl implements AuthService {
 		Attendee attendee = Attendee.of(request.email(), encodePassword(request.password()), request.name(),
 			request.phone());
 
-		if (conference != null) {
-			attendee.assignConference(conference);
-		}
+		attendee.assignConference(conference);
+
 		attendeeRepository.save(attendee);
 
 		pointService.addSignupPoint(attendee.getId());
@@ -72,12 +77,25 @@ public class AuthServiceImpl implements AuthService {
 		return SignupAttendeeResponseDto.from(attendee);
 	}
 
-	@Transactional(readOnly = true)
+	@Transactional
 	@Override
 	public TokenWithRefreshToken loginAsAttendee(String email, String rawPassword) {
 		Attendee attendee = findAttendeeByEmail(email);
 
+		// 계정 잠김 상태인지 확인
+		if (attendee.isLocked()) {
+			// // Redis 키가 존재하는지 확인
+			if (loginFailedRepository.exists(email)) {
+				// 	// 아직 TTL 남아있음 → 계속 잠금 유지
+				throw new AccountLockedException();
+			} else {
+				attendee.unlockAccount();
+				attendeeRepository.save(attendee);
+			}
+		}
+
 		if (!isPasswordMatch(rawPassword, attendee.getPassword())) {
+			countLoginFailed(attendee);
 			throw new UnauthorizedException();
 		}
 
@@ -149,6 +167,17 @@ public class AuthServiceImpl implements AuthService {
 		tokenService.deleteRefreshToken(identifier);
 	}
 
+	@Override
+	public void unlockAccountIfLocked(String email) {
+		attendeeRepository.findByEmail(email).ifPresent(attendee -> {
+			if (attendee.isLocked()) {
+				attendee.unlockAccount();
+				attendeeRepository.save(attendee);
+				loginFailedRepository.delete(email);
+			}
+		});
+	}
+
 	private Attendee findAttendeeByEmail(String email) {
 		return attendeeRepository.findByEmail(email).orElseThrow(NotFoundUserException::new);
 	}
@@ -158,6 +187,25 @@ public class AuthServiceImpl implements AuthService {
 			.<User>map(admin -> admin)
 			.or(() -> recruiterRepository.findByRecruiterAuthCode(authCode))
 			.orElseThrow(InvalidAuthCodeException::new);
+	}
+
+	private void countLoginFailed(Attendee attendee) {
+		Integer attemptCount = incrementFailedCount(attendee);
+
+		log.info("attemptCount : {}", attemptCount);
+
+		if (attemptCount >= MAX_ATTEMPT_COUNT) {
+			accountLockService.lockUserAccount(attendee);
+			loginFailedRepository.delete(attendee.getEmail()); // 계정 잠금 후 실패 횟수 초기화
+			throw new AccountLockedException();
+		}
+	}
+
+	private Integer incrementFailedCount(Attendee attendee) {
+		if (loginFailedRepository.getValues(attendee.getEmail()) == null) {
+			loginFailedRepository.setValue(attendee.getEmail(), INIT_LOGIN_TRIAL_COUNT);
+		}
+		return loginFailedRepository.increment(attendee.getEmail());
 	}
 
 	private void validateSignupRequest(SignupAttendeeRequestDto request) {

@@ -21,6 +21,7 @@ import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.entity.RecruiterAttendeeLike;
 import com.synergy.backend.domain.member.exception.DuplicateLikeException;
+import com.synergy.backend.domain.member.exception.NotFoundLikeException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterAttendeeLikeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
@@ -44,8 +45,9 @@ class RecruiterAttendeeLikeServiceImplTest {
 	private Recruiter recruiter2;
 	private Attendee attendee1;
 	private Attendee attendee2;
-	private RecruiterAttendeeLike like1;
-	private RecruiterAttendeeLike like2;
+	private RecruiterAttendeeLike like11;
+	private RecruiterAttendeeLike like12;
+	private RecruiterAttendeeLike like21;
 
 	@BeforeEach
 	void setUp() {
@@ -58,8 +60,9 @@ class RecruiterAttendeeLikeServiceImplTest {
 		ReflectionTestUtils.setField(attendee1, "id", 1L);
 		ReflectionTestUtils.setField(attendee2, "id", 2L);
 
-		like1 = RecruiterAttendeeLike.of(recruiter1, attendee1);
-		like2 = RecruiterAttendeeLike.of(recruiter2, attendee2);
+		like11 = RecruiterAttendeeLike.of(recruiter1, attendee1);
+		like12 = RecruiterAttendeeLike.of(recruiter1, attendee2);
+		like21 = RecruiterAttendeeLike.of(recruiter2, attendee1);
 	}
 
 	@DisplayName("채용담당자가 참가자 좋아요를 한다.")
@@ -113,23 +116,23 @@ class RecruiterAttendeeLikeServiceImplTest {
 		// given
 		Long recruiterId = 1L;
 		when(recruiterAttendeeLikeRepository.findAllByRecruiterId(recruiterId))
-			.thenReturn(List.of(like1));
+			.thenReturn(List.of(like11, like12));
 
 		// when
 		List<AttendeeSimpleResponseDto> response = recruiterAttendeeLikeService.getLikedAttendees(recruiterId);
 
 		// then
-		assertThat(response).hasSize(1);
+		assertThat(response).hasSize(2);
 		assertThat(response.get(0).getName()).isEqualTo(attendee1.getName());
 	}
 
-	@DisplayName("참가자가 좋아요한 채용 담당자 목록을 조회한다.")
+	@DisplayName("참가자가 본인을 좋아요한 채용 담당자 목록을 조회한다.")
 	@Test
 	void getLikedRecruiters() {
 		// given
 		Long attendeeId = 10L;
 		when(recruiterAttendeeLikeRepository.findAllByAttendeeId(attendeeId))
-			.thenReturn(List.of(like1, like2));
+			.thenReturn(List.of(like11, like21));
 
 		// when
 		List<LikedRecruiterResponseDto> response = recruiterAttendeeLikeService.getLikedRecruiters(attendeeId);
@@ -139,4 +142,16 @@ class RecruiterAttendeeLikeServiceImplTest {
 		assertThat(response.get(0).name()).isEqualTo(recruiter1.getName());
 		assertThat(response.get(1).name()).isEqualTo(recruiter2.getName());
 	}
+
+	@DisplayName("존재하지 않는 좋아요를 취소하려 하면 예외가 발생한다.")
+	@Test
+	void unlikeAttendee_NotFoundLike_ThrowsException() {
+		// given
+		when(recruiterAttendeeLikeRepository.existsLike(1L, 1L)).thenReturn(false);
+
+		// when & then
+		assertThatThrownBy(() -> recruiterAttendeeLikeService.unlikeAttendee(1L, 1L))
+			.isInstanceOf(NotFoundLikeException.class);
+	}
+
 }
