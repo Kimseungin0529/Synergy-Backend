@@ -73,6 +73,7 @@ public class BoothRepositoryImpl implements BoothRepositoryCustom {
                         booth.companyType,
                         booth.boothLocation,
                         booth.boothNumber,
+                        booth.boothDescription,
                         booth.progressDate,
                         booth.qrUrl
                 ))
