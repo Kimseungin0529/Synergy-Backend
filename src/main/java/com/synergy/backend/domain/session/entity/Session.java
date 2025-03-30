@@ -104,7 +104,7 @@ public class Session {
 				.build();
 	}
 
-	public void updateSession(SessionReqDto reqDto, FileInformationDto fileInfo) {
+	public void updateSession(SessionReqDto reqDto) {
 		this.title = reqDto.title();
 		this.speaker = reqDto.speaker();
 		this.speakerPosition = reqDto.speakerPosition();
@@ -113,8 +113,6 @@ public class Session {
 		this.endTime = reqDto.endTime();
 		this.description = reqDto.description();
 		this.maximum = reqDto.maximum();
-		this.imageKey = fileInfo.fileKey();
-		this.imageUrl = fileInfo.accessUrl();
 	}
 
 	public void addQRCode(FileInformationDto fileInformationDto) {

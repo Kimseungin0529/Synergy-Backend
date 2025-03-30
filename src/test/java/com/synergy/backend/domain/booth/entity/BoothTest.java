@@ -52,7 +52,7 @@ public class BoothTest {
         Booth booth = new Booth("부스A", "회사A", "위치A", "101C", progressDate, "secret", "설명A", conference);
 
         // when
-        booth.updateInfo("부스B", "회사B", "위치B", "202C", null,"설명B", "new-image-key", "new-image-url");
+        booth.updateInfo("부스B", "회사B", "위치B", "202C", null,"설명B");
 
         // then
         assertThat(booth.getCompanyName()).isEqualTo("부스B");
@@ -61,7 +61,5 @@ public class BoothTest {
         assertThat(booth.getBoothNumber()).isEqualTo("202C");
         assertThat(booth.getProgressDate()).isNull();
         assertThat(booth.getBoothDescription()).isEqualTo("설명B");
-        assertThat(booth.getImageKey()).isEqualTo("new-image-key");
-        assertThat(booth.getImageUrl()).isEqualTo("new-image-url");
     }
 }

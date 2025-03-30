@@ -106,7 +106,10 @@ public class BoothServiceImpl implements BoothService {
             throw new NotFoundConference();
         }
 
-        FileInformationDto imageInfo = (imageFile != null) ? fileS3Util.uploadFile(imageFile) : null;
+        if(imageFile != null) {
+            booth.updateImage(fileS3Util.uploadFile(imageFile));
+
+        }
 
         booth.updateInfo(
                 request.companyName() != null ? request.companyName() : booth.getCompanyName(),
@@ -114,9 +117,7 @@ public class BoothServiceImpl implements BoothService {
                 request.boothLocation() != null ? request.boothLocation() : booth.getBoothLocation(),
                 request.boothNumber() != null ? request.boothNumber() : booth.getBoothNumber(),
                 request.progressDate() != null ? request.progressDate() : booth.getProgressDate(),
-                request.boothDescription() != null ? request.boothDescription() : booth.getBoothDescription(),
-                imageInfo != null ? imageInfo.fileKey() : booth.getImageKey(),
-                imageInfo != null ? imageInfo.accessUrl() : booth.getImageUrl()
+                request.boothDescription() != null ? request.boothDescription() : booth.getBoothDescription()
         );
 
         return new BoothDetailResponseDto(booth, Boolean.FALSE);

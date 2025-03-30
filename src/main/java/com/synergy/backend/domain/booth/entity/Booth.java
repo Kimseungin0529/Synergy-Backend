@@ -91,15 +91,13 @@ public class Booth {
 	}
 
 	public void updateInfo(String companyName, String companyType, String boothLocation, String boothNumber,
-			   	LocalDate progressDate, String boothDescription, String imageKey, String imageUrl) {
+			   	LocalDate progressDate, String boothDescription) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
 		this.boothNumber = boothNumber;
 		this.progressDate = progressDate;
 		this.boothDescription = boothDescription;
-		this.imageKey = imageKey;
-		this.imageUrl = imageUrl;
 	}
 
 	public void updateQr(FileInformationDto fileInformation) {
