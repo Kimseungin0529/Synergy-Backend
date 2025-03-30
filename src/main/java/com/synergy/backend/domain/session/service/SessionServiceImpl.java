@@ -108,11 +108,11 @@ public class SessionServiceImpl implements SessionService {
         Admin admin = findIfAdminExists(identifier);
         verifyAuthenticationRole(session, admin);
 
-        FileInformationDto fileInfo = new FileInformationDto(null, null);
         if(multipartFile != null) {
-            fileInfo = fileS3Util.uploadFile(multipartFile);
+            session.addImage(fileS3Util.uploadFile(multipartFile));
+
         }
-        session.updateSession(reqDto, fileInfo);
+        session.updateSession(reqDto);
     }
 
     @Override
