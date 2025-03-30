@@ -22,7 +22,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -164,7 +163,7 @@ public class BoothServiceImplTest {
         when(boothRepository.findById(boothId)).thenReturn(Optional.of(booth));
 
         // when
-        BoothDetailResponseDto response = boothService.updateBooth(conferenceId, boothId, request, mockImageFile);
+        BoothDetailResponseDto response = boothService.updateBooth(conferenceId, boothId, request, null);
 
         // then
         assertThat(response).isNotNull();
