@@ -73,14 +73,14 @@ INSERT INTO recruiter (recruiter_id, recruiter_auth_code, company, responsibilit
 INSERT INTO recruiter (recruiter_id, recruiter_auth_code, company, responsibility, name, company_photo_url) VALUES (2, 'RC67890', 'OpenStack Korea', 'HR팀 매니저', '김주은', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/boothlogo-rectangle/OpenStackKorea.png');
 
 -- 참가자 기본 데이터
-INSERT INTO attendee (email, password, name, phone, total_points, membership_level_type, profile_image_url, conference_id)
+INSERT INTO attendee (email, password, name, phone, total_points, membership_level_type, profile_image_url, conference_id, is_locked)
 VALUES
-    ('jiwon.kim@example.com', '$2a$10$aO4mzbreIOHJiJDgPaUtG.BS81l7i92I2.D2qkwvM5hvUB8BGBsk2', '김지원', '01012345678', 250, 'BRONZE', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%80%E1%85%B5%E1%86%B7%E1%84%8C%E1%85%B5%E1%84%8B%E1%85%AF%E1%86%AB.png', 1),
-    ('youngho.choi@example.com', '$2a$10$hashedpassword2', '최영호', '01056781234', 1200, 'GOLD', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%8E%E1%85%AC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%A9.png', 1),
-    ('seoyeon.jung@example.com', '$2a$10$hashedpassword3', '정서연', '01055556666', 1200, 'GOLD', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%8C%E1%85%A5%E1%86%BC%E1%84%89%E1%85%A5%E1%84%8B%E1%85%A7%E1%86%AB.png', 1),
-    ('sihyung.park@example.com', '$2a$10$hashedpassword4', '박시형', '01077778888', 300, 'SILVER', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%87%E1%85%A1%E1%86%A8%E1%84%89%E1%85%B5%E1%84%92%E1%85%A7%E1%86%BC.png', 1),
-    ('dayoung.lee@example.com', '$2a$10$hashedpassword5', '이다영', '01099990000', 1500, 'GOLD', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%8B%E1%85%B5%E1%84%83%E1%85%A1%E1%84%8B%E1%85%A7%E1%86%BC.png', 1),
-    ('dahye.kim@example.com', '$2a$10$hashedpassword6', '김다혜', '01011112222', 50, 'DEFAULT', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%80%E1%85%B5%E1%86%B7%E1%84%83%E1%85%A1%E1%84%92%E1%85%A8.png', 1);
+    ('jiwon.kim@example.com', '$2a$10$aO4mzbreIOHJiJDgPaUtG.BS81l7i92I2.D2qkwvM5hvUB8BGBsk2', '김지원', '01012345678', 250, 'BRONZE', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%80%E1%85%B5%E1%86%B7%E1%84%8C%E1%85%B5%E1%84%8B%E1%85%AF%E1%86%AB.png', 1, 0),
+    ('youngho.choi@example.com', '$2a$10$hashedpassword2', '최영호', '01056781234', 1200, 'GOLD', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%8E%E1%85%AC%E1%84%8B%E1%85%A7%E1%86%BC%E1%84%92%E1%85%A9.png', 1, 0),
+    ('seoyeon.jung@example.com', '$2a$10$hashedpassword3', '정서연', '01055556666', 1200, 'GOLD', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%8C%E1%85%A5%E1%86%BC%E1%84%89%E1%85%A5%E1%84%8B%E1%85%A7%E1%86%AB.png', 1, 0),
+    ('sihyung.park@example.com', '$2a$10$hashedpassword4', '박시형', '01077778888', 300, 'SILVER', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%87%E1%85%A1%E1%86%A8%E1%84%89%E1%85%B5%E1%84%92%E1%85%A7%E1%86%BC.png', 1, 0),
+    ('dayoung.lee@example.com', '$2a$10$hashedpassword5', '이다영', '01099990000', 1500, 'GOLD', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%8B%E1%85%B5%E1%84%83%E1%85%A1%E1%84%8B%E1%85%A7%E1%86%BC.png', 1, 0),
+    ('dahye.kim@example.com', '$2a$10$hashedpassword6', '김다혜', '01011112222', 50, 'DEFAULT', 'https://synergy-conference-bucket.s3.ap-northeast-2.amazonaws.com/all/dummydata+v.0.1/profile/%E1%84%80%E1%85%B5%E1%86%B7%E1%84%83%E1%85%A1%E1%84%92%E1%85%A8.png', 1, 0);
 
 -- 김지원 (attendee_id = 1) → 수도권, 부산
 INSERT INTO attendee_desired_work_region (attendee_id, desired_work_region) VALUES (1, 0); -- CAPITAL_AREA

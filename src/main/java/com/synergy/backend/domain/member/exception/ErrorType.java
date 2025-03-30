@@ -26,6 +26,8 @@ public enum ErrorType {
 	_LIKE_NOT_FOUND(400, "해당 좋아요를 찾을 수 없습니다."),
 	_INVALID_ACCOUNT_INFORMATION(400, "입력하신 계정정보가 일치하지 않습니다."),
 	_SAME_AS_PREVIOUS_PASSWORD(400, "이전에 사용한 비밀번호와 동일한 비밀번호는 사용할 수 없습니다."),
+	_ACCOUNT_LOCKED(403, "계정이 잠겨있습니다. 이메일을 확인하거나 30분 후 재시도해주세요.")
+
 	;
 
 	private final int code;

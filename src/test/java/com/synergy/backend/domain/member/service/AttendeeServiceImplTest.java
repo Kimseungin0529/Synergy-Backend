@@ -18,7 +18,9 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.synergy.backend.domain.interest.entity.AttendeeInterest;
 import com.synergy.backend.domain.interest.entity.Interest;
+import com.synergy.backend.domain.interest.exception.NotFoundInterestException;
 import com.synergy.backend.domain.interest.repository.AttendeeInterestRepository;
 import com.synergy.backend.domain.interest.repository.InterestRepository;
 import com.synergy.backend.domain.job.JobGroup;
@@ -40,6 +42,7 @@ import com.synergy.backend.domain.member.exception.AccessDeniedException;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.global.security.CustomUserDetails;
 import com.synergy.backend.global.util.file.dto.FileInformationDto;
+import com.synergy.backend.global.util.file.exception.EmptyImageFileException;
 import com.synergy.backend.global.util.file.util.FileS3Util;
 
 @ExtendWith(MockitoExtension.class)
@@ -210,6 +213,28 @@ class AttendeeServiceImplTest {
 		assertThrows(IllegalArgumentException.class, () -> attendeeService.addJobInfo(1L, request));
 	}
 
+	@DisplayName("유효하지 않은 관심사 코드가 포함되면 예외가 발생한다.")
+	@Test
+	void addJobInfo_invalidInterestCode_throwsException() {
+		// given
+		JobInfoRequestDto request = new JobInfoRequestDto(Set.of(1, 2, 99), 100, 200, true);
+		when(attendeeRepository.findById(1L)).thenReturn(Optional.of(attendee));
+
+		// 코드 1, 2만 존재한다고 가정 (99는 없음)
+		Interest interest1 = mock(Interest.class);
+		Interest interest2 = mock(Interest.class);
+		when(interest1.getCode()).thenReturn(1);
+		when(interest2.getCode()).thenReturn(2);
+
+		when(interestRepository.findAllByCodeIn(any()))
+			.thenReturn(List.of(interest1, interest2));
+
+		// when & then
+		assertThrows(NotFoundInterestException.class, () -> {
+			attendeeService.addJobInfo(1L, request);
+		});
+	}
+
 	@DisplayName("프로필 이미지를 업데이트한다.")
 	@Test
 	void updateProfileImage_success() {
@@ -230,4 +255,82 @@ class AttendeeServiceImplTest {
 
 	}
 
+	@DisplayName("관심사 코드가 모두 유효하면 예외 없이 통과한다.")
+	@Test
+	void addJobInfo_allValidInterestCodes_passes() {
+		// given
+		JobInfoRequestDto request = new JobInfoRequestDto(Set.of(101, 102), 1, 101, true);
+		when(attendeeRepository.findById(1L)).thenReturn(Optional.of(attendee));
+
+		Interest interest1 = mock(Interest.class);
+		Interest interest2 = mock(Interest.class);
+		lenient().when(interest1.getCode()).thenReturn(101);
+		lenient().when(interest2.getCode()).thenReturn(102);
+
+		when(interestRepository.findAllByCodeIn(Set.of(101, 102)))
+			.thenReturn(List.of(interest1, interest2));
+		when(jobGroupRepository.findByCode(1)).thenReturn(Optional.of(mock(JobGroup.class)));
+		when(jobPositionRepository.findByCode(101)).thenReturn(Optional.of(mock(JobPosition.class)));
+
+		// when
+		attendeeService.addJobInfo(1L, request);
+
+		// then
+		verify(interestRepository).findAllByCodeIn(Set.of(101, 102));
+		assertThat(attendee.getAttendeeInterests()).hasSize(2);
+	}
+
+	@DisplayName("관심사가 기존과 동일하면 업데이트하지 않는다.")
+	@Test
+	void addJobInfo_sameInterests_noChange() {
+		// given
+		JobInfoRequestDto request = new JobInfoRequestDto(Set.of(1, 2), 100, 200, true);
+		when(attendeeRepository.findById(1L)).thenReturn(Optional.of(attendee));
+
+		Interest interest1 = mock(Interest.class);
+		Interest interest2 = mock(Interest.class);
+		lenient().when(interest1.getCode()).thenReturn(1);
+		lenient().when(interest2.getCode()).thenReturn(2);
+		when(jobGroupRepository.findByCode(100)).thenReturn(Optional.of(mock(JobGroup.class)));
+		when(jobPositionRepository.findByCode(200)).thenReturn(Optional.of(mock(JobPosition.class)));
+
+		Set<Interest> sameInterests = Set.of(interest1, interest2);
+
+		// mock current interests
+		AttendeeInterest ai1 = mock(AttendeeInterest.class);
+		AttendeeInterest ai2 = mock(AttendeeInterest.class);
+		when(ai1.getInterest()).thenReturn(interest1);
+		when(ai2.getInterest()).thenReturn(interest2);
+		attendee.getAttendeeInterests().addAll(Set.of(ai1, ai2));
+
+		when(interestRepository.findAllByCodeIn(Set.of(1, 2))).thenReturn(List.of(interest1, interest2));
+
+		// when
+		attendeeService.addJobInfo(1L, request);
+
+		// then
+		verify(attendeeInterestRepository, never()).deleteAll(any());
+	}
+
+	@DisplayName("프로필 이미지가 null이면 예외가 발생한다.")
+	@Test
+	void updateProfileImage_nullFile_throwsException() {
+		// when & then
+		assertThrows(EmptyImageFileException.class, () -> {
+			attendeeService.updateProfileImage(attendee.getId(), null);
+		});
+	}
+
+	@DisplayName("프로필 이미지가 비어있으면 예외가 발생한다.")
+	@Test
+	void updateProfileImage_emptyFile_throwsException() {
+		// given
+		MultipartFile emptyFile = mock(MultipartFile.class);
+		when(emptyFile.isEmpty()).thenReturn(true);
+
+		// when & then
+		assertThrows(EmptyImageFileException.class, () -> {
+			attendeeService.updateProfileImage(attendee.getId(), emptyFile);
+		});
+	}
 }
