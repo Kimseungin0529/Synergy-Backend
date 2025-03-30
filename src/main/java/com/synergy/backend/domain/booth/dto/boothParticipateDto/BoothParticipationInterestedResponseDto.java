@@ -1,4 +1,4 @@
-package com.synergy.backend.domain.booth.dto;
+package com.synergy.backend.domain.booth.dto.boothParticipateDto;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.querydsl.core.annotations.QueryProjection;
@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Getter
-public class BoothParticipationResponseDto {
+public class BoothParticipationInterestedResponseDto {
 	private Long boothId;
 	private String companyName;
 	private String companyType;
@@ -17,21 +17,21 @@ public class BoothParticipationResponseDto {
 	private String boothNumber;
 	@JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "MM/dd")
 	private LocalDate progressDate;
-	private List<BoothParticipateInterestedTechDto> techs;
+	private List<BoothParticipateInterestedTechDto> dataset;
 
 	@QueryProjection
-	public BoothParticipationResponseDto(Long boothId, String companyName, String companyType, String boothLocation,
-										 String boothNumber, LocalDate progressDate) {
+	public BoothParticipationInterestedResponseDto(Long boothId, String companyName, String companyType, String boothLocation,
+												   String boothNumber, LocalDate progressDate) {
 		this.boothId = boothId;
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
 		this.boothNumber = boothNumber;
 		this.progressDate = progressDate;
-		this.techs = new ArrayList<>();
+		this.dataset = new ArrayList<>();
 	}
 
 	public void addTechs(List<BoothParticipateInterestedTechDto> techs) {
-		this.techs = techs;
+		this.dataset = techs;
 	}
 }

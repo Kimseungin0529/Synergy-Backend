@@ -20,7 +20,6 @@ import static org.mockito.Mockito.mock;
 import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.multipart;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 
@@ -50,8 +49,8 @@ class BoothControllerTest extends ControllerTestSupport {
                 requestDto.boothNumber(),
                 requestDto.progressDate(),
                 requestDto.boothDescription(),
-                "https://qr-url.com/booth123",
-                "https://image-url.com/booth123"
+                "https://image-url.com/booth123",
+                Boolean.FALSE
         );
 
         MockMultipartFile imageFile = new MockMultipartFile(
@@ -63,8 +62,7 @@ class BoothControllerTest extends ControllerTestSupport {
                 objectMapper.writeValueAsBytes(requestDto)
         );
 
-        given(boothService.createBooth(eq(conferenceId), eq(router), any(BoothRequestDto.class), any(MultipartFile.class)))
-                .willReturn(responseDto);
+        boothService.createBooth(eq(conferenceId), eq(router), any(BoothRequestDto.class), any(MultipartFile.class));
 
         given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
         given(jwtProvider.getIdentifierFromToken(anyString())).willReturn("AUTH1");
@@ -80,9 +78,7 @@ class BoothControllerTest extends ControllerTestSupport {
                         .contentType(MediaType.MULTIPART_FORM_DATA)
                 )
                 .andDo(print())
-                .andExpect(status().isOk())
-                .andExpect(jsonPath("$.data.id").value(10L))
-                .andExpect(jsonPath("$.data.companyName").value("CodeSphere"));
+                .andExpect(status().isOk());
     }
 
 

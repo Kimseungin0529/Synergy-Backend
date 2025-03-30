@@ -14,10 +14,10 @@ public record BoothDetailResponseDto(
         @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
         LocalDate progressDate,
         String boothDescription,
-        String qrUrl,
-        String imageUrl
+        String imageUrl,
+        Boolean isQRVerify
 ) {
-    public BoothDetailResponseDto(Booth booth) {
+    public BoothDetailResponseDto(Booth booth, Boolean isQRVerify) {
         this(
                 booth.getId(),
                 booth.getCompanyName(),
@@ -26,8 +26,8 @@ public record BoothDetailResponseDto(
                 booth.getBoothNumber(),
                 booth.getProgressDate(),
                 booth.getBoothDescription(),
-                booth.getQrUrl(),
-                booth.getImageUrl()
+                booth.getImageUrl(),
+                isQRVerify
         );
     }
 }

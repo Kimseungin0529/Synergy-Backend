@@ -1,13 +1,16 @@
 package com.synergy.backend.domain.booth.repository.querydsl;
 
+import com.querydsl.core.Tuple;
 import com.querydsl.core.types.dsl.BooleanExpression;
+import com.querydsl.core.types.dsl.NumberExpression;
 import com.querydsl.jpa.impl.JPAQueryFactory;
-import com.synergy.backend.domain.booth.dto.BoothParticipateInterestedTechDto;
-import com.synergy.backend.domain.booth.dto.BoothParticipationResponseDto;
-import com.synergy.backend.domain.booth.dto.QBoothParticipateInterestedTechDto;
-import com.synergy.backend.domain.booth.dto.QBoothParticipationResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.*;
+import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+import java.text.DecimalFormat;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -19,15 +22,55 @@ import static com.synergy.backend.domain.interest.entity.QAttendeeInterest.atten
 import static com.synergy.backend.domain.interest.entity.QInterest.interest;
 import static com.synergy.backend.domain.member.entity.QAttendee.attendee;
 
+@Slf4j
 @RequiredArgsConstructor
 public class BoothRepositoryImpl implements BoothRepositoryCustom {
 
     private final JPAQueryFactory queryFactory;
+    private final AttendeeRepository attendeeRepository;
+    private final DecimalFormat decimalFormat = new DecimalFormat("#.##");
 
     @Override
-    public List<BoothParticipationResponseDto> searchBoothParticipation(Long conferenceId) {
-        List<BoothParticipationResponseDto> booths = queryFactory
-                .select(new QBoothParticipationResponseDto(
+    public BoothParticipateRateResDto searchBoothRank(Long conferenceId, LocalDate currentDate) {
+        Long attendeeCount = attendeeRepository.count();
+        NumberExpression<Long> countExpression = boothParticipation.count();
+
+        List<Tuple> tuples = queryFactory
+                .select(
+                        booth.id,
+                        countExpression,
+                        booth.companyName
+                )
+                .from(booth)
+                .leftJoin(boothParticipation).on(booth.id.eq(boothParticipation.booth.id))
+                .where(
+                        booth.conference.id.eq(conferenceId),
+                        booth.progressDate.eq(currentDate)
+                )
+                .groupBy(booth.id)
+                .orderBy(countExpression.desc())
+                .limit(3)
+                .fetch();
+
+        List<BoothParticipateDetailDto> list = tuples.stream()
+                .map(tuple -> {
+                    Long boothId = tuple.get(booth.id);
+                    log.info("totalMember: {}, boothMember: {}" ,attendeeCount, tuple.get(countExpression));
+                    Long boothCount = tuple.get(countExpression);
+                    double percent = (double) boothCount / attendeeCount;
+                    String attendeePercent = decimalFormat.format(percent * 100) + "%";
+                    String companyName = tuple.get(booth.companyName);
+
+                    return new BoothParticipateDetailDto(boothId, attendeePercent, companyName);
+                }).toList();
+
+        return new BoothParticipateRateResDto(currentDate, list);
+    }
+
+    @Override
+    public List<BoothParticipationInterestedResponseDto> searchBoothParticipation(Long conferenceId) {
+        List<BoothParticipationInterestedResponseDto> booths = queryFactory
+                .select(new QBoothParticipationInterestedResponseDto(
                         booth.id,
                         booth.companyName,
                         booth.companyType,
@@ -62,7 +105,7 @@ public class BoothRepositoryImpl implements BoothRepositoryCustom {
                 .collect(Collectors.groupingBy(BoothParticipateInterestedTechDto::getBoothId));
 
         // 4. 각 부스 DTO에 해당 tech 리스트 주입
-        for (BoothParticipationResponseDto boothDto : booths) {
+        for (BoothParticipationInterestedResponseDto boothDto : booths) {
             boothDto.addTechs(techsByBooth.getOrDefault(boothDto.getBoothId(), List.of()));
         }
 

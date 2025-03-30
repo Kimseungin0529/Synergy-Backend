@@ -1,11 +1,15 @@
 package com.synergy.backend.domain.booth.service;
 
-import com.synergy.backend.domain.booth.dto.BoothParticipationResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipateRateResDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationInterestedResponseDto;
+import com.synergy.backend.domain.booth.dto.BoothResponseDto;
 
 import java.util.List;
 
 public interface BoothParticipationService {
-    void participateInBooth(Long attendeeId, Long boothId);
+    BoothResponseDto participateInBooth(String identifier, Long boothId, String qrCode);
 
-    List<BoothParticipationResponseDto> getParticipationCountByInterest(Long boothId);
+    BoothParticipateRateResDto boothParticipateRate(String identifier, Long conferenceId);
+
+    List<BoothParticipationInterestedResponseDto> getParticipationCountByInterest(Long boothId);
 }

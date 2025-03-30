@@ -6,10 +6,15 @@ import com.synergy.backend.domain.booth.dto.BoothRequestDto;
 import com.synergy.backend.domain.booth.dto.BoothResponseDto;
 import com.synergy.backend.domain.booth.entity.Booth;
 import com.synergy.backend.domain.booth.exception.NotFoundBoothException;
+import com.synergy.backend.domain.booth.repository.BoothParticipationRepository;
 import com.synergy.backend.domain.booth.repository.BoothRepository;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.exception.NotFoundConference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
+import com.synergy.backend.domain.member.entity.Attendee;
+import com.synergy.backend.domain.member.entity.RoleType;
+import com.synergy.backend.domain.member.exception.NotFoundUserException;
+import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.qrCode.service.QrService;
 import com.synergy.backend.global.util.file.dto.FileInformationDto;
 import com.synergy.backend.global.util.file.util.FileS3Util;
@@ -28,12 +33,14 @@ public class BoothServiceImpl implements BoothService {
 
     private final BoothRepository boothRepository;
     private final ConferenceRepository conferenceRepository;
+    private final BoothParticipationRepository boothParticipationRepository;
+    private final AttendeeRepository attendeeRepository;
     private final FileS3Util fileS3Util;
     private final QrService qrService;
 
     @Transactional
     @Override
-    public BoothDetailResponseDto createBooth(Long conferenceId, String router, BoothRequestDto request, MultipartFile imageFile) throws WriterException {
+    public void createBooth(Long conferenceId, String router, BoothRequestDto request, MultipartFile imageFile) throws WriterException {
         Conference conference = ifConferenceExists(conferenceId);
 
         String secretCode = UUID.randomUUID().toString();
@@ -43,10 +50,12 @@ public class BoothServiceImpl implements BoothService {
                 request.boothLocation(),
                 request.boothNumber(),
                 request.progressDate(),
-                request.boothDescription(),
                 secretCode,
+                request.boothDescription(),
                 conference
         );
+
+        boothRepository.save(booth);
 
         String url = router + "/booth/" + booth.getId();
         byte[] qrCode = qrService.generateQRCode(url, secretCode);
@@ -55,26 +64,36 @@ public class BoothServiceImpl implements BoothService {
 
         FileInformationDto imageInfo = fileS3Util.uploadFile(imageFile);
         booth.updateImage(imageInfo);
-        boothRepository.save(booth);
-
-        return new BoothDetailResponseDto(booth);
     }
 
     @Transactional(readOnly = true)
     @Override
     public Page<BoothResponseDto> getAllBooths(Long conferenceId, Pageable pageable) {
         return boothRepository.findAllByConferenceId(conferenceId, pageable)
-                .map(BoothResponseDto::of);
+                .map(BoothResponseDto::from);
     }
 
     @Transactional(readOnly = true)
     @Override
-    public BoothDetailResponseDto getBoothById(Long conferenceId, Long id) {
+    public BoothDetailResponseDto getBoothById(String identifier, RoleType role, Long conferenceId, Long id) {
         Booth booth = ifBoothExists(id);
+        Boolean isQRVerify = Boolean.FALSE;
+
         if (!booth.getConference().getId().equals(conferenceId)) {
             throw new NotFoundBoothException();
         }
-        return new BoothDetailResponseDto(booth);
+
+        try {
+            if(role.equals(RoleType.ATTENDEE)) {
+                Attendee attendee = findIfAttendeeExists(identifier);
+                boothParticipationRepository.existsByBoothIdAndAttendeeId(booth.getId(), attendee.getId())
+                        .orElseThrow(NotFoundBoothException::new);
+                isQRVerify = Boolean.TRUE;
+            }
+            return new BoothDetailResponseDto(booth, isQRVerify);
+        } catch (Exception e) {
+            return new BoothDetailResponseDto(booth, isQRVerify);
+        }
     }
 
     @Transactional
@@ -98,7 +117,7 @@ public class BoothServiceImpl implements BoothService {
                 imageInfo != null ? imageInfo.accessUrl() : booth.getImageUrl()
         );
 
-        return new BoothDetailResponseDto(booth);
+        return new BoothDetailResponseDto(booth, Boolean.FALSE);
     }
 
     @Transactional
@@ -119,5 +138,9 @@ public class BoothServiceImpl implements BoothService {
     private Booth ifBoothExists(Long boothId) {
         return boothRepository.findById(boothId)
                 .orElseThrow(NotFoundBoothException::new);
+    }
+
+    private Attendee findIfAttendeeExists(String identifier) {
+        return attendeeRepository.findByEmail(identifier).orElseThrow(NotFoundUserException::new);
     }
 }

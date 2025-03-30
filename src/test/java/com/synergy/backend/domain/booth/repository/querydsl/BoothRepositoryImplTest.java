@@ -1,6 +1,6 @@
 package com.synergy.backend.domain.booth.repository.querydsl;
 
-import com.synergy.backend.domain.booth.dto.BoothParticipationResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationInterestedResponseDto;
 import com.synergy.backend.domain.booth.repository.BoothRepository;
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.conference.repository.ConferenceRepository;
@@ -30,7 +30,7 @@ class BoothRepositoryImplTest extends IntegrationSupportTest {
                 .orElseThrow(() -> new IllegalStateException("data-test.sql 이 실행되지 않았습니다."));
 
         // when
-        List<BoothParticipationResponseDto> result = boothRepository.searchBoothParticipation(savedConference.getId());
+        List<BoothParticipationInterestedResponseDto> result = boothRepository.searchBoothParticipation(savedConference.getId());
 
         // then
         assertThat(result)
