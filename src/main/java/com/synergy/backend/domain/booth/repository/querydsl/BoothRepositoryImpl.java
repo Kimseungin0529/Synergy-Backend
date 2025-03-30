@@ -46,6 +46,7 @@ public class BoothRepositoryImpl implements BoothRepositoryCustom {
                         booth.progressDate.eq(currentDate)
                 )
                 .groupBy(booth.id)
+                .having(boothParticipation.count().ne(0L))
                 .orderBy(boothParticipation.count().desc())
                 .limit(3)
                 .fetch();
