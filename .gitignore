@@ -38,3 +38,4 @@ out/
 /src/main/generated/
 /synergy.env
 /.env
+.DS_Store

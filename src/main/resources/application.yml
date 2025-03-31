@@ -71,6 +71,8 @@ logging:
 jwt:
   secret: ${JWT_SECRET}
 
+server:
+  forward-headers-strategy: framework
 
 spring:
   config:

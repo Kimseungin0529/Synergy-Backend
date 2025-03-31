@@ -4,13 +4,16 @@ import static jakarta.persistence.FetchType.*;
 import static lombok.AccessLevel.*;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 import com.synergy.backend.domain.conference.entity.Conference;
 import com.synergy.backend.domain.member.entity.Admin;
-
 import com.synergy.backend.global.util.file.dto.FileInformationDto;
+
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -19,6 +22,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
 import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -55,6 +59,9 @@ public class Booth {
 	@JoinColumn(name = "conference_id")
 	private Conference conference;
 
+	@OneToMany(mappedBy = "booth", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<BoothParticipation> boothParticipations = new ArrayList<>();
+
 	@ManyToMany(mappedBy = "booths")
 	private Set<Admin> admins = new HashSet<>();
 
@@ -73,13 +80,8 @@ public class Booth {
 	@Column
 	private String imageUrl;
 
-	public void addAdmin(Admin admin) {
-		this.admins.add(admin);
-		admin.getBooths().add(this);
-	}
-
 	public Booth(String companyName, String companyType, String boothLocation, String boothNumber,
-				 LocalDate progressDate, String secretCode, String boothDescription, Conference conference) {
+		LocalDate progressDate, String secretCode, String boothDescription, Conference conference) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
@@ -90,8 +92,13 @@ public class Booth {
 		this.conference = conference;
 	}
 
+	public void addAdmin(Admin admin) {
+		this.admins.add(admin);
+		admin.getBooths().add(this);
+	}
+
 	public void updateInfo(String companyName, String companyType, String boothLocation, String boothNumber,
-			   	LocalDate progressDate, String boothDescription) {
+		LocalDate progressDate, String boothDescription) {
 		this.companyName = companyName;
 		this.companyType = companyType;
 		this.boothLocation = boothLocation;
@@ -105,7 +112,7 @@ public class Booth {
 		this.qrUrl = fileInformation.accessUrl();
 	}
 
-	public void updateImage(FileInformationDto fileInformation){
+	public void updateImage(FileInformationDto fileInformation) {
 		this.imageKey = fileInformation.fileKey();
 		this.imageUrl = fileInformation.accessUrl();
 	}

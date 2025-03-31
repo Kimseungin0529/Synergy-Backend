@@ -18,7 +18,7 @@ public class CookieUtils {
 	public void addRefreshTokenToCookie(HttpServletResponse response, String refreshToken) {
 		ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_NAME, refreshToken)
 			.httpOnly(true)
-			.secure(false)	// .secure(ture): http에서 안됨 추후 변경
+			.secure(true)
 			.path("/")
 			.maxAge(Duration.ofDays(30))
 			.sameSite("None")
@@ -29,7 +29,7 @@ public class CookieUtils {
 	public void deleteRefreshTokenCookie(HttpServletResponse response) {
 		ResponseCookie cookie = ResponseCookie.from(REFRESH_TOKEN_NAME, "")
 			.httpOnly(true)
-			.secure(false)	// .secure(ture): http에서 안됨 추후 변경
+			.secure(true)
 			.path("/")
 			.maxAge(0)
 			.sameSite("None")
