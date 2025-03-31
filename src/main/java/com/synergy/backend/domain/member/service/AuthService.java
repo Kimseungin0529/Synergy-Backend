@@ -1,7 +1,6 @@
 package com.synergy.backend.domain.member.service;
 
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
-import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
 import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 
 public interface AuthService {

@@ -10,8 +10,8 @@ import java.util.List;
 import java.util.Optional;
 
 import com.synergy.backend.domain.member.api.dto.request.AttendeeFilterRequest;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeListResponse;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeListResponse;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 
 import org.junit.jupiter.api.BeforeEach;
@@ -22,7 +22,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 
-import com.synergy.backend.domain.member.api.dto.resposne.RecruiterMyInfoResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.RecruiterMyInfoResponseDto;
 import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.exception.NotFoundRecruiterException;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;

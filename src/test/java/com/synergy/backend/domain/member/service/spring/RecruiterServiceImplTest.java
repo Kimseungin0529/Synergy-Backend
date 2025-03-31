@@ -1,7 +1,7 @@
 package com.synergy.backend.domain.member.service.spring;
 
 import com.synergy.backend.domain.member.api.dto.request.AttendeeFilterRequest;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeListResponse;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeListResponse;
 import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;

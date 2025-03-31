@@ -2,8 +2,8 @@ package com.synergy.backend.domain.member.service;
 
 import java.util.List;
 
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.LikedRecruiterResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeSimpleResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.LikedRecruiterResponseDto;
 
 public interface RecruiterAttendeeLikeService {
 	void likeAttendee(Long id, Long attendeeId);

@@ -10,11 +10,11 @@ public record PointResponseDto(
 	String details,
 	LocalDateTime createdTime
 ) {
-	public static PointResponseDto from(Point point, String details) {
+	public static PointResponseDto from(Point point) {
 		return new PointResponseDto(
 			point.getPointType().getMessage(),
 			point.getPointType().getPointValue(),
-			details,
+			point.getDetails(),
 			point.getCreatedTime()
 		);
 	}

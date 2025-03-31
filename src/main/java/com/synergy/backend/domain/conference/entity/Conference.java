@@ -50,7 +50,7 @@ public class Conference {
     @Column(nullable = false, length = MAX_COMMON_LENGTH)
     private String type;
 
-    @Column
+    @Column(unique = true)
     private String ticketCode;
 
     @OneToMany(mappedBy = "conference", cascade = {CascadeType.PERSIST, REMOVE}, orphanRemoval = true)

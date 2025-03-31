@@ -5,8 +5,8 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.LikedRecruiterResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeSimpleResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.LikedRecruiterResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.entity.RecruiterAttendeeLike;

@@ -1,8 +1,8 @@
 package com.synergy.backend.domain.member.service;
 
 import com.synergy.backend.domain.member.api.dto.request.AttendeeFilterRequest;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeListResponse;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeListResponse;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -10,7 +10,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.synergy.backend.domain.member.api.dto.resposne.RecruiterMyInfoResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.RecruiterMyInfoResponseDto;
 import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.exception.NotFoundRecruiterException;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;

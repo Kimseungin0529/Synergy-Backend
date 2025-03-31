@@ -18,8 +18,8 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeLevelRankingResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeePointRankingResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeLevelRankingResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.AttendeePointRankingResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.member.entity.details.MembershipLevelType;
@@ -27,7 +27,9 @@ import com.synergy.backend.module.ControllerTestSupport;
 
 class AdminControllerTest extends ControllerTestSupport {
 
-	@DisplayName("관리자가 등급별 참가자 랭킹을 조회합니다.")
+	private final Long conferenceId = 1L;
+
+	@DisplayName("관리자가 등급별 컨퍼런스 참가자 랭킹을 조회합니다.")
 	@Test
 	@WithMockUser(username = "AD12345", roles = {"ADMIN"})
 	void getAttendeeLevelRankings() throws Exception {
@@ -43,13 +45,13 @@ class AdminControllerTest extends ControllerTestSupport {
 		Page<AttendeeLevelRankingResponseDto> page = new PageImpl<>(rankingList, PageRequest.of(0, 10),
 			rankingList.size());
 
-		given(adminService.getAttendeeLevelRankings(any(), any())).willReturn(page);
+		given(adminService.getAttendeeLevelRankings(any(), any(), any())).willReturn(page);
 		given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
 		given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
 		given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
 		// when & then
-		mockMvc.perform(get("/api/v1/admin/attendees/level-rankings")
+		mockMvc.perform(get("/api/v1/admin/conferences/{conferenceId}/attendees/level-rankings", conferenceId)
 				.param("membershipLevelType", MembershipLevelType.GOLD.name())
 				.param("page", "0")
 				.param("size", "10")
@@ -62,7 +64,7 @@ class AdminControllerTest extends ControllerTestSupport {
 			.andDo(print());
 	}
 
-	@DisplayName("관리자가 포인트 랭킹을 조회합니다.")
+	@DisplayName("관리자가 컨퍼런스 참가자 포인트 랭킹을 조회합니다.")
 	@Test
 	@WithMockUser(username = "AD12345", roles = {"ADMIN"})
 	void getAttendeePointRankings() throws Exception {
@@ -79,13 +81,13 @@ class AdminControllerTest extends ControllerTestSupport {
 		Page<AttendeePointRankingResponseDto> page = new PageImpl<>(rankingList, PageRequest.of(0, 10),
 			rankingList.size());
 
-		given(adminService.getAttendeePointRankings(any())).willReturn(page);
+		given(adminService.getAttendeePointRankings(any(), any())).willReturn(page);
 		given(jwtProvider.validateAccessToken(anyString())).willReturn(true);
 		given(jwtProvider.getRoleTypeFromToken(anyString())).willReturn(RoleType.ADMIN);
 		given(userDetailsService.loadUserByUsername(anyString())).willReturn(mock(UserDetails.class));
 
 		// when & then
-		mockMvc.perform(get("/api/v1/admin/attendees/point-rankings")
+		mockMvc.perform(get("/api/v1/admin/conferences/{conferenceId}/attendees/point-rankings", conferenceId)
 				.param("page", "0")
 				.param("size", "10")
 				.with(csrf())

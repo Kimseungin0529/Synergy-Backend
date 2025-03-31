@@ -16,10 +16,10 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.synergy.backend.domain.member.api.dto.request.JobInfoDetailsRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.JobInfoRequestDto;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeFullInfoResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.JobInfoResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.LikedRecruiterResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.MyInfoResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeFullInfoResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.JobInfoResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.LikedRecruiterResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.MyInfoResponseDto;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.member.service.AttendeeService;
 import com.synergy.backend.domain.member.service.RecruiterAttendeeLikeService;

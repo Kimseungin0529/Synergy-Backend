@@ -20,6 +20,7 @@ spring:
         open-in-view: false
         dialect: org.hibernate.dialect.MySQL8Dialect
         default_batch_fetch_size: 200
+    #        generate_statistics: true
     defer-datasource-initialization: true
 
   sql:
@@ -62,6 +63,10 @@ logging:
   level:
     org.hibernate.SQL: DEBUG  # ✅ SQL 로그를 DEBUG 수준으로 상세하게 출력
     org.hibernate.type.descriptor.sql: TRACE  # ✅ 바인딩된 파라미터도 함께 출력
+#    org.hibernate.stat: DEBUG
+#    org.hibernate.orm.jdbc.bind: TRACE
+#    org.hibernate.engine.jdbc.spi.SqlStatementLogger: DEBUG  # 쿼리 실행시간 로그를 명시적으로 출력
+
 ---
 jwt:
   secret: ${JWT_SECRET}

@@ -48,8 +48,7 @@ public class PointServiceImpl implements PointService {
 		Point point = pointRepository.findById(pointId)
 			.orElseThrow(PointNotFoundException::new);
 
-		String details = getDetailsForPoint(point);
-		return PointResponseDto.from(point, details);
+		return PointResponseDto.from(point);
 	}
 
 	@Transactional(readOnly = true)
@@ -85,16 +84,12 @@ public class PointServiceImpl implements PointService {
 	}
 
 	@Transactional
-	public void addPoint(Long attendeeId, PointType pointType, Long detailId) {
+	public void addPoint(Long attendeeId, PointType pointType, Long detailsId) {
 		Attendee attendee = attendeeRepository.findById(attendeeId).orElseThrow(UnKnownUserTypeException::new);
 
-		Point point = Point.builder()
-			.pointType(pointType)
-			.build();
+		String details = getDetailsForPoint(pointType, detailsId);
 
-		if (detailId != null) {
-			updatePointDetail(point, pointType, detailId);
-		}
+		Point point = Point.of(pointType, details);
 
 		attendee.addPoint(point);
 		pointRepository.save(point);
@@ -105,47 +100,27 @@ public class PointServiceImpl implements PointService {
 
 	}
 
-	@Override
-	public String getDetailsForPoint(Point point) {
-		return switch (point.getPointType()) {
+	private String getDetailsForPoint(PointType pointType, Long detailsId) {
+		return switch (pointType) {
 			case BOOTH_VISIT -> {
-				if (point.getBoothId() != null) {
-					Booth booth = boothRepository.findById(point.getBoothId())
-						.orElseThrow(() -> new NotFoundBoothException("부스 정보를 찾을 수 없습니다."));
-					yield booth.getCompanyName();
-				}
-				yield "";
+				Booth booth = boothRepository.findById(detailsId)
+					.orElseThrow(() -> new NotFoundBoothException("부스 정보를 찾을 수 없습니다."));
+				yield booth.getCompanyName();
 			}
 			case SESSION_ATTEND, SESSION_QNA -> {
-				if (point.getSessionId() != null) {
-					Session session = sessionRepository.findById(point.getSessionId())
-						.orElseThrow(NotFoundSession::new);
-					yield session.getTitle();
-				}
-				yield "";
+				Session session = sessionRepository.findById(detailsId)
+					.orElseThrow(NotFoundSession::new);
+				yield session.getTitle();
 			}
 			case RECRUITER_MEETING -> {
-				if (point.getRecruiterId() != null) {
-					Recruiter recruiter = recruiterRepository.findById(point.getRecruiterId())
-						.orElseThrow(NotFoundUserException::new);
-					yield recruiter.getCompany();
-				}
-				yield "";
+				Recruiter recruiter = recruiterRepository.findById(detailsId)
+					.orElseThrow(NotFoundUserException::new);
+				yield recruiter.getCompany();
 			}
 			case SIGN_UP -> "회원가입 적립";
 			case SURVEY_PARTICIPATION -> "설문조사 참여 적립";
 			case CONTENT_SHARE -> "컨텐츠 공유 적립";
 		};
-	}
-
-	private void updatePointDetail(Point point, PointType pointType, Long detailId) {
-		switch (pointType) {
-			case BOOTH_VISIT -> point.updateBoothId(detailId);
-			case SESSION_ATTEND, SESSION_QNA -> point.updateSessionId(detailId);
-			case RECRUITER_MEETING -> point.updateRecruiterId(detailId);
-			default -> {
-			}
-		}
 	}
 
 }

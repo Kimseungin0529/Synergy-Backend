@@ -16,8 +16,8 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.test.util.ReflectionTestUtils;
 
-import com.synergy.backend.domain.member.api.dto.resposne.LikedRecruiterResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.ProfileImageUpdatedResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.LikedRecruiterResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.ProfileImageUpdatedResponseDto;
 import com.synergy.backend.domain.member.entity.Attendee;
 import com.synergy.backend.global.security.CustomUserDetails;
 import com.synergy.backend.module.ControllerTestSupport;

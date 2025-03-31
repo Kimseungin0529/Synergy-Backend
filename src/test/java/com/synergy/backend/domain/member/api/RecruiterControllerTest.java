@@ -23,9 +23,9 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.test.context.support.WithMockUser;
 
 import com.synergy.backend.domain.member.api.dto.request.AttendeeFilterRequest;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeListResponse;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
-import com.synergy.backend.domain.member.api.dto.resposne.RecruiterMyInfoResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeListResponse;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeSimpleResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.RecruiterMyInfoResponseDto;
 import com.synergy.backend.domain.member.entity.RoleType;
 import com.synergy.backend.domain.member.entity.User;
 import com.synergy.backend.global.security.CustomUserDetails;

@@ -13,8 +13,8 @@ import com.synergy.backend.domain.member.api.dto.request.LoginAttendeeRequestDto
 import com.synergy.backend.domain.member.api.dto.request.PasswordResetConfirmDto;
 import com.synergy.backend.domain.member.api.dto.request.PasswordResetRequestDto;
 import com.synergy.backend.domain.member.api.dto.request.SignupAttendeeRequestDto;
-import com.synergy.backend.domain.member.api.dto.resposne.EmailVerificationResponseForTestDto;
-import com.synergy.backend.domain.member.api.dto.resposne.TokenResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.EmailVerificationResponseForTestDto;
+import com.synergy.backend.domain.member.api.dto.response.TokenResponseDto;
 import com.synergy.backend.domain.member.service.AuthService;
 import com.synergy.backend.domain.member.vo.TokenWithRefreshToken;
 import com.synergy.backend.global.annotation.DisableSwaggerSecurity;

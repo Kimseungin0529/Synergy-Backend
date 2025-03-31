@@ -1,24 +1,18 @@
 package com.synergy.backend.domain.member.repository.spring;
 
 import com.synergy.backend.domain.member.api.dto.request.AttendeeFilterRequest;
-import com.synergy.backend.domain.member.api.dto.resposne.AttendeeSimpleResponseDto;
+import com.synergy.backend.domain.member.api.dto.response.AttendeeSimpleResponseDto;
 import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
-import com.synergy.backend.global.config.QuerydslConfig;
 
 import com.synergy.backend.module.IntegrationSupportTest;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.context.annotation.Import;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 

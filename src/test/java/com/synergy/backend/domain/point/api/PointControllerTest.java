@@ -37,10 +37,14 @@ class PointControllerTest extends ControllerTestSupport {
 			new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities())
 		);
 
+		Point point1 = Point.of(SIGN_UP, "회원가입");
+		Point point2 = Point.of(PointType.SESSION_ATTEND, "세션참여");
+
 		List<PointResponseDto> mockResponse = List.of(
-			PointResponseDto.from(Point.of(SIGN_UP), "회원가입"),
-			PointResponseDto.from(Point.of(PointType.SESSION_ATTEND), "세션참여")
+			PointResponseDto.from(point1),
+			PointResponseDto.from(point2)
 		);
+
 		given(pointService.getPointResponses(Mockito.anyLong()))
 			.willReturn(mockResponse);
 

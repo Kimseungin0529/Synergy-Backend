@@ -48,7 +48,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Table(
 	indexes = {
-		@Index(name = "idx_total_points", columnList = "total_points DESC")
+		@Index(name = "idx_total_points_conf", columnList = "conference_id, total_points DESC")
 	})
 public class Attendee extends BaseEntity implements User {
 

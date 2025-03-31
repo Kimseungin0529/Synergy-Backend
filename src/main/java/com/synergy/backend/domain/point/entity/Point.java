@@ -31,44 +31,27 @@ public class Point extends BaseEntity {
 	@Enumerated(EnumType.STRING)
 	private PointType pointType;
 
-	private Long boothId;  // 부스 방문 시 부스 ID 저장
-	private Long sessionId; // 세션 참여 시 세션 ID 저장
-	// private Long sessionQnAId; // 세션 Q&A 참여 시 세션 Q&A ID 저장
-	private Long recruiterId; // 채용 담당자 미팅 시 담당자 ID 저장
+	private String details;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "attendee_id")
 	private Attendee attendee;
 
 	@Builder
-	private Point(PointType pointType, Long boothId, Long sessionId, Long sessionQnAId, Long recruiterId) {
+	private Point(PointType pointType, String details) {
 		this.pointType = pointType;
-		this.boothId = boothId;
-		this.sessionId = sessionId;
-		// this.sessionQnAId = sessionQnAId;
-		this.recruiterId = recruiterId;
+		this.details = details;
 	}
 
-	public static Point of(PointType pointType) {
+	public static Point of(PointType pointType, String details) {
 		return Point.builder()
 			.pointType(pointType)
+			.details(details)
 			.build();
 	}
 
 	public void assignAttendee(Attendee attendee) {
 		this.attendee = attendee;
-	}
-
-	public void updateBoothId(Long boothId) {
-		this.boothId = boothId;
-	}
-
-	public void updateSessionId(Long sessionId) {
-		this.sessionId = sessionId;
-	}
-
-	public void updateRecruiterId(Long recruiterId) {
-		this.recruiterId = recruiterId;
 	}
 
 }

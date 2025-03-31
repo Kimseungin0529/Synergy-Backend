@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
-import com.synergy.backend.domain.point.api.dto.PointResponseDto;
 import com.synergy.backend.domain.point.entity.Point;
 
 public interface PointRepository extends JpaRepository<Point, Long> {

@@ -21,5 +21,4 @@ public interface PointService {
 
 	List<PointResponseDto> getPointResponses(Long attendeeId);
 
-	String getDetailsForPoint(Point point);
 }

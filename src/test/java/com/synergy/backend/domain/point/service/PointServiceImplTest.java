@@ -17,7 +17,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import com.synergy.backend.domain.booth.entity.Booth;
 import com.synergy.backend.domain.booth.repository.BoothRepository;
 import com.synergy.backend.domain.member.entity.Attendee;
-import com.synergy.backend.domain.member.entity.Recruiter;
 import com.synergy.backend.domain.member.repository.AttendeeRepository;
 import com.synergy.backend.domain.member.repository.RecruiterRepository;
 import com.synergy.backend.domain.point.api.dto.PointResponseDto;
@@ -54,7 +53,7 @@ class PointServiceImplTest {
 	@BeforeEach
 	void setUp() {
 		testAttendee = Attendee.of("email", "pass", "name", "0101");
-		testPoint = Point.of(PointType.SIGN_UP);
+		testPoint = Point.of(PointType.SIGN_UP, PointType.SIGN_UP.getMessage());
 	}
 
 	@DisplayName("사용자의 포인트 내역을 조회할 수 있다.")
@@ -78,6 +77,10 @@ class PointServiceImplTest {
 		// given
 		when(attendeeRepository.findById(1L)).thenReturn(Optional.of(testAttendee));
 
+		Booth mockBooth = mock(Booth.class);
+		when(mockBooth.getCompanyName()).thenReturn("테스트부스");
+		when(boothRepository.findById(200L)).thenReturn(Optional.of(mockBooth));
+
 		// when
 		pointService.addBoothPoint(1L, 200L);
 
@@ -94,6 +97,10 @@ class PointServiceImplTest {
 		// given
 		when(attendeeRepository.findById(1L)).thenReturn(Optional.of(testAttendee));
 
+		Session mockSession = mock(Session.class);
+		when(mockSession.getTitle()).thenReturn("테스트세션");
+		when(sessionRepository.findById(200L)).thenReturn(Optional.of(mockSession));
+
 		// when
 		pointService.addSessionAttendPoint(1L, 200L);
 
@@ -109,6 +116,10 @@ class PointServiceImplTest {
 	void testAddSessionQnAPoint() {
 		// given
 		when(attendeeRepository.findById(1L)).thenReturn(Optional.of(testAttendee));
+
+		Session mockSession = mock(Session.class);
+		when(mockSession.getTitle()).thenReturn("테스트세션");
+		when(sessionRepository.findById(200L)).thenReturn(Optional.of(mockSession));
 
 		// when
 		pointService.addSessionQnaPoint(1L, 200L);
@@ -163,93 +174,6 @@ class PointServiceImplTest {
 		// then
 		assertEquals(1, responses.size());
 		assertEquals(testPoint.getPointType().getMessage(), responses.get(0).title());
-	}
-
-	@DisplayName("포인트 타입이 부스참여인 경우 포인트 상세정보로 부스 회사명을 반환한다.")
-	@Test
-	void testGetDetailsForPoint() {
-		// given
-		Point boothPoint = Point.builder().pointType(PointType.BOOTH_VISIT).boothId(10L).build();
-		Booth booth = mock(Booth.class);
-		when(booth.getCompanyName()).thenReturn("테스트회사");
-		when(boothRepository.findById(10L)).thenReturn(Optional.of(booth));
-
-		// when
-		String result = pointService.getDetailsForPoint(boothPoint);
-
-		// then
-		assertEquals("테스트회사", result);
-	}
-
-	@DisplayName("포인트 타입이 세션참여 또는 QnA인 경우 포인트 상세정보로 세션 제목을 반환한다.")
-	@Test
-	void testGetDetailsForPoint_SessionTypes() {
-		// given
-		Point sessionPoint = Point.builder().pointType(PointType.SESSION_ATTEND).sessionId(20L).build();
-		Session session = mock(Session.class);
-		when(session.getTitle()).thenReturn("세션 제목");
-		when(sessionRepository.findById(20L)).thenReturn(Optional.of(session));
-
-		// when
-		String result = pointService.getDetailsForPoint(sessionPoint);
-
-		// then
-		assertEquals("세션 제목", result);
-	}
-
-	@DisplayName("포인트 타입이 채용담당자 미팅인 경우 채용담당자 회사명을 반환한다.")
-	@Test
-	void testGetDetailsForPoint_RecruiterMeeting() {
-		// given
-		Point point = Point.builder().pointType(PointType.RECRUITER_MEETING).recruiterId(30L).build();
-		Recruiter recruiter = mock(Recruiter.class);
-		when(recruiter.getCompany()).thenReturn("채용담당자회사");
-		when(recruiterRepository.findById(30L)).thenReturn(Optional.of(recruiter));
-
-		// when
-		String result = pointService.getDetailsForPoint(point);
-
-		// then
-		assertEquals("채용담당자회사", result);
-	}
-
-	@DisplayName("포인트 타입이 회원가입인 경우 정해진 메시지를 반환한다.")
-	@Test
-	void testGetDetailsForPoint_SignUp() {
-		// given
-		Point point = Point.builder().pointType(PointType.SIGN_UP).build();
-
-		// when
-		String result = pointService.getDetailsForPoint(point);
-
-		// then
-		assertEquals("회원가입 적립", result);
-	}
-
-	@DisplayName("포인트 타입이 설문조사 참여인 경우 정해진 메시지를 반환한다.")
-	@Test
-	void testGetDetailsForPoint_SurveyParticipation() {
-		// given
-		Point point = Point.builder().pointType(PointType.SURVEY_PARTICIPATION).build();
-
-		// when
-		String result = pointService.getDetailsForPoint(point);
-
-		// then
-		assertEquals("설문조사 참여 적립", result);
-	}
-
-	@DisplayName("포인트 타입이 컨텐츠 공유인 경우 정해진 메시지를 반환한다.")
-	@Test
-	void testGetDetailsForPoint_ContentShare() {
-		// given
-		Point point = Point.builder().pointType(PointType.CONTENT_SHARE).build();
-
-		// when
-		String result = pointService.getDetailsForPoint(point);
-
-		// then
-		assertEquals("컨텐츠 공유 적립", result);
 	}
 
 }

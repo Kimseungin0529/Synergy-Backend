@@ -258,18 +258,18 @@ INSERT INTO booth_participation (booth_id, attendee_id) VALUES
     (1, 6);  -- 김다혜
 
 -- 포인트 적립 내역
-INSERT INTO point (attendee_id, created_time, point_type, booth_id, recruiter_id, session_id)
+INSERT INTO point (attendee_id, created_time, point_type, details)
 VALUES
-    (1, '2025-03-20 15:30:00', 'SIGN_UP', null, null, null),
-    (1, '2025-04-02 08:30:00', 'SESSION_ATTEND', null, null, 1),
-    (1, '2025-04-02 10:30:00', 'SESSION_QNA', null, null, 1),
-    (1, '2025-04-02 11:30:00', 'BOOTH_VISIT', 1, null, null),
-    (1, '2025-04-02 13:30:00', 'CONTENT_SHARE', null, null, null),
-    (1, '2025-04-02 13:34:00', 'SURVEY_PARTICIPATION', null, null, null),
-    (1, '2025-04-02 15:30:00', 'RECRUITER_MEETING', null, 1, null),
-    (2, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null),
-    (3, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null),
-    (4, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null),
-    (5, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null),
-    (6, CURRENT_TIMESTAMP, 'SIGN_UP', null, null, null);
+    (1, '2025-03-20 15:30:00', 'SIGN_UP', null),
+    (1, '2025-04-02 08:30:00', 'SESSION_ATTEND', '디지털 시대의 리더십과 팀 빌딩'),
+    (1, '2025-04-02 10:30:00', 'SESSION_QNA', '디지털 시대의 리더십과 팀 빌딩'),
+    (1, '2025-04-02 11:30:00', 'BOOTH_VISIT', 'OpenStack Korea'),
+    (1, '2025-04-02 13:30:00', 'CONTENT_SHARE', null),
+    (1, '2025-04-02 13:34:00', 'SURVEY_PARTICIPATION', null),
+    (1, '2025-04-02 15:30:00', 'RECRUITER_MEETING', null),
+    (2, CURRENT_TIMESTAMP, 'SIGN_UP', null),
+    (3, CURRENT_TIMESTAMP, 'SIGN_UP', null),
+    (4, CURRENT_TIMESTAMP, 'SIGN_UP', null),
+    (5, CURRENT_TIMESTAMP, 'SIGN_UP', null),
+    (6, CURRENT_TIMESTAMP, 'SIGN_UP', null);
 
