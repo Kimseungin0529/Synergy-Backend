@@ -122,7 +122,7 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
     }
 
 
-    private SessionParticipateRateDetailResDto refineTechList(SessionParticipateRateDetailResDto dto) {
+    SessionParticipateRateDetailResDto refineTechList(SessionParticipateRateDetailResDto dto) {
         List<SessionParticipateTechResDto> original = dto.dataset();
 
         if (original == null || original.size() <= 6) return dto;
