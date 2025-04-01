@@ -1,8 +1,10 @@
 package com.synergy.backend.domain.booth.service;
 
+import com.synergy.backend.domain.booth.dto.BoothResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothDtoMapper;
 import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipateRateResDto;
 import com.synergy.backend.domain.booth.dto.boothParticipateDto.BoothParticipationInterestedResponseDto;
-import com.synergy.backend.domain.booth.dto.BoothResponseDto;
+import com.synergy.backend.domain.booth.dto.boothParticipateDto.collection.BoothParticipateInterestedTechDtoList;
 import com.synergy.backend.domain.booth.entity.Booth;
 import com.synergy.backend.domain.booth.entity.BoothParticipation;
 import com.synergy.backend.domain.booth.exception.DuplicateParticipationException;
@@ -28,7 +30,8 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.List;
 
-@Service @Slf4j
+@Service
+@Slf4j
 @RequiredArgsConstructor
 public class BoothParticipationServiceImpl implements BoothParticipationService {
 
@@ -53,9 +56,9 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
                 .orElseThrow(NotFoundBoothException::new);
 
         boothParticipationRepository.findByBoothIdAndAttendeeId(boothId, attendee.getId())
-                        .ifPresent(boothParticipation -> {
-                                throw new DuplicateParticipationException();
-                        });
+                .ifPresent(boothParticipation -> {
+                    throw new DuplicateParticipationException();
+                });
 
         boothParticipationRepository.save(BoothParticipation.of(booth, attendee));
         pointService.addBoothPoint(attendee.getId(), boothId);
@@ -76,8 +79,11 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
     @Transactional(readOnly = true)
     @Override
     public List<BoothParticipationInterestedResponseDto> getParticipationCountByInterest(Long conferenceId) {
-        return boothRepository.searchBoothParticipation(conferenceId);
+        return boothRepository.searchBoothParticipation(conferenceId).stream()
+                .map(this::toProcessedDto)
+                .toList();
     }
+
 
     private void findIfConferenceMine(Admin admin, Long conferenceId) {
         adminRepository.findByIdAndConferences_Id(admin.getId(), conferenceId);
@@ -89,5 +95,11 @@ public class BoothParticipationServiceImpl implements BoothParticipationService 
 
     private Admin findIfAdminExists(String identifier) {
         return adminRepository.findByAdminAuthCode(identifier).orElseThrow(NotFoundUserException::new);
+    }
+
+    private BoothParticipationInterestedResponseDto toProcessedDto(BoothParticipationInterestedResponseDto rawDto) {
+        BoothParticipateInterestedTechDtoList rawTechList = BoothParticipateInterestedTechDtoList.from(rawDto.getDataset());
+        BoothParticipateInterestedTechDtoList processedTechs = rawTechList.convertTop6WithEtc(rawDto.getBoothId());
+        return BoothDtoMapper.withProcessedTechs(rawDto, processedTechs);
     }
 }
