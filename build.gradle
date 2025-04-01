@@ -138,13 +138,14 @@ jacocoTestReport {
         html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
     }
     def excludedDirs = [
-            "**/dto/**",
-            "**/config/**",
-            "**/exception/**",
+            //"**/dto/**",
+            "**/Q*",
+            //"**/config/**",
+            //"**/exception/**",
             "**/meta/**",
             "**/annotation/**",
-            "**/common/**",
-            "**/security/**",
+            //"**/common/**",
+            //"**/security/**",
             "**/generated/**"
     ]
 
@@ -168,13 +169,14 @@ jacocoTestCoverageVerification {
         }
     }
     def excludedDirs = [
-            "**/dto/**",
-            "**/config/**",
-            "**/exception/**",
+            //"**/dto/**",
+            "**/Q*",
+            //"**/config/**",
+            //"**/exception/**",
             "**/meta/**",
             "**/annotation/**",
-            "**/common/**",
-            "**/security/**",
+            //"**/common/**",
+            //"**/security/**",
             "**/generated/**"
     ]
 

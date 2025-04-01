@@ -42,7 +42,7 @@ spring:
     multipart:
       enabled: true
       # location: 간혹 에러가 생기면 해당 위치에 남는다고 한다. default는 스프링이 내부적으로 설정한다. 실제 운영에서 위치 지정하는 것이 파악하기 빠르다.
-      max-file-size: 2MB
+      max-file-size: 4MB
       max-request-size: 15MB
 
   data:
@@ -115,7 +115,7 @@ spring:
     multipart:
       enabled: true
       # location: 간혹 에러가 생기면 해당 위치에 남는다고 한다. default는 스프링이 내부적으로 설정한다. 실제 운영에서 위치 지정하는 것이 파악하기 빠르다.
-      max-file-size: 2MB
+      max-file-size: 4MB
       max-request-size: 15MB
 
   data:
@@ -174,7 +174,7 @@ spring:
   servlet:
     multipart:
       enabled: true
-      max-file-size: 2MB
+      max-file-size: 4MB
       max-request-size: 15MB
 
   sql:
