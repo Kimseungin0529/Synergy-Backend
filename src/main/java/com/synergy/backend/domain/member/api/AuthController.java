@@ -45,7 +45,7 @@ public class AuthController {
 	@Operation(summary = "참가자 회원가입", description = "이메일 인증을 완료한 참가자가 회원가입을 합니다.")
 	@DisableSwaggerSecurity
 	@PostMapping("/attendee/signup")
-	public ApiResponse<?> registerAttendee(@Valid @RequestBody SignupAttendeeRequestDto request,
+	public ApiResponse<TokenResponseDto> registerAttendee(@Valid @RequestBody SignupAttendeeRequestDto request,
 		HttpServletResponse response) {
 		TokenWithRefreshToken tokenWithRefreshToken = authService.registerAttendee(request);
 
