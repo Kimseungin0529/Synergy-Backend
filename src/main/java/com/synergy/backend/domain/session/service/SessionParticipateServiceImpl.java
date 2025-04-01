@@ -14,6 +14,7 @@ import com.synergy.backend.domain.session.dto.sessionDto.SessionResDto;
 import com.synergy.backend.domain.session.dto.questionDto.QuestionReqDto;
 import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParticipateRateDetailResDto;
 import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParticipateRateResDto;
+import com.synergy.backend.domain.session.dto.sessionparticipateDto.SessionParticipateTechResDto;
 import com.synergy.backend.domain.session.entity.AttendeeSession;
 import com.synergy.backend.domain.session.entity.Session;
 import com.synergy.backend.domain.session.entity.SessionQuestion;
@@ -32,6 +33,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDate;
 import java.time.ZoneId;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import static com.synergy.backend.domain.member.entity.QAttendee.attendee;
@@ -109,7 +112,47 @@ public class SessionParticipateServiceImpl implements SessionParticipateService 
         Admin currentMember = findIfAdminExists(identifier);
         findIfConferenceMine(currentMember, conferenceId); // 해당 컨퍼런스의 소유자인지 확인해야 됨.
 
-        return sessionRepository.getSessionParticipateDetailByConferenceId(conferenceId);
+        // 원본 세션 참여 정보
+        List<SessionParticipateRateDetailResDto> rawList = sessionRepository.getSessionParticipateDetailByConferenceId(conferenceId);
+
+        // 각 세션의 기술 리스트 후처리
+        return rawList.stream()
+                .map(this::refineTechList)
+                .toList();
+    }
+
+
+    private SessionParticipateRateDetailResDto refineTechList(SessionParticipateRateDetailResDto dto) {
+        List<SessionParticipateTechResDto> original = dto.dataset();
+
+        if (original == null || original.size() <= 6) return dto;
+
+        List<SessionParticipateTechResDto> sorted = original.stream()
+                .sorted(Comparator.comparingLong(SessionParticipateTechResDto::attendeeCount).reversed())
+                .toList();
+
+        List<SessionParticipateTechResDto> top6 = new ArrayList<>(sorted.subList(0, 6));
+
+        long etcCount = sorted.subList(6, sorted.size()).stream()
+                .mapToLong(SessionParticipateTechResDto::attendeeCount)
+                .sum();
+
+        top6.add(new SessionParticipateTechResDto("기타", etcCount));
+
+        // record 는 불변이라 새로 생성해야 함
+        return new SessionParticipateRateDetailResDto(
+                dto.sessionId(),
+                dto.title(),
+                dto.speaker(),
+                dto.speakerPosition(),
+                dto.description(),
+                dto.maximum(),
+                dto.progressDate(),
+                dto.startDate(),
+                dto.endDate(),
+                dto.qrUrl(),
+                top6
+        );
     }
 
     private void findIfConferenceMine(Admin admin, Long conferenceId) {
