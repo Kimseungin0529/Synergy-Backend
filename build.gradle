@@ -137,16 +137,55 @@ jacocoTestReport {
         csv.required.set(false)
         html.outputLocation.set(layout.buildDirectory.dir("jacocoHtml"))
     }
+    def excludedDirs = [
+            "**/dto/**",
+            "**/config/**",
+            "**/exception/**",
+            "**/meta/**",
+            "**/annotation/**",
+            "**/common/**",
+            "**/security/**",
+            "**/generated/**"
+    ]
+
+    def mainClassFiles = fileTree(
+            dir: "${buildDir}/classes/java/main", // 문자열로 지정 (문제 회피 핵심)
+            excludes: excludedDirs
+    )
+
+    classDirectories.setFrom(mainClassFiles)
+
+
 }
 
 jacocoTestCoverageVerification {
     violationRules {
         rule {
             limit {
-                minimum = 0.30
+                minimum = 0.65
+
             }
         }
     }
+    def excludedDirs = [
+            "**/dto/**",
+            "**/config/**",
+            "**/exception/**",
+            "**/meta/**",
+            "**/annotation/**",
+            "**/common/**",
+            "**/security/**",
+            "**/generated/**"
+    ]
+
+    def mainClassFiles = fileTree(
+            dir: "${buildDir}/classes/java/main",
+            excludes: excludedDirs
+    )
+
+    classDirectories.setFrom(mainClassFiles)
+
+
 }
 check.dependsOn jacocoTestCoverageVerification
 
