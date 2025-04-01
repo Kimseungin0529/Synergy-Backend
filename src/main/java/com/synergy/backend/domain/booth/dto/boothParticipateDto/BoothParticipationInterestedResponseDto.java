@@ -35,6 +35,19 @@ public class BoothParticipationInterestedResponseDto {
 		this.dataset = new ArrayList<>();
 	}
 
+	public BoothParticipationInterestedResponseDto(Long boothId, String companyName, String companyType, String boothLocation,
+												   String boothNumber, String boothDescription, LocalDate progressDate, String qrCode, List<BoothParticipateInterestedTechDto> dataset) {
+		this.boothId = boothId;
+		this.companyName = companyName;
+		this.companyType = companyType;
+		this.boothLocation = boothLocation;
+		this.boothNumber = boothNumber;
+		this.boothDescription = boothDescription;
+		this.progressDate = progressDate;
+		this.qrCode = qrCode;
+		this.dataset = dataset;
+	}
+
 	public void addTechs(List<BoothParticipateInterestedTechDto> techs) {
 		this.dataset = techs;
 	}
