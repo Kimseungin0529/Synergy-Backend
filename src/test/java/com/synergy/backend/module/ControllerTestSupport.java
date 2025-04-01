@@ -1,5 +1,9 @@
 package com.synergy.backend.module;
 
+import com.synergy.backend.domain.member.api.AuthController;
+import com.synergy.backend.domain.member.service.*;
+import com.synergy.backend.global.mail.MailService;
+import com.synergy.backend.global.token.CookieUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -15,10 +19,6 @@ import com.synergy.backend.domain.conference.service.ConferenceService;
 import com.synergy.backend.domain.member.api.AdminController;
 import com.synergy.backend.domain.member.api.AttendeeController;
 import com.synergy.backend.domain.member.api.RecruiterController;
-import com.synergy.backend.domain.member.service.AdminService;
-import com.synergy.backend.domain.member.service.AttendeeService;
-import com.synergy.backend.domain.member.service.RecruiterAttendeeLikeService;
-import com.synergy.backend.domain.member.service.RecruiterService;
 import com.synergy.backend.domain.point.api.PointController;
 import com.synergy.backend.domain.point.service.PointService;
 import com.synergy.backend.global.jwt.JwtProvider;
@@ -30,7 +30,8 @@ import com.synergy.backend.global.security.CustomUserDetailsService;
 	RecruiterController.class,
 	AdminController.class,
 	AttendeeController.class,
-	PointController.class
+	PointController.class,
+	AuthController.class
 } /* 추가로 필요한 컨트롤러 클래스 지정 */)
 public abstract class ControllerTestSupport {
 	protected final ObjectMapper objectMapper = new ObjectMapper()
@@ -56,4 +57,10 @@ public abstract class ControllerTestSupport {
 	protected AttendeeService attendeeService;
 	@MockitoBean
 	protected PointService pointService;
+	@MockitoBean
+	protected AuthService authService;
+	@MockitoBean
+	protected MailService mailService;
+	@MockitoBean
+	protected CookieUtils cookieUtils;
 }
