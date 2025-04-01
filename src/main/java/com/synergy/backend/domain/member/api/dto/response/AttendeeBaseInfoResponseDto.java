@@ -22,7 +22,7 @@ public record AttendeeBaseInfoResponseDto(
 	public static AttendeeBaseInfoResponseDto from(Attendee attendee) {
 		return new AttendeeBaseInfoResponseDto(
 			attendee.getName(),
-			attendee.getCurrentJobPosition() != null ? attendee.getCurrentJobPosition().getName() : "",
+			attendee.getDesiredJobPosition() != null ? attendee.getDesiredJobPosition().getName() : "",
 			attendee.getExperienceLevel() != null ? attendee.getExperienceLevel().getDescription() : "",
 			attendee.getProfileImageUrl()
 		);
